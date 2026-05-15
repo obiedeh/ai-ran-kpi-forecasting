@@ -203,3 +203,37 @@ def generate_congestion_telemetry(
         df.loc[shock_slice, "rrc_users"] = np.clip(df.loc[shock_slice, "rrc_users"] + (30 * ramp).astype(int), 10, 500)
 
     return df.reset_index(drop=True)
+
+
+def generate_backhaul_telemetry(
+    cells: int = 3,
+    periods: int = 168,
+    freq: str = "1h",
+    seed: int = 42,
+    start: str = "2024-01-01",
+    affected_cell: str = "CELL_001",
+    shock_start: float = 0.58,
+    shock_duration: int = 20,
+) -> pd.DataFrame:
+    """Generate a synthetic backhaul saturation event for dashboard evidence."""
+    df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)
+    if affected_cell not in set(df["cell_id"]):
+        affected_cell = df["cell_id"].iloc[0]
+
+    cell_df = df.loc[df["cell_id"] == affected_cell].copy()
+    shock_idx = int(len(cell_df) * shock_start)
+    shock_idx = max(0, min(shock_idx, max(len(cell_df) - 1, 0)))
+    end_idx = min(len(cell_df), shock_idx + shock_duration)
+
+    if end_idx > shock_idx:
+        shock_slice = cell_df.index[shock_idx:end_idx]
+        ramp = np.linspace(0.25, 1.0, len(shock_slice))
+        df.loc[shock_slice, "throughput_dl_mbps"] = np.clip(df.loc[shock_slice, "throughput_dl_mbps"] - 48 * ramp, 1, None)
+        df.loc[shock_slice, "throughput_ul_mbps"] = np.clip(df.loc[shock_slice, "throughput_ul_mbps"] - 22 * ramp, 1, None)
+        df.loc[shock_slice, "latency_ms"] = np.clip(df.loc[shock_slice, "latency_ms"] + 14 * ramp, 5, None)
+        df.loc[shock_slice, "packet_loss_pct"] = np.clip(df.loc[shock_slice, "packet_loss_pct"] + 2.4 * ramp, 0, 15)
+        df.loc[shock_slice, "sinr_db"] = np.clip(df.loc[shock_slice, "sinr_db"] - 2.5 * ramp, 1, 30)
+        df.loc[shock_slice, "prb_dl_util"] = np.clip(df.loc[shock_slice, "prb_dl_util"] + 4 * ramp, 5, 99)
+        df.loc[shock_slice, "prb_ul_util"] = np.clip(df.loc[shock_slice, "prb_ul_util"] + 3 * ramp, 4, 99)
+
+    return df.reset_index(drop=True)

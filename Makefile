@@ -2,7 +2,7 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-generic run-telecom synthetic report scenario-demo
+.PHONY: install install-dev test lint run-generic run-telecom synthetic report scenario-demo scenario-backhaul portal
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -44,4 +44,13 @@ report: run-generic
 
 scenario-demo:
 	$(PYTHON) ai-ran-kpi-forecasting.py scenario-demo \
-		--output-dir $(SCENARIO_DIR)
+		--output-dir $(SCENARIO_DIR)/congestion
+
+scenario-backhaul:
+	$(PYTHON) ai-ran-kpi-forecasting.py scenario-demo \
+		--scenario-type backhaul \
+		--output-dir $(SCENARIO_DIR)/backhaul
+
+portal:
+	$(PYTHON) ai-ran-kpi-forecasting.py portal \
+		--output reports/index.html

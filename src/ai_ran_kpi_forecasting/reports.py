@@ -66,6 +66,140 @@ def _svg_content(path: Path) -> str:
     return path.read_text(encoding="utf-8") if path.exists() else ""
 
 
+def write_portal_page(output_path: str | Path) -> Path:
+    """Write a lightweight portal that links the publishable report bundles."""
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    root = output_path.parent
+    forecast_root = root / "forecast_examples" / "latest"
+    scenarios_root = root / "scenarios" / "latest"
+
+    def rel(path: Path) -> str:
+        try:
+            return str(path.relative_to(root))
+        except ValueError:
+            return str(path)
+
+    cards = [
+        {
+            "title": "Forecast Evidence Pack",
+            "desc": "Baseline KPI forecast, metrics, impact plot, and feature importance for the sample RAN telemetry.",
+            "links": [
+                ("Metrics summary", rel(forecast_root / "metrics_summary.md")),
+                ("Forecast SVG", rel(forecast_root / "prb_dl_util_forecast.svg")),
+                ("Impact SVG", rel(forecast_root / "prb_dl_util_impact.svg")),
+            ],
+        },
+        {
+            "title": "Congestion Scenario",
+            "desc": "Pre-shock versus shock-window evidence showing PRB, throughput, and latency stress on one cell.",
+            "links": [
+                ("Dashboard", rel(scenarios_root / "dashboard" / "dashboard.html")),
+                ("Scenario summary", rel(scenarios_root / "dashboard" / "dashboard_summary.md")),
+            ],
+        },
+        {
+            "title": "Backhaul Scenario",
+            "desc": "Backhaul saturation example with throughput collapse and latency growth under constrained transport.",
+            "links": [
+                ("Dashboard", rel(scenarios_root / "backhaul" / "dashboard" / "dashboard.html")),
+                ("Scenario summary", rel(scenarios_root / "backhaul" / "dashboard" / "dashboard_summary.md")),
+            ],
+        },
+        {
+            "title": "Data Contracts",
+            "desc": "Telemetry assumptions and synthetic data contract for reproducible runs.",
+            "links": [
+                ("Data contract", rel(root.parent / "DATA_CONTRACT.md")),
+                ("Scenario README", rel(root / "scenarios" / "README.md")),
+                ("Forecast README", rel(root / "forecast_examples" / "README.md")),
+            ],
+        },
+    ]
+
+    def render_links(links: list[tuple[str, str]]) -> str:
+        items = "".join(f'<li><a href="{href}">{label}</a></li>' for label, href in links)
+        return f"<ul>{items}</ul>"
+
+    html_cards = "".join(
+        f"""
+        <section class="card">
+          <div class="eyebrow">{card['title']}</div>
+          <p>{card['desc']}</p>
+          {render_links(card['links'])}
+        </section>
+        """
+        for card in cards
+    )
+
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-RAN KPI Forecasting Portal</title>
+  <style>
+    :root {{
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #dbe4ee;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+    }}
+    body {{
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.10), rgba(248, 250, 252, 0.0) 240px),
+        var(--bg);
+    }}
+    .wrap {{ max-width: 1400px; margin: 0 auto; padding: 28px; }}
+    h1 {{ margin: 0 0 8px; font-size: 34px; }}
+    .sub {{ color: var(--muted); max-width: 900px; line-height: 1.5; }}
+    .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }}
+    .card {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }}
+    .eyebrow {{ color: var(--blue); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }}
+    .card p {{ color: var(--muted); line-height: 1.5; }}
+    ul {{ padding-left: 18px; margin: 0; }}
+    li {{ margin: 8px 0; }}
+    a {{ color: var(--blue); text-decoration: none; }}
+    a:hover {{ text-decoration: underline; }}
+    .footer {{ margin-top: 22px; color: var(--muted); font-size: 13px; }}
+    @media (max-width: 880px) {{
+      .grid {{ grid-template-columns: 1fr; }}
+    }}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AI-RAN KPI Forecasting Portal</h1>
+    <div class="sub">
+      Evidence-oriented telecom telemetry, baseline forecasting, and pre/post scenario dashboards for AI-RAN observability.
+      The layout is intentionally compact and publishable: one sample forecast pack, one congestion scenario, and one backhaul scenario.
+    </div>
+    <div class="grid">
+      {html_cards}
+    </div>
+    <div class="footer">
+      Generated from the repository's report artifacts and synthetic telecom telemetry utilities.
+    </div>
+  </div>
+</body>
+</html>
+"""
+    output_path.write_text(html, encoding="utf-8")
+    return output_path
+
+
 def write_scenario_dashboard(
     baseline_result: ForecastRunResult,
     congestion_result: ForecastRunResult,
@@ -220,7 +354,7 @@ def write_scenario_dashboard(
 <body>
   <div class="wrap">
     <h1>{scenario_name}</h1>
-    <div class="sub">Wireless KPI observability pack for a baseline cell and a congestion shock on {congestion_result.cell_id}.</div>
+    <div class="sub">Wireless KPI observability pack comparing a baseline cell with a pre/post scenario event on {congestion_result.cell_id}.</div>
     <div class="grid">
       <div class="card"><div class="label">Baseline RMSE</div><div class="value">{baseline_result.metrics['rmse']:.2f}</div><div class="small">{baseline_result.target_col}</div></div>
       <div class="card"><div class="label">Congestion RMSE</div><div class="value">{congestion_result.metrics['rmse']:.2f}</div><div class="small">{congestion_result.target_col}</div></div>

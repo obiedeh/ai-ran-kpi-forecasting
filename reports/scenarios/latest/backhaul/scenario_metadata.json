@@ -1,0 +1,11 @@
+{
+  "baseline_data": "reports/scenarios/latest/backhaul/baseline_telemetry.csv",
+  "scenario_data": "reports/scenarios/latest/backhaul/backhaul_telemetry.csv",
+  "scenario_type": "backhaul",
+  "shock_start": 0.58,
+  "shock_duration": 20,
+  "baseline_report": "reports/scenarios/latest/backhaul/baseline",
+  "scenario_report": "reports/scenarios/latest/backhaul/backhaul",
+  "dashboard_html": "reports/scenarios/latest/backhaul/dashboard/dashboard.html",
+  "dashboard_summary": "reports/scenarios/latest/backhaul/dashboard/dashboard_summary.md"
+}
