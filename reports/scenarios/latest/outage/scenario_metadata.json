@@ -1,0 +1,11 @@
+{
+  "baseline_data": "reports/scenarios/latest/outage/baseline_telemetry.csv",
+  "scenario_data": "reports/scenarios/latest/outage/outage_telemetry.csv",
+  "scenario_type": "outage",
+  "shock_start": 0.66,
+  "shock_duration": 14,
+  "baseline_report": "reports/scenarios/latest/outage/baseline",
+  "scenario_report": "reports/scenarios/latest/outage/outage",
+  "dashboard_html": "reports/scenarios/latest/outage/dashboard/dashboard.html",
+  "dashboard_summary": "reports/scenarios/latest/outage/dashboard/dashboard_summary.md"
+}

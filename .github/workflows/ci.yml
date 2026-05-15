@@ -57,10 +57,21 @@ jobs:
             --scenario-type backhaul \
             --output-dir reports/scenarios/latest/backhaul
 
+      - name: Generate outage scenario dashboard
+        run: |
+          python ai-ran-kpi-forecasting.py scenario-demo \
+            --scenario-type outage \
+            --output-dir reports/scenarios/latest/outage
+
       - name: Generate evidence portal
         run: |
           python ai-ran-kpi-forecasting.py portal \
             --output reports/index.html
+
+      - name: Generate publish page
+        run: |
+          python ai-ran-kpi-forecasting.py publish \
+            --output-dir reports/publish/latest
 
       - name: Verify scenario artifacts
         run: |
@@ -72,4 +83,9 @@ jobs:
           test -f reports/scenarios/latest/backhaul/dashboard/dashboard_summary.md
           test -f reports/scenarios/latest/backhaul/baseline/prb_dl_util_impact.svg
           test -f reports/scenarios/latest/backhaul/backhaul/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/outage/dashboard/dashboard.html
+          test -f reports/scenarios/latest/outage/dashboard/dashboard_summary.md
+          test -f reports/scenarios/latest/outage/baseline/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/outage/outage/prb_dl_util_impact.svg
           test -f reports/index.html
+          test -f reports/publish/latest/index.html

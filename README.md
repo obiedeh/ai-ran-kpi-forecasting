@@ -226,10 +226,22 @@ python ai-ran-kpi-forecasting.py scenario-demo --output-dir reports/scenarios/la
 python ai-ran-kpi-forecasting.py scenario-demo --scenario-type backhaul --output-dir reports/scenarios/latest/backhaul
 ```
 
+### Generate Outage Scenario Dashboard
+
+```bash
+python ai-ran-kpi-forecasting.py scenario-demo --scenario-type outage --output-dir reports/scenarios/latest/outage
+```
+
 ### Generate Evidence Portal
 
 ```bash
 python ai-ran-kpi-forecasting.py portal --output reports/index.html
+```
+
+### Generate Publish Page
+
+```bash
+python ai-ran-kpi-forecasting.py publish --output-dir reports/publish/latest
 ```
 
 The scenario dashboard includes telecom-style KPI cards, pre-shock versus shock-window telemetry, and side-by-side baseline/congestion report panels.

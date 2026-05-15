@@ -9,10 +9,11 @@ from pathlib import Path
 from ai_ran_kpi_forecasting.data import (
     generate_backhaul_telemetry,
     generate_congestion_telemetry,
+    generate_outage_telemetry,
     generate_synthetic_telemetry,
 )
 from ai_ran_kpi_forecasting.forecasting import run_forecast_pipeline
-from ai_ran_kpi_forecasting.reports import write_portal_page, write_report_bundle, write_scenario_dashboard
+from ai_ran_kpi_forecasting.reports import write_portal_page, write_publish_page, write_report_bundle, write_scenario_dashboard
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,10 +50,13 @@ def build_parser() -> argparse.ArgumentParser:
     scenario.add_argument("--cell-id", default="CELL_001")
     scenario.add_argument("--kpi-col", default="prb_dl_util")
     scenario.add_argument("--horizon", type=int, default=24)
-    scenario.add_argument("--scenario-type", choices=["congestion", "backhaul"], default="congestion")
+    scenario.add_argument("--scenario-type", choices=["congestion", "backhaul", "outage"], default="congestion")
 
     portal = subparsers.add_parser("portal", help="Generate the top-level evidence portal page.")
     portal.add_argument("--output", default="reports/index.html")
+
+    publish = subparsers.add_parser("publish", help="Generate a release-friendly static landing page.")
+    publish.add_argument("--output-dir", default="reports/publish/latest")
 
     return parser
 
@@ -109,6 +113,17 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
         scenario_name = "AI-RAN backhaul saturation scenario"
         shock_start = 0.58
         shock_duration = 20
+    elif args.scenario_type == "outage":
+        scenario_data = generate_outage_telemetry(
+            cells=args.cells,
+            periods=args.periods,
+            freq=args.freq,
+            seed=args.seed,
+            affected_cell=args.cell_id,
+        )
+        scenario_name = "AI-RAN cell outage recovery scenario"
+        shock_start = 0.66
+        shock_duration = 14
     else:
         scenario_data = generate_congestion_telemetry(
             cells=args.cells,
@@ -185,6 +200,14 @@ def run_portal(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_publish(args: argparse.Namespace) -> int:
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    publish_path = write_publish_page(output_dir)
+    print(f"Wrote publish page to {publish_path}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -196,6 +219,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_scenario_demo(args)
     if args.command == "portal":
         return run_portal(args)
+    if args.command == "publish":
+        return run_publish(args)
 
     # Backward-compatible default: run the sample forecast when no subcommand is provided.
     return run_forecast(

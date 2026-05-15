@@ -1,0 +1,7 @@
+{
+  "portal": "../../index.html",
+  "forecast_pack": "../../forecast_examples/latest/metrics_summary.md",
+  "congestion": "../../scenarios/latest/congestion/dashboard/dashboard.html",
+  "backhaul": "../../scenarios/latest/backhaul/dashboard/dashboard.html",
+  "outage": "../../scenarios/latest/outage/dashboard/dashboard.html"
+}
