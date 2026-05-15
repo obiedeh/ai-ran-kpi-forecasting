@@ -1,226 +1,267 @@
 # AI-RAN KPI Forecasting
 
-Small ML project for forecasting telecom RAN KPIs (per-cell, univariate forecasting).
+AI-native forecasting and operational intelligence for telecom RAN and edge infrastructure.
 
-This repository contains a single-file runnable forecasting script (`ai-ran-kpi-forecasting.py`) that:
-- Loads generic RAN KPI CSVs or Telecom Italia MI challenge data
-- Engineers time & lag features
-- Trains an XGBoost (or RandomForest fallback) regressor
-- Produces a short-horizon autoregressive forecast
+This repository explores how machine learning can support proactive operations across AI-RAN, private 5G, and edge AI environments by forecasting network KPIs, identifying emerging congestion patterns, and improving infrastructure visibility before failures occur.
 
-**Quick Start**
+The focus is not just forecasting a metric.
 
-Prerequisites
-- Python 3.8+ recommended
-- Make a virtual environment and activate it (Windows PowerShell shown):
+The focus is building a foundation for:
 
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+- AI-native RAN observability
+- edge workload intelligence
+- congestion and utilization forecasting
+- inference-aware network operations
+- proactive telecom operations support
+- future AI-RAN and 6G operational workflows
+
+---
+
+## Why This Matters
+
+As AI workloads move closer to the edge, telecom infrastructure is becoming tightly coupled with inference systems, robotics platforms, distributed compute, and latency-sensitive applications.
+
+Modern AI-RAN environments must handle:
+
+- fluctuating inference demand
+- variable user mobility
+- latency-sensitive edge workloads
+- resource contention
+- energy and thermal constraints
+- unpredictable traffic patterns
+
+Forecasting network behavior ahead of time enables:
+
+- smarter workload placement
+- proactive scaling decisions
+- congestion mitigation
+- improved edge resource utilization
+- more resilient AI-native telecom operations
+
+This repository is an engineering exploration of those operational intelligence workflows.
+
+---
+
+## Core Capabilities
+
+### Forecasting and Network Intelligence
+
+- per-cell KPI forecasting
+- temporal trend analysis
+- autoregressive forecasting workflows
+- short-horizon and mid-horizon prediction
+- anomaly-oriented KPI visibility
+
+### Supported KPI Types
+
+- PRB utilization
+- throughput (DL/UL)
+- RRC connections
+- internet traffic volume
+- SMS and call activity
+- custom numeric network KPIs
+
+### Feature Engineering
+
+- lag-based temporal features
+- cyclical time encodings
+- hour/day/week seasonality
+- time-aware train/test separation
+
+### Modeling
+
+- XGBoost forecasting
+- RandomForest fallback pipeline
+- forward-only temporal validation
+- autoregressive roll-forward prediction
+
+---
+
+## Architecture
+
+```text
+RAN / Edge Telemetry
+        |
+        v
+Telemetry Ingestion
+        |
+        v
+Feature Engineering
+(time, lag, cyclical patterns)
+        |
+        v
+Forecasting Engine
+(XGBoost / RandomForest)
+        |
+        v
+Operational Intelligence Layer
+- congestion forecasting
+- utilization visibility
+- anomaly awareness
+- workload planning
+        |
+        v
+AI-RAN / Edge Operations
 ```
 
-Install runtime dependencies:
+---
 
-```powershell
-python -m pip install -r requirements.txt
-```
+## Repository Structure
 
-Install dev/test dependencies (optional):
-
-```powershell
-python -m pip install -r requirements-dev.txt
-```
-
-Run the example smoke test with pytest:
-
-```powershell
-pytest -q
-```
-
-Running the script
-
-The main entrypoint is `ai-ran-kpi-forecasting.py`. The script expects `--data` and supports two dataset types:
-
-- `generic`: a CSV with a timestamp column, a `cell_id` column and one or more numeric KPI columns.
-- `telecom-italia-mi`: directory or CSVs from the Telecom Italia Big Data Challenge (MI dataset).
-
-Example (generic CSV):
-
-```powershell
-python ai-ran-kpi-forecasting.py --dataset-type generic --data .\data\ran_kpi_sample.csv --timestamp-col timestamp --cell-id-col cell_id --kpi-col prb_dl_util --cell-id CELL_001 --horizon 24
-```
-
-Example (Telecom Italia MI directory):
-
-```powershell
-python ai-ran-kpi-forecasting.py --dataset-type telecom-italia-mi --data .\data\telecom_italia_mi --aggregate hourly --kpi-col internet_traffic --horizon 24
-```
-
-Notes / tips
-- If `xgboost` is installed the script uses `XGBRegressor`; otherwise it falls back to `RandomForestRegressor` from scikit-learn.
-- For MLflow logging, set `MLFLOW_TRACKING_URI` to a local folder, e.g. `file:./mlruns` before running.
-- Keep test fixtures and small sample data under `tests/fixtures/` to avoid committing large datasets.
-
-Contributing
-- See `.github/copilot-instructions.md` for AI-agent guidance and repository conventions.
-
-If you want, I can add a small `train.py` wrapper, a sample test fixture, or a GitHub Actions workflow that runs `pytest` on PRs.
-📡 AI-RAN KPI Forecasting
-
-Adaptive Forecasting Engine for RAN Traffic, Mobility & Utilization KPIs
-
-This repository provides a modular time-series forecasting pipeline for Radio Access Network (RAN) KPIs. It supports both:
-
-Generic RAN KPI CSV Files
-
-Telecom Italia “Telecommunications – SMS, Call, Internet – MI” Dataset (Big Data Challenge)
-
-The system uses lag features, calendar features, and machine learning models (XGBoost or RandomForest fallback) to produce short-term and mid-term forecasts for per-cell KPIs such as:
-
-PRB utilization
-
-Throughput (DL/UL)
-
-RRC connections
-
-Internet traffic volume
-
-SMS / Call counters
-
-Any numeric KPI column
-
-🚀 Features
-✔ Supports Multiple Dataset Types
-
-Generic RAN CSV
-
-Telecom Italia MI traffic dataset (Option 2)
-
-✔ Automatic Feature Engineering
-
-Time features: hour, day, week, cyclical encodings
-
-Lag features: configurable (1, 2, 3, 6, 12 steps, etc.)
-
-✔ Time-Aware Modeling
-
-Temporal (strict forward-only) train/test split
-
-Autoregressive forecasting with lag roll-forward
-
-✔ Model Options
-
-XGBoost (default)
-
-RandomForest if XGBoost is not installed
-
-✔ Forecasting Horizon
-
-Configurable (default: 24 steps)
-
-📁 Directory Structure
-ai-ran-kpi-forecasting/
-│
-├── ai_ran_kpi_forecasting.py       # Main forecasting engine
-├── data/
-│   ├── ran_kpi_sample.csv          # Example generic dataset (user-provided)
-│   ├── telecom_italia_mi/          # Telecom Italia MI CSV files
-│
+```text
+.
+├── ai-ran-kpi-forecasting.py    # Forecasting pipeline
+├── data/                        # Sample datasets
+├── tests/                       # Smoke tests and validation
+├── requirements.txt
+├── requirements-dev.txt
 └── README.md
+```
 
-🧠 Dataset Options
-Option 1 — Generic RAN KPI CSV
+---
 
-Your file must include:
+## Supported Dataset Types
 
-timestamp — datetime
+### 1. Generic RAN KPI CSV
 
-cell_id — cell identifier
+Expected fields:
 
-one or more numeric KPIs
+- timestamp
+- cell_id
+- one or more numeric KPI columns
 
 Example:
 
+```csv
 timestamp,cell_id,prb_dl_util,throughput_mbps,rrc_users
 2024-01-01 00:00:00,CELL_001,45.2,12.3,122
 2024-01-01 00:05:00,CELL_001,50.1,14.9,138
-...
+```
 
+---
 
-Run:
+### 2. Telecom Italia Big Data Challenge Dataset
 
-python ai_ran_kpi_forecasting.py \
-    --dataset-type generic \
-    --data ./data/ran_kpi_sample.csv \
-    --timestamp-col timestamp \
-    --cell-id-col cell_id \
-    --kpi-col prb_dl_util \
-    --cell-id CELL_001 \
-    --horizon 24
+Supports the Telecom Italia:
 
-Option 2 — Telecom Italia “SMS, Call, Internet – MI” Dataset
+> Telecommunications - SMS, Call, Internet - MI Dataset
 
-This is a public telecom dataset containing:
+Capabilities include:
 
-Square id (grid cell)
+- timestamp normalization
+- traffic aggregation
+- KPI extraction
+- temporal forecasting workflows
 
-Time interval (UNIX ms, 10-min)
+Dataset source:
 
-SMS-in/out activity
-
-Call-in/out activity
-
-Internet traffic activity
-
-Download from:
 https://dandelion.eu/datamine/open-big-data/
 
-Organize as:
+---
 
-data/telecom_italia_mi/
-    2013-11-01.csv
-    2013-11-02.csv
-    ...
+## Quick Start
 
+### Create Environment
 
-Run:
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
 
-python ai_ran_kpi_forecasting.py \
-    --dataset-type telecom-italia-mi \
-    --data ./data/telecom_italia_mi \
-    --aggregate hourly \
-    --kpi-col internet_traffic \
-    --horizon 24
+Windows PowerShell:
 
-Notes:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-The loader automatically normalizes column names
+---
 
-Converts UNIX ms → UTC timestamps
+### Install Dependencies
 
-Aggregates over country codes
+```bash
+python -m pip install -r requirements.txt
+```
 
-Supports:
+Optional development dependencies:
 
-10-minute granularity
+```bash
+python -m pip install -r requirements-dev.txt
+```
 
-1-hour resampling (--aggregate hourly)
+---
 
-🔧 Key Arguments
-Argument	Description
---dataset-type	generic or telecom-italia-mi
---data	CSV file (generic) or directory (TI MI)
---timestamp-col	For generic datasets
---cell-id-col	For generic datasets
---kpi-col	KPI to forecast; inferred if omitted
---cell-id	Specific cell; auto-selects densest
---lags	Autoregressive lag steps
---horizon	Forecast steps
---test-size	Train/test split (time-ordered)
---aggregate	For TI MI (10min, hourly)
-📊 Example Forecast Output
-timestamp                forecast_step   y_hat
-2024-01-10 12:00:00+00:00      1          125.33
-2024-01-10 13:00:00+00:00      2          130.77
-2024-01-10 14:00:00+00:00      3          128.44
-...
+### Run Smoke Tests
+
+```bash
+pytest -q
+```
+
+---
+
+## Example Usage
+
+### Generic RAN KPI Dataset
+
+```bash
+python ai-ran-kpi-forecasting.py \
+  --dataset-type generic \
+  --data ./data/ran_kpi_sample.csv \
+  --timestamp-col timestamp \
+  --cell-id-col cell_id \
+  --kpi-col prb_dl_util \
+  --cell-id CELL_001 \
+  --horizon 24
+```
+
+---
+
+### Telecom Italia Dataset
+
+```bash
+python ai-ran-kpi-forecasting.py \
+  --dataset-type telecom-italia-mi \
+  --data ./data/telecom_italia_mi \
+  --aggregate hourly \
+  --kpi-col internet_traffic \
+  --horizon 24
+```
+
+---
+
+## Engineering Direction
+
+This repository is evolving toward a broader AI-native telecom intelligence platform focused on:
+
+- AI-RAN operations
+- edge AI infrastructure awareness
+- network telemetry intelligence
+- anomaly detection
+- workload-aware forecasting
+- operational decision support
+- distributed edge systems
+
+Planned future directions include:
+
+- SHAP-based explainability
+- multi-KPI forecasting
+- anomaly detection pipelines
+- Grafana-style observability outputs
+- workload-placement experimentation
+- AI-RAN operational dashboards
+- GPU-accelerated training paths
+
+---
+
+## Positioning
+
+This project is part of a broader engineering focus around:
+
+- Physical AI
+- Edge AI
+- Agentic AI
+- LLM/RAG systems
+- AI-native infrastructure
+- AI-RAN and private 5G
+
+The goal is to build practical, deployable AI systems that operate across telecom networks, edge infrastructure, and real-world operational environments.
