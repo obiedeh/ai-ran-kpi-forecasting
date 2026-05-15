@@ -1,7 +1,8 @@
 PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
+SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-generic run-telecom synthetic report
+.PHONY: install install-dev test lint run-generic run-telecom synthetic report scenario-demo
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -40,3 +41,7 @@ synthetic:
 		--output ./data/synthetic_ran_kpi.csv
 
 report: run-generic
+
+scenario-demo:
+	$(PYTHON) ai-ran-kpi-forecasting.py scenario-demo \
+		--output-dir $(SCENARIO_DIR)

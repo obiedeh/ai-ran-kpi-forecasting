@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
-from ai_ran_kpi_forecasting.data import generate_synthetic_telemetry
+from ai_ran_kpi_forecasting.data import generate_congestion_telemetry, generate_synthetic_telemetry
 from ai_ran_kpi_forecasting.forecasting import run_forecast_pipeline
-from ai_ran_kpi_forecasting.reports import write_report_bundle
+from ai_ran_kpi_forecasting.reports import write_report_bundle, write_scenario_dashboard
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -34,6 +35,16 @@ def build_parser() -> argparse.ArgumentParser:
     synthetic.add_argument("--periods", type=int, default=168)
     synthetic.add_argument("--freq", default="1h")
     synthetic.add_argument("--seed", type=int, default=42)
+
+    scenario = subparsers.add_parser("scenario-demo", help="Generate a baseline vs congestion scenario dashboard.")
+    scenario.add_argument("--output-dir", default="reports/scenarios/latest")
+    scenario.add_argument("--cells", type=int, default=3)
+    scenario.add_argument("--periods", type=int, default=168)
+    scenario.add_argument("--freq", default="1h")
+    scenario.add_argument("--seed", type=int, default=42)
+    scenario.add_argument("--cell-id", default="CELL_001")
+    scenario.add_argument("--kpi-col", default="prb_dl_util")
+    scenario.add_argument("--horizon", type=int, default=24)
 
     return parser
 
@@ -74,6 +85,74 @@ def run_generate_synthetic(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_scenario_demo(args: argparse.Namespace) -> int:
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    baseline_data = generate_synthetic_telemetry(cells=args.cells, periods=args.periods, freq=args.freq, seed=args.seed)
+    congestion_data = generate_congestion_telemetry(
+        cells=args.cells,
+        periods=args.periods,
+        freq=args.freq,
+        seed=args.seed,
+        congested_cell=args.cell_id,
+    )
+
+    baseline_data_path = output_dir / "baseline_telemetry.csv"
+    congestion_data_path = output_dir / "congestion_telemetry.csv"
+    baseline_data.to_csv(baseline_data_path, index=False)
+    congestion_data.to_csv(congestion_data_path, index=False)
+
+    baseline_result = run_forecast_pipeline(
+        data=str(baseline_data_path),
+        dataset_type="generic",
+        cell_id=args.cell_id,
+        kpi_col=args.kpi_col,
+        horizon=args.horizon,
+    )
+    congestion_result = run_forecast_pipeline(
+        data=str(congestion_data_path),
+        dataset_type="generic",
+        cell_id=args.cell_id,
+        kpi_col=args.kpi_col,
+        horizon=args.horizon,
+    )
+
+    baseline_report_dir = output_dir / "baseline"
+    congestion_report_dir = output_dir / "congestion"
+    dashboard_dir = output_dir / "dashboard"
+    write_report_bundle(baseline_result, baseline_report_dir)
+    write_report_bundle(congestion_result, congestion_report_dir)
+    dashboard_artifacts = write_scenario_dashboard(
+        baseline_result=baseline_result,
+        congestion_result=congestion_result,
+        baseline_dir=baseline_report_dir,
+        congestion_dir=congestion_report_dir,
+        baseline_telemetry_path=baseline_data_path,
+        congestion_telemetry_path=congestion_data_path,
+        output_dir=dashboard_dir,
+        scenario_name="AI-RAN congestion scenario",
+        shock_start=0.62,
+        shock_duration=18,
+    )
+
+    metadata = {
+        "baseline_data": str(baseline_data_path),
+        "congestion_data": str(congestion_data_path),
+        "shock_start": 0.62,
+        "shock_duration": 18,
+        "baseline_report": str(baseline_report_dir),
+        "congestion_report": str(congestion_report_dir),
+        **dashboard_artifacts,
+    }
+    (output_dir / "scenario_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+
+    print(f"Scenario dashboard: {dashboard_artifacts['dashboard_html']}")
+    print(f"Baseline report: {baseline_report_dir}")
+    print(f"Congestion report: {congestion_report_dir}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -81,6 +160,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_forecast(args)
     if args.command == "generate-synthetic":
         return run_generate_synthetic(args)
+    if args.command == "scenario-demo":
+        return run_scenario_demo(args)
 
     # Backward-compatible default: run the sample forecast when no subcommand is provided.
     return run_forecast(

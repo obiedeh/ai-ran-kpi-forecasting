@@ -131,6 +131,8 @@ def generate_synthetic_telemetry(
 
     for cell_idx in range(1, cells + 1):
         cell_id = f"CELL_{cell_idx:03d}"
+        site_id = f"SITE_{(cell_idx - 1) // 3 + 1:02d}"
+        sector_id = f"{site_id}_SEC_{((cell_idx - 1) % 3) + 1}"
         phase = rng.uniform(0, np.pi)
         baseline = rng.uniform(35, 55)
         for idx, ts in enumerate(timestamps):
@@ -138,18 +140,66 @@ def generate_synthetic_telemetry(
             weekly_cycle = np.sin(2 * np.pi * idx / (24 * 7) + phase / 2)
             load = baseline + 18 * hour_cycle + 8 * weekly_cycle + rng.normal(0, 3)
             prb_dl_util = float(np.clip(load, 5, 98))
+            prb_ul_util = float(np.clip(prb_dl_util * 0.62 + rng.normal(0, 4), 4, 95))
             rrc_users = int(np.clip(80 + prb_dl_util * 2.0 + rng.normal(0, 15), 10, 400))
-            throughput = float(np.clip(150 - prb_dl_util * 1.15 + rng.normal(0, 8), 5, 180))
+            throughput_dl = float(np.clip(180 - prb_dl_util * 1.35 + rng.normal(0, 8), 5, 220))
+            throughput_ul = float(np.clip(90 - prb_ul_util * 0.95 + rng.normal(0, 5), 2, 120))
             latency = float(np.clip(12 + prb_dl_util * 0.16 + rng.normal(0, 1.2), 5, 60))
+            packet_loss = float(np.clip((prb_dl_util - 55) * 0.05 + rng.normal(0, 0.2), 0, 5))
+            sinr = float(np.clip(24 - prb_dl_util * 0.08 + rng.normal(0, 0.9), 1, 30))
             rows.append(
                 {
                     "timestamp": ts,
                     "cell_id": cell_id,
+                    "site_id": site_id,
+                    "sector_id": sector_id,
+                    "technology": "5G NSA",
+                    "band": "n78",
                     "prb_dl_util": round(prb_dl_util, 3),
-                    "throughput_mbps": round(throughput, 3),
+                    "prb_ul_util": round(prb_ul_util, 3),
+                    "throughput_dl_mbps": round(throughput_dl, 3),
+                    "throughput_ul_mbps": round(throughput_ul, 3),
                     "rrc_users": rrc_users,
                     "latency_ms": round(latency, 3),
+                    "packet_loss_pct": round(packet_loss, 3),
+                    "sinr_db": round(sinr, 3),
                 }
             )
 
     return pd.DataFrame(rows)
+
+
+def generate_congestion_telemetry(
+    cells: int = 3,
+    periods: int = 168,
+    freq: str = "1h",
+    seed: int = 42,
+    start: str = "2024-01-01",
+    congested_cell: str = "CELL_001",
+    shock_start: float = 0.62,
+    shock_duration: int = 18,
+) -> pd.DataFrame:
+    """Generate a synthetic congestion event for before/after reporting."""
+    df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)
+    if congested_cell not in set(df["cell_id"]):
+        congested_cell = df["cell_id"].iloc[0]
+
+    cell_mask = df["cell_id"] == congested_cell
+    cell_df = df.loc[cell_mask].copy()
+    shock_idx = int(len(cell_df) * shock_start)
+    shock_idx = max(0, min(shock_idx, max(len(cell_df) - 1, 0)))
+    end_idx = min(len(cell_df), shock_idx + shock_duration)
+
+    if end_idx > shock_idx:
+        shock_slice = cell_df.index[shock_idx:end_idx]
+        ramp = np.linspace(0.15, 1.0, len(shock_slice))
+        df.loc[shock_slice, "prb_dl_util"] = np.clip(df.loc[shock_slice, "prb_dl_util"] + 22 * ramp, 5, 99)
+        df.loc[shock_slice, "prb_ul_util"] = np.clip(df.loc[shock_slice, "prb_ul_util"] + 12 * ramp, 4, 99)
+        df.loc[shock_slice, "throughput_dl_mbps"] = np.clip(df.loc[shock_slice, "throughput_dl_mbps"] - 38 * ramp, 2, None)
+        df.loc[shock_slice, "throughput_ul_mbps"] = np.clip(df.loc[shock_slice, "throughput_ul_mbps"] - 16 * ramp, 1, None)
+        df.loc[shock_slice, "latency_ms"] = np.clip(df.loc[shock_slice, "latency_ms"] + 9 * ramp, 5, None)
+        df.loc[shock_slice, "packet_loss_pct"] = np.clip(df.loc[shock_slice, "packet_loss_pct"] + 1.8 * ramp, 0, 12)
+        df.loc[shock_slice, "sinr_db"] = np.clip(df.loc[shock_slice, "sinr_db"] - 4.5 * ramp, 1, 30)
+        df.loc[shock_slice, "rrc_users"] = np.clip(df.loc[shock_slice, "rrc_users"] + (30 * ramp).astype(int), 10, 500)
+
+    return df.reset_index(drop=True)

@@ -14,6 +14,7 @@ Planned report artifacts include:
 - anomaly visibility examples
 - congestion-risk summaries
 - AI-RAN operational scenario outputs
+- baseline vs congestion scenario dashboards
 
 ---
 
@@ -59,3 +60,5 @@ Future extensions will expand toward:
 - distributed edge observability
 
 The repo keeps the reporting surface small and reproducible so these artifacts can be generated in CI or on a laptop without a notebook workflow.
+
+For broader operational evidence, see `reports/scenarios/latest/` after running the congestion scenario demo.

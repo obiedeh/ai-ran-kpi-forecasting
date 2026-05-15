@@ -45,3 +45,15 @@ jobs:
           test -f reports/forecast_examples/latest/prb_dl_util_forecast.svg
           test -f reports/forecast_examples/latest/prb_dl_util_impact.svg
           test -f reports/forecast_examples/latest/metrics_summary.md
+
+      - name: Generate congestion scenario dashboard
+        run: |
+          python ai-ran-kpi-forecasting.py scenario-demo \
+            --output-dir reports/scenarios/latest
+
+      - name: Verify scenario artifacts
+        run: |
+          test -f reports/scenarios/latest/dashboard/dashboard.html
+          test -f reports/scenarios/latest/dashboard/dashboard_summary.md
+          test -f reports/scenarios/latest/baseline/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/congestion/prb_dl_util_impact.svg

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-RAN congestion scenario</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #dbe4ee;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --red: #dc2626;
+      --green: #0f766e;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .sub { color: var(--muted); margin-bottom: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .value { font-size: 26px; font-weight: 700; margin-top: 8px; }
+    .small { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .viz {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      overflow: hidden;
+    }
+    .viz svg { width: 100%; height: auto; display: block; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+    }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0c4a6e;
+    }
+    .warn { color: var(--red); }
+    @media (max-width: 1100px) {
+      .grid, .two { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 760px) {
+      .grid, .two { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AI-RAN congestion scenario</h1>
+    <div class="sub">Wireless KPI observability pack for a baseline cell and a congestion shock on CELL_001.</div>
+    <div class="grid">
+      <div class="card"><div class="label">Baseline RMSE</div><div class="value">4.39</div><div class="small">prb_dl_util</div></div>
+      <div class="card"><div class="label">Congestion RMSE</div><div class="value">4.11</div><div class="small">prb_dl_util</div></div>
+      <div class="card"><div class="label">PRB uplift</div><div class="value warn">+11.24</div><div class="small">shock window minus pre-shock</div></div>
+      <div class="card"><div class="label">Forecast RMSE ratio</div><div class="value">0.94x</div><div class="small">higher than baseline indicates stress</div></div>
+    </div>
+
+    <div class="section">
+      <div class="pill">Network health summary</div>
+      <table>
+        <thead>
+          <tr><th>Run</th><th>Cell</th><th>Target</th><th>Pre-shock Mean</th><th>Shock Mean</th><th>Peak</th><th>MAE</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Baseline</td><td>CELL_001</td><td>prb_dl_util</td><td>44.01</td><td>39.30</td><td>75.24</td><td>3.62</td></tr>
+          <tr><td>Congestion</td><td>CELL_001</td><td>prb_dl_util</td><td>40.71</td><td>51.95</td><td>77.05</td><td>3.30</td></tr>
+        </tbody>
+      </table>
+      <div class="small">Throughput before/after: 125.50 → 106.10 Mbps. Latency before/after: 18.24 → 23.57 ms.</div>
+    </div>
+
+    <div class="two">
+      <div class="section">
+        <div class="pill">Baseline forecast</div>
+        <div class="viz"><svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="60" y="34" font-family="Arial, sans-serif" font-size="22" fill="#111827">AI-RAN KPI forecast: prb_dl_util</text>
+  <text x="60" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">actual, hold-out prediction, and forward forecast</text>
+  <line x1="60" y1="60" x2="60" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <line x1="60" y1="460" x2="920" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <polyline points="60.0,275.0 87.7,199.2 115.5,225.4 143.2,165.7 171.0,172.2 198.7,171.2 226.5,156.8 254.2,158.0 281.9,176.0 309.7,229.6 337.4,286.3 365.2,285.2 392.9,337.8 420.6,314.5 448.4,378.7 476.1,386.3 503.9,447.9 531.6,400.5 559.4,400.5 587.1,347.6 614.8,337.7 642.6,284.4 670.3,309.7 698.1,264.1 725.8,259.0 753.5,168.9 781.3,171.5 809.0,145.0 836.8,93.0 864.5,104.3 892.3,157.0 920.0,60.0" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="60.0,272.8 87.7,216.4 115.5,240.1 143.2,189.6 171.0,193.8 198.7,189.8 226.5,159.3 254.2,189.1 281.9,206.6 309.7,260.6 337.4,323.1 365.2,314.6 392.9,348.3 420.6,355.1 448.4,417.1 476.1,434.5 503.9,454.7 531.6,460.0 559.4,440.6 587.1,412.0 614.8,371.9 642.6,348.9 670.3,324.1 698.1,307.0 725.8,258.9 753.5,199.7 781.3,184.8 809.0,158.7 836.8,108.2 864.5,164.8 892.3,170.6 920.0,145.3" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <polyline points="60.0,145.3 97.4,134.4 134.8,146.0 172.2,141.6 209.6,141.7 247.0,140.8 284.3,140.9 321.7,140.9 359.1,141.0 396.5,141.0 433.9,141.0 471.3,141.0 508.7,141.0 546.1,141.0 583.5,141.0 620.9,141.0 658.3,141.0 695.7,141.0 733.0,141.0 770.4,141.0 807.8,141.0 845.2,141.0 882.6,141.0 920.0,141.0" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <rect x="680" y="60" width="300" height="72" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <line x1="696" y1="84" x2="730" y2="84" stroke="#111827" stroke-width="2"/>
+  <text x="740" y="88" font-family="Arial, sans-serif" font-size="12" fill="#111827">actual</text>
+  <line x1="696" y1="104" x2="730" y2="104" stroke="#2563eb" stroke-width="2"/>
+  <text x="740" y="108" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
+  <line x1="696" y1="124" x2="730" y2="124" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="740" y="128" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
+  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-06 16:00:00+00:00 → 2024-01-08 23:00:00+00:00</text>
+</svg>
+</div>
+      </div>
+      <div class="section">
+        <div class="pill">Congestion forecast</div>
+        <div class="viz"><svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="60" y="34" font-family="Arial, sans-serif" font-size="22" fill="#111827">AI-RAN KPI forecast: prb_dl_util</text>
+  <text x="60" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">actual, hold-out prediction, and forward forecast</text>
+  <line x1="60" y1="60" x2="60" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <line x1="60" y1="460" x2="920" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <polyline points="60.0,276.2 87.7,199.9 115.5,226.3 143.2,166.3 171.0,172.8 198.7,171.8 226.5,157.4 254.2,158.6 281.9,176.6 309.7,230.5 337.4,287.5 365.2,286.4 392.9,339.3 420.6,315.9 448.4,380.4 476.1,388.0 503.9,449.9 531.6,402.2 559.4,402.3 587.1,349.1 614.8,339.2 642.6,285.6 670.3,311.0 698.1,265.2 725.8,260.1 753.5,169.5 781.3,172.1 809.0,145.4 836.8,93.2 864.5,104.5 892.3,157.5 920.0,60.0" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="60.0,278.2 87.7,221.1 115.5,249.4 143.2,186.2 171.0,192.4 198.7,190.7 226.5,160.4 254.2,185.9 281.9,197.6 309.7,249.7 337.4,318.6 365.2,307.1 392.9,343.1 420.6,353.7 448.4,415.7 476.1,430.2 503.9,455.9 531.6,460.0 559.4,436.5 587.1,413.7 614.8,377.8 642.6,351.9 670.3,326.8 698.1,313.0 725.8,263.9 753.5,204.8 781.3,180.1 809.0,159.9 836.8,92.8 864.5,156.5 892.3,163.3 920.0,138.1" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <polyline points="60.0,138.1 97.4,127.3 134.8,136.9 172.2,135.5 209.6,132.6 247.0,132.4 284.3,131.8 321.7,132.1 359.1,132.2 396.5,132.3 433.9,132.3 471.3,132.3 508.7,132.3 546.1,132.3 583.5,132.3 620.9,132.3 658.3,132.3 695.7,132.3 733.0,132.3 770.4,132.3 807.8,132.3 845.2,132.3 882.6,132.3 920.0,132.3" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <rect x="680" y="60" width="300" height="72" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <line x1="696" y1="84" x2="730" y2="84" stroke="#111827" stroke-width="2"/>
+  <text x="740" y="88" font-family="Arial, sans-serif" font-size="12" fill="#111827">actual</text>
+  <line x1="696" y1="104" x2="730" y2="104" stroke="#2563eb" stroke-width="2"/>
+  <text x="740" y="108" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
+  <line x1="696" y1="124" x2="730" y2="124" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="740" y="128" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
+  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-06 16:00:00+00:00 → 2024-01-08 23:00:00+00:00</text>
+</svg>
+</div>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="section">
+        <div class="pill">Baseline impact</div>
+        <div class="viz"><svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="56" y="34" font-family="Arial, sans-serif" font-size="24" fill="#111827">Before / After KPI impact</text>
+  <text x="56" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">historical telemetry versus forecast horizon</text>
+
+  <rect x="56" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="596" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="72" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">Before: actual history</text>
+  <text x="612" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">After: forecast horizon</text>
+
+  <polyline points="56.0,143.7 74.3,179.7 92.5,217.7 110.8,217.0 129.0,252.2 147.3,236.6 165.6,279.6 183.8,284.7 202.1,326.0 220.3,294.2 238.6,294.3 256.9,258.8 275.1,252.1 293.4,216.4 311.7,233.3 329.9,202.8 348.2,199.4 366.4,139.0 384.7,140.7 403.0,123.0 421.2,88.1 439.5,95.7 457.7,131.0 476.0,66.0" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="596.0,309.4 614.3,66.0 632.5,326.0 650.8,226.6 669.0,230.2 687.3,210.7 705.6,212.7 723.8,212.6 742.1,213.9 760.3,214.1 778.6,214.2 796.9,214.1 815.1,214.1 833.4,214.1 851.7,214.1 869.9,214.1 888.2,214.1 906.4,214.1 924.7,214.1 943.0,214.1 961.2,214.1 979.5,214.1 997.7,214.1 1016.0,214.1" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <line x1="56" y1="356" x2="476" y2="356" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="596" y1="356" x2="1016" y2="356" stroke="#d1d5db" stroke-width="1"/>
+
+  <rect x="56" y="394" width="300" height="82" rx="12" fill="#111827"/>
+  <text x="74" y="426" font-family="Arial, sans-serif" font-size="13" fill="#cbd5e1">Before average</text>
+  <text x="74" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">51.63</text>
+
+  <rect x="376" y="394" width="300" height="82" rx="12" fill="#1d4ed8"/>
+  <text x="394" y="426" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe">After average</text>
+  <text x="394" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">64.33</text>
+
+  <rect x="696" y="394" width="380" height="82" rx="12" fill="#f3f4f6" stroke="#e5e7eb"/>
+  <text x="714" y="426" font-family="Arial, sans-serif" font-size="13" fill="#111827">Impact</text>
+  <text x="714" y="452" font-family="Arial, sans-serif" font-size="26" fill="#111827">+12.70 (+24.6%)</text>
+  <text x="714" y="476" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">peak before 74.17 | peak after 65.15</text>
+</svg>
+</div>
+      </div>
+      <div class="section">
+        <div class="pill">Congestion impact</div>
+        <div class="viz"><svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="56" y="34" font-family="Arial, sans-serif" font-size="24" fill="#111827">Before / After KPI impact</text>
+  <text x="56" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">historical telemetry versus forecast horizon</text>
+
+  <rect x="56" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="596" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="72" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">Before: actual history</text>
+  <text x="612" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">After: forecast horizon</text>
+
+  <polyline points="56.0,143.7 74.3,179.7 92.5,217.7 110.8,217.0 129.0,252.2 147.3,236.6 165.6,279.6 183.8,284.7 202.1,326.0 220.3,294.2 238.6,294.3 256.9,258.8 275.1,252.1 293.4,216.4 311.7,233.3 329.9,202.8 348.2,199.4 366.4,139.0 384.7,140.7 403.0,123.0 421.2,88.1 439.5,95.7 457.7,131.0 476.0,66.0" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="596.0,326.0 614.3,66.0 632.5,297.0 650.8,261.2 669.0,192.7 687.3,186.5 705.6,172.4 723.8,179.4 742.1,182.8 760.3,184.7 778.6,185.1 796.9,184.6 815.1,184.3 833.4,184.1 851.7,184.1 869.9,184.2 888.2,184.2 906.4,184.2 924.7,184.2 943.0,184.2 961.2,184.2 979.5,184.2 997.7,184.2 1016.0,184.2" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <line x1="56" y1="356" x2="476" y2="356" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="596" y1="356" x2="1016" y2="356" stroke="#d1d5db" stroke-width="1"/>
+
+  <rect x="56" y="394" width="300" height="82" rx="12" fill="#111827"/>
+  <text x="74" y="426" font-family="Arial, sans-serif" font-size="13" fill="#cbd5e1">Before average</text>
+  <text x="74" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">51.63</text>
+
+  <rect x="376" y="394" width="300" height="82" rx="12" fill="#1d4ed8"/>
+  <text x="394" y="426" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe">After average</text>
+  <text x="394" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">65.41</text>
+
+  <rect x="696" y="394" width="380" height="82" rx="12" fill="#f3f4f6" stroke="#e5e7eb"/>
+  <text x="714" y="426" font-family="Arial, sans-serif" font-size="13" fill="#111827">Impact</text>
+  <text x="714" y="452" font-family="Arial, sans-serif" font-size="26" fill="#111827">+13.78 (+26.7%)</text>
+  <text x="714" y="476" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">peak before 74.17 | peak after 66.05</text>
+</svg>
+</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
