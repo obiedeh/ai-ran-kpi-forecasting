@@ -13,6 +13,8 @@ The current pipeline supports two modes:
 1. Generic RAN KPI CSV
 2. Telecom Italia MI dataset
 
+It also includes a synthetic telemetry generator for reproducible demos, benchmarks, and CI checks.
+
 ---
 
 ## 1. Generic RAN KPI CSV
@@ -108,3 +110,18 @@ Current limitations:
 - live streaming telemetry is not implemented yet
 
 Future work should add stronger validation, data profiling, and schema enforcement.
+
+---
+
+## Synthetic Telemetry
+
+The `generate-synthetic` CLI command produces a small, deterministic telemetry table with:
+
+- `timestamp`
+- `cell_id`
+- `prb_dl_util`
+- `throughput_mbps`
+- `rrc_users`
+- `latency_ms`
+
+This output is meant for smoke tests, report generation, and local development, not for claims about real telecom performance.

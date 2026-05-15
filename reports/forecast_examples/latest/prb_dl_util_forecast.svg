@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="60" y="34" font-family="Arial, sans-serif" font-size="22" fill="#111827">AI-RAN KPI forecast: prb_dl_util</text>
+  <text x="60" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">actual, hold-out prediction, and forward forecast</text>
+  <line x1="60" y1="60" x2="60" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <line x1="60" y1="460" x2="920" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <polyline points="60.0,101.0 182.9,85.4 305.7,70.6 428.6,92.7 551.4,155.4 674.3,235.6 797.1,349.0 920.0,457.8" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="60.0,94.2 182.9,79.3 305.7,60.0 428.6,96.6 551.4,160.3 674.3,250.9 797.1,350.5 920.0,460.0" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <polyline points="60.0,460.0 97.4,455.6 134.8,448.8 172.2,437.8 209.6,437.5 247.0,437.7 284.3,437.9 321.7,439.0 359.1,439.1 396.5,439.1 433.9,439.1 471.3,439.0 508.7,439.0 546.1,439.0 583.5,439.0 620.9,439.0 658.3,439.0 695.7,439.0 733.0,439.0 770.4,439.0 807.8,439.0 845.2,439.0 882.6,439.0 920.0,439.0" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <rect x="680" y="60" width="300" height="72" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <line x1="696" y1="84" x2="730" y2="84" stroke="#111827" stroke-width="2"/>
+  <text x="740" y="88" font-family="Arial, sans-serif" font-size="12" fill="#111827">actual</text>
+  <line x1="696" y1="104" x2="730" y2="104" stroke="#2563eb" stroke-width="2"/>
+  <text x="740" y="108" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
+  <line x1="696" y1="124" x2="730" y2="124" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="740" y="128" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
+  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-02 16:00:00+00:00 → 2024-01-03 23:00:00+00:00</text>
+</svg>
