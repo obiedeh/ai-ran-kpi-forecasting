@@ -237,3 +237,39 @@ def generate_backhaul_telemetry(
         df.loc[shock_slice, "prb_ul_util"] = np.clip(df.loc[shock_slice, "prb_ul_util"] + 3 * ramp, 4, 99)
 
     return df.reset_index(drop=True)
+
+
+def generate_outage_telemetry(
+    cells: int = 3,
+    periods: int = 168,
+    freq: str = "1h",
+    seed: int = 42,
+    start: str = "2024-01-01",
+    affected_cell: str = "CELL_001",
+    shock_start: float = 0.66,
+    shock_duration: int = 14,
+) -> pd.DataFrame:
+    """Generate a synthetic cell outage and recovery event for dashboard evidence."""
+    df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)
+    if affected_cell not in set(df["cell_id"]):
+        affected_cell = df["cell_id"].iloc[0]
+
+    cell_df = df.loc[df["cell_id"] == affected_cell].copy()
+    shock_idx = int(len(cell_df) * shock_start)
+    shock_idx = max(0, min(shock_idx, max(len(cell_df) - 1, 0)))
+    end_idx = min(len(cell_df), shock_idx + shock_duration)
+
+    if end_idx > shock_idx:
+        shock_slice = cell_df.index[shock_idx:end_idx]
+        ramp = np.linspace(0.1, 1.0, len(shock_slice))
+        recovery = np.linspace(1.0, 0.2, len(shock_slice))
+        df.loc[shock_slice, "prb_dl_util"] = np.clip(df.loc[shock_slice, "prb_dl_util"] * (1 - 0.85 * ramp), 0, 99)
+        df.loc[shock_slice, "prb_ul_util"] = np.clip(df.loc[shock_slice, "prb_ul_util"] * (1 - 0.75 * ramp), 0, 99)
+        df.loc[shock_slice, "throughput_dl_mbps"] = np.clip(df.loc[shock_slice, "throughput_dl_mbps"] * (0.08 + 0.35 * recovery), 0, None)
+        df.loc[shock_slice, "throughput_ul_mbps"] = np.clip(df.loc[shock_slice, "throughput_ul_mbps"] * (0.10 + 0.30 * recovery), 0, None)
+        df.loc[shock_slice, "latency_ms"] = np.clip(df.loc[shock_slice, "latency_ms"] + 22 * ramp, 5, None)
+        df.loc[shock_slice, "packet_loss_pct"] = np.clip(df.loc[shock_slice, "packet_loss_pct"] + 4.0 * ramp, 0, 25)
+        df.loc[shock_slice, "sinr_db"] = np.clip(df.loc[shock_slice, "sinr_db"] - 8.0 * ramp, 0, 30)
+        df.loc[shock_slice, "rrc_users"] = np.clip(df.loc[shock_slice, "rrc_users"] * (0.45 + 0.35 * recovery), 5, 500).astype(int)
+
+    return df.reset_index(drop=True)

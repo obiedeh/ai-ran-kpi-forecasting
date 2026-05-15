@@ -108,6 +108,14 @@ def write_portal_page(output_path: str | Path) -> Path:
             ],
         },
         {
+            "title": "Cell Outage Scenario",
+            "desc": "Cell-level outage and recovery example with throughput collapse, low PRB, and packet loss spikes.",
+            "links": [
+                ("Dashboard", rel(scenarios_root / "outage" / "dashboard" / "dashboard.html")),
+                ("Scenario summary", rel(scenarios_root / "outage" / "dashboard" / "dashboard_summary.md")),
+            ],
+        },
+        {
             "title": "Data Contracts",
             "desc": "Telemetry assumptions and synthetic data contract for reproducible runs.",
             "links": [
@@ -116,20 +124,26 @@ def write_portal_page(output_path: str | Path) -> Path:
                 ("Forecast README", rel(root / "forecast_examples" / "README.md")),
             ],
         },
+        {
+            "title": "Release Bundle",
+            "desc": "Static landing page for GitHub Pages, release uploads, or other publishable report hosting.",
+            "links": [
+                ("Publish page", rel(root / "publish" / "latest" / "index.html")),
+                ("Manifest", rel(root / "publish" / "latest" / "manifest.json")),
+            ],
+        },
     ]
 
     def render_links(links: list[tuple[str, str]]) -> str:
         items = "".join(f'<li><a href="{href}">{label}</a></li>' for label, href in links)
         return f"<ul>{items}</ul>"
 
-    html_cards = "".join(
-        f"""
-        <section class="card">
+    html_cards = "\n".join(
+        f"""<section class="card">
           <div class="eyebrow">{card['title']}</div>
           <p>{card['desc']}</p>
           {render_links(card['links'])}
-        </section>
-        """
+        </section>"""
         for card in cards
     )
 
@@ -198,6 +212,67 @@ def write_portal_page(output_path: str | Path) -> Path:
 """
     output_path.write_text(html, encoding="utf-8")
     return output_path
+
+
+def write_publish_page(output_dir: str | Path) -> Path:
+    """Write a release-friendly landing page for the report artifacts."""
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest = {
+        "portal": "../../index.html",
+        "forecast_pack": "../../forecast_examples/latest/metrics_summary.md",
+        "congestion": "../../scenarios/latest/congestion/dashboard/dashboard.html",
+        "backhaul": "../../scenarios/latest/backhaul/dashboard/dashboard.html",
+        "outage": "../../scenarios/latest/outage/dashboard/dashboard.html",
+    }
+    manifest_path = output_dir / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-RAN KPI Forecasting Release Bundle</title>
+  <style>
+    body {{ font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f8fafc; color: #0f172a; }}
+    .wrap {{ max-width: 1120px; margin: 0 auto; padding: 28px; }}
+    h1 {{ margin: 0 0 8px; font-size: 32px; }}
+    p {{ color: #475569; line-height: 1.55; }}
+    .panel {{ background: #fff; border: 1px solid #dbe4ee; border-radius: 12px; padding: 18px 20px; margin-top: 18px; }}
+    ul {{ margin: 0; padding-left: 18px; }}
+    li {{ margin: 8px 0; }}
+    a {{ color: #2563eb; text-decoration: none; }}
+    a:hover {{ text-decoration: underline; }}
+    code {{ background: #eef2ff; padding: 2px 6px; border-radius: 6px; }}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AI-RAN KPI Forecasting Release Bundle</h1>
+    <p>This page is the release-friendly entry point for the report artifacts. It is intended for GitHub Pages, release uploads, or any static hosting path that wants a single landing page.</p>
+    <div class="panel">
+      <strong>Included evidence</strong>
+      <ul>
+        <li><a href="../../index.html">Top-level portal</a></li>
+        <li><a href="{manifest['forecast_pack']}">Forecast evidence pack</a></li>
+        <li><a href="{manifest['congestion']}">Congestion scenario dashboard</a></li>
+        <li><a href="{manifest['backhaul']}">Backhaul scenario dashboard</a></li>
+        <li><a href="{manifest['outage']}">Cell outage scenario dashboard</a></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <strong>Manifest</strong>
+      <p>The bundle writes a machine-readable <code>manifest.json</code> alongside this page.</p>
+    </div>
+  </div>
+</body>
+</html>
+"""
+    index_path = output_dir / "index.html"
+    index_path.write_text(html, encoding="utf-8")
+    return index_path
 
 
 def write_scenario_dashboard(

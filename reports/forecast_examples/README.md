@@ -63,3 +63,4 @@ The repo keeps the reporting surface small and reproducible so these artifacts c
 
 For broader operational evidence, see `reports/scenarios/latest/` after running the congestion scenario demo.
 The top-level entry point is `reports/index.html`.
+The release-friendly landing page is `reports/publish/latest/index.html`.
