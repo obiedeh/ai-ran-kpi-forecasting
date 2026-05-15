@@ -14,5 +14,5 @@
   <text x="740" y="108" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
   <line x1="696" y1="124" x2="730" y2="124" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
   <text x="740" y="128" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
-  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-02 16:00:00+00:00 → 2024-01-03 23:00:00+00:00</text>
+  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-02 16:00:00+00:00 to 2024-01-03 23:00:00+00:00</text>
 </svg>

@@ -2,19 +2,23 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-generic run-telecom synthetic report scenario-demo scenario-backhaul scenario-outage portal publish
+.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic report scenario-demo scenario-backhaul scenario-outage portal publish
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
 
 install-dev:
-	$(PYTHON) -m pip install -r requirements-dev.txt
+	$(PYTHON) -m pip install -r requirements.txt -r requirements-dev.txt
 
 test:
-	pytest -q
+	PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 $(PYTHON) -m pytest -q
 
 lint:
-	ruff check .
+	$(PYTHON) -m ruff check .
+
+run-sample:
+	$(PYTHON) ai-ran-kpi-forecasting.py run-sample \
+		--output-dir $(REPORT_DIR)
 
 run-generic:
 	$(PYTHON) ai-ran-kpi-forecasting.py forecast \
@@ -40,7 +44,7 @@ synthetic:
 	$(PYTHON) ai-ran-kpi-forecasting.py generate-synthetic \
 		--output ./data/synthetic_ran_kpi.csv
 
-report: run-generic
+report: run-sample
 
 scenario-demo:
 	$(PYTHON) ai-ran-kpi-forecasting.py scenario-demo \

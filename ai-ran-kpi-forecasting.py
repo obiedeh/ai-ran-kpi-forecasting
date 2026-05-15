@@ -13,6 +13,5 @@ if str(SRC) not in sys.path:
 
 from ai_ran_kpi_forecasting.cli import main
 
-
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -7,7 +7,12 @@ from ai_ran_kpi_forecasting.data import (
     generate_synthetic_telemetry,
 )
 from ai_ran_kpi_forecasting.forecasting import run_forecast_pipeline
-from ai_ran_kpi_forecasting.reports import write_portal_page, write_publish_page, write_report_bundle, write_scenario_dashboard
+from ai_ran_kpi_forecasting.reports import (
+    write_portal_page,
+    write_publish_page,
+    write_report_bundle,
+    write_scenario_dashboard,
+)
 
 
 def test_synthetic_telemetry_schema():

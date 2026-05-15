@@ -7,4 +7,4 @@
 - MAE: `0.6954`
 - MAPE: `0.82%`
 
-These artifacts provide a reproducible benchmark for AI-RAN KPI observability workflows.
+These artifacts provide a reproducible benchmark for AI-RAN and edge infrastructure forecasting workflows.

@@ -1,0 +1,23 @@
+project:
+  name: ai-ran-kpi-forecasting
+  positioning: AI-native telecom forecasting and operational intelligence for AI-RAN and edge infrastructure.
+
+data:
+  dataset_type: generic
+  path: data/ran_kpi_sample.csv
+  timestamp_col: timestamp
+  cell_id_col: cell_id
+  cell_id: CELL_001
+
+forecast:
+  target_kpi: prb_dl_util
+  lags: [1, 2, 3, 6, 12]
+  test_size: 0.2
+  horizon: 24
+  random_state: 42
+
+outputs:
+  report_dir: reports/forecast_examples/latest
+  forecast_csv: reports/forecast_examples/latest/prb_dl_util_forecast.csv
+  kpi_plot: reports/forecast_examples/latest/prb_dl_util_forecast.svg
+  metrics_summary: reports/forecast_examples/latest/metrics_summary.md
