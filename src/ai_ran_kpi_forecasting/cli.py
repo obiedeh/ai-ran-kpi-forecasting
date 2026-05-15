@@ -6,9 +6,13 @@ import argparse
 import json
 from pathlib import Path
 
-from ai_ran_kpi_forecasting.data import generate_congestion_telemetry, generate_synthetic_telemetry
+from ai_ran_kpi_forecasting.data import (
+    generate_backhaul_telemetry,
+    generate_congestion_telemetry,
+    generate_synthetic_telemetry,
+)
 from ai_ran_kpi_forecasting.forecasting import run_forecast_pipeline
-from ai_ran_kpi_forecasting.reports import write_report_bundle, write_scenario_dashboard
+from ai_ran_kpi_forecasting.reports import write_portal_page, write_report_bundle, write_scenario_dashboard
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -45,6 +49,10 @@ def build_parser() -> argparse.ArgumentParser:
     scenario.add_argument("--cell-id", default="CELL_001")
     scenario.add_argument("--kpi-col", default="prb_dl_util")
     scenario.add_argument("--horizon", type=int, default=24)
+    scenario.add_argument("--scenario-type", choices=["congestion", "backhaul"], default="congestion")
+
+    portal = subparsers.add_parser("portal", help="Generate the top-level evidence portal page.")
+    portal.add_argument("--output", default="reports/index.html")
 
     return parser
 
@@ -90,18 +98,33 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     baseline_data = generate_synthetic_telemetry(cells=args.cells, periods=args.periods, freq=args.freq, seed=args.seed)
-    congestion_data = generate_congestion_telemetry(
-        cells=args.cells,
-        periods=args.periods,
-        freq=args.freq,
-        seed=args.seed,
-        congested_cell=args.cell_id,
-    )
+    if args.scenario_type == "backhaul":
+        scenario_data = generate_backhaul_telemetry(
+            cells=args.cells,
+            periods=args.periods,
+            freq=args.freq,
+            seed=args.seed,
+            affected_cell=args.cell_id,
+        )
+        scenario_name = "AI-RAN backhaul saturation scenario"
+        shock_start = 0.58
+        shock_duration = 20
+    else:
+        scenario_data = generate_congestion_telemetry(
+            cells=args.cells,
+            periods=args.periods,
+            freq=args.freq,
+            seed=args.seed,
+            congested_cell=args.cell_id,
+        )
+        scenario_name = "AI-RAN congestion scenario"
+        shock_start = 0.62
+        shock_duration = 18
 
     baseline_data_path = output_dir / "baseline_telemetry.csv"
-    congestion_data_path = output_dir / "congestion_telemetry.csv"
+    scenario_data_path = output_dir / f"{args.scenario_type}_telemetry.csv"
     baseline_data.to_csv(baseline_data_path, index=False)
-    congestion_data.to_csv(congestion_data_path, index=False)
+    scenario_data.to_csv(scenario_data_path, index=False)
 
     baseline_result = run_forecast_pipeline(
         data=str(baseline_data_path),
@@ -110,8 +133,8 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
         kpi_col=args.kpi_col,
         horizon=args.horizon,
     )
-    congestion_result = run_forecast_pipeline(
-        data=str(congestion_data_path),
+    scenario_result = run_forecast_pipeline(
+        data=str(scenario_data_path),
         dataset_type="generic",
         cell_id=args.cell_id,
         kpi_col=args.kpi_col,
@@ -119,37 +142,46 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
     )
 
     baseline_report_dir = output_dir / "baseline"
-    congestion_report_dir = output_dir / "congestion"
+    scenario_report_dir = output_dir / args.scenario_type
     dashboard_dir = output_dir / "dashboard"
     write_report_bundle(baseline_result, baseline_report_dir)
-    write_report_bundle(congestion_result, congestion_report_dir)
+    write_report_bundle(scenario_result, scenario_report_dir)
     dashboard_artifacts = write_scenario_dashboard(
         baseline_result=baseline_result,
-        congestion_result=congestion_result,
+        congestion_result=scenario_result,
         baseline_dir=baseline_report_dir,
-        congestion_dir=congestion_report_dir,
+        congestion_dir=scenario_report_dir,
         baseline_telemetry_path=baseline_data_path,
-        congestion_telemetry_path=congestion_data_path,
+        congestion_telemetry_path=scenario_data_path,
         output_dir=dashboard_dir,
-        scenario_name="AI-RAN congestion scenario",
-        shock_start=0.62,
-        shock_duration=18,
+        scenario_name=scenario_name,
+        shock_start=shock_start,
+        shock_duration=shock_duration,
     )
 
     metadata = {
         "baseline_data": str(baseline_data_path),
-        "congestion_data": str(congestion_data_path),
-        "shock_start": 0.62,
-        "shock_duration": 18,
+        "scenario_data": str(scenario_data_path),
+        "scenario_type": args.scenario_type,
+        "shock_start": shock_start,
+        "shock_duration": shock_duration,
         "baseline_report": str(baseline_report_dir),
-        "congestion_report": str(congestion_report_dir),
+        "scenario_report": str(scenario_report_dir),
         **dashboard_artifacts,
     }
     (output_dir / "scenario_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
     print(f"Scenario dashboard: {dashboard_artifacts['dashboard_html']}")
     print(f"Baseline report: {baseline_report_dir}")
-    print(f"Congestion report: {congestion_report_dir}")
+    print(f"Scenario report: {scenario_report_dir}")
+    return 0
+
+
+def run_portal(args: argparse.Namespace) -> int:
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    portal_path = write_portal_page(output)
+    print(f"Wrote portal page to {portal_path}")
     return 0
 
 
@@ -162,6 +194,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_generate_synthetic(args)
     if args.command == "scenario-demo":
         return run_scenario_demo(args)
+    if args.command == "portal":
+        return run_portal(args)
 
     # Backward-compatible default: run the sample forecast when no subcommand is provided.
     return run_forecast(

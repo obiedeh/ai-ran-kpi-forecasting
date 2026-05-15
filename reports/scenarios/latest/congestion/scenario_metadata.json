@@ -1,0 +1,11 @@
+{
+  "baseline_data": "reports/scenarios/latest/congestion/baseline_telemetry.csv",
+  "scenario_data": "reports/scenarios/latest/congestion/congestion_telemetry.csv",
+  "scenario_type": "congestion",
+  "shock_start": 0.62,
+  "shock_duration": 18,
+  "baseline_report": "reports/scenarios/latest/congestion/baseline",
+  "scenario_report": "reports/scenarios/latest/congestion/congestion",
+  "dashboard_html": "reports/scenarios/latest/congestion/dashboard/dashboard.html",
+  "dashboard_summary": "reports/scenarios/latest/congestion/dashboard/dashboard_summary.md"
+}

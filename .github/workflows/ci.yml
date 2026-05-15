@@ -49,11 +49,27 @@ jobs:
       - name: Generate congestion scenario dashboard
         run: |
           python ai-ran-kpi-forecasting.py scenario-demo \
-            --output-dir reports/scenarios/latest
+            --output-dir reports/scenarios/latest/congestion
+
+      - name: Generate backhaul scenario dashboard
+        run: |
+          python ai-ran-kpi-forecasting.py scenario-demo \
+            --scenario-type backhaul \
+            --output-dir reports/scenarios/latest/backhaul
+
+      - name: Generate evidence portal
+        run: |
+          python ai-ran-kpi-forecasting.py portal \
+            --output reports/index.html
 
       - name: Verify scenario artifacts
         run: |
-          test -f reports/scenarios/latest/dashboard/dashboard.html
-          test -f reports/scenarios/latest/dashboard/dashboard_summary.md
-          test -f reports/scenarios/latest/baseline/prb_dl_util_impact.svg
-          test -f reports/scenarios/latest/congestion/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/congestion/dashboard/dashboard.html
+          test -f reports/scenarios/latest/congestion/dashboard/dashboard_summary.md
+          test -f reports/scenarios/latest/congestion/baseline/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/congestion/congestion/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/backhaul/dashboard/dashboard.html
+          test -f reports/scenarios/latest/backhaul/dashboard/dashboard_summary.md
+          test -f reports/scenarios/latest/backhaul/baseline/prb_dl_util_impact.svg
+          test -f reports/scenarios/latest/backhaul/backhaul/prb_dl_util_impact.svg
+          test -f reports/index.html

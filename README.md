@@ -217,7 +217,19 @@ python ai-ran-kpi-forecasting.py generate-synthetic --output data/synthetic_ran_
 ### Generate Congestion Scenario Dashboard
 
 ```bash
-python ai-ran-kpi-forecasting.py scenario-demo --output-dir reports/scenarios/latest
+python ai-ran-kpi-forecasting.py scenario-demo --output-dir reports/scenarios/latest/congestion
+```
+
+### Generate Backhaul Scenario Dashboard
+
+```bash
+python ai-ran-kpi-forecasting.py scenario-demo --scenario-type backhaul --output-dir reports/scenarios/latest/backhaul
+```
+
+### Generate Evidence Portal
+
+```bash
+python ai-ran-kpi-forecasting.py portal --output reports/index.html
 ```
 
 The scenario dashboard includes telecom-style KPI cards, pre-shock versus shock-window telemetry, and side-by-side baseline/congestion report panels.

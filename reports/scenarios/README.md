@@ -4,10 +4,13 @@ This directory stores telecom-style before/after scenario evidence.
 
 The default demo creates:
 
-- `latest/baseline/`: baseline telemetry and forecast evidence
-- `latest/congestion/`: congestion-shock telemetry and forecast evidence
-- `latest/dashboard/`: a combined HTML dashboard and summary
-- `latest/scenario_metadata.json`: generation parameters and artifact paths
+- `latest/congestion/baseline/`: baseline telemetry and forecast evidence
+- `latest/congestion/congestion/`: congestion-shock telemetry and forecast evidence
+- `latest/congestion/dashboard/`: a combined HTML dashboard and summary
+- `latest/backhaul/baseline/`: baseline telemetry and forecast evidence
+- `latest/backhaul/backhaul/`: backhaul-shock telemetry and forecast evidence
+- `latest/backhaul/dashboard/`: a combined HTML dashboard and summary
+- `reports/index.html`: a portal page linking the evidence packs
 
 The goal is to resemble an actual wireless operations review pack:
 

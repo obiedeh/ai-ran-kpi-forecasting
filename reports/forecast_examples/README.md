@@ -62,3 +62,4 @@ Future extensions will expand toward:
 The repo keeps the reporting surface small and reproducible so these artifacts can be generated in CI or on a laptop without a notebook workflow.
 
 For broader operational evidence, see `reports/scenarios/latest/` after running the congestion scenario demo.
+The top-level entry point is `reports/index.html`.
