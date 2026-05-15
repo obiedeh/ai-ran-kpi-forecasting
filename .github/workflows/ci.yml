@@ -30,3 +30,18 @@ jobs:
       - name: Run tests
         run: |
           pytest -q
+
+      - name: Generate benchmark report bundle
+        run: |
+          python ai-ran-kpi-forecasting.py forecast \
+            --data data/ran_kpi_sample.csv \
+            --cell-id CELL_001 \
+            --kpi-col prb_dl_util \
+            --horizon 24 \
+            --output-dir reports/forecast_examples/latest
+
+      - name: Verify report artifacts
+        run: |
+          test -f reports/forecast_examples/latest/prb_dl_util_forecast.svg
+          test -f reports/forecast_examples/latest/prb_dl_util_impact.svg
+          test -f reports/forecast_examples/latest/metrics_summary.md
