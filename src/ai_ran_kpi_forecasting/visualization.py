@@ -62,7 +62,7 @@ def plot_forecast(
   <text x="{pad + 680}" y="{pad + 48}" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
   <line x1="{pad + 636}" y1="{pad + 64}" x2="{pad + 670}" y2="{pad + 64}" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
   <text x="{pad + 680}" y="{pad + 68}" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
-  <text x="{pad}" y="{height - 16}" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">{start_ts} → {end_ts}</text>
+  <text x="{pad}" y="{height - 16}" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">{start_ts} to {end_ts}</text>
 </svg>
 """
     output_path.write_text(svg, encoding="utf-8")

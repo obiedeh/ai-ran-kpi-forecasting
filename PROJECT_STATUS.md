@@ -14,10 +14,10 @@ Implemented capabilities:
 - Telecom Italia MI dataset support
 - time-based feature engineering
 - lag feature generation
-- XGBoost forecasting path
-- RandomForest fallback path
+- deterministic ridge-regression forecasting path
 - autoregressive forecast rollout
-- basic smoke testing
+- focused tests for data loading, lag features, temporal splitting, forecast shape, and metrics
+- reproducible sample report artifacts
 
 Current maturity level:
 
@@ -61,11 +61,14 @@ Target evidence files:
 
 ```text
 reports/
-├── forecast_examples/
-│   ├── prb_dl_util_forecast.csv
-│   ├── prb_dl_util_forecast.png
-│   └── metrics_summary.md
-└── assumptions.md
+|-- README.md
+|-- sample_metrics_report.md
+`-- forecast_examples/
+    `-- latest/
+        |-- prb_dl_util_forecast.csv
+        |-- prb_dl_util_forecast.svg
+        |-- metrics.json
+        `-- metrics_summary.md
 ```
 
 ---
@@ -87,13 +90,13 @@ Target structure:
 
 ```text
 src/ai_ran_kpi_forecasting/
-├── cli.py
-├── data.py
-├── features.py
-├── models.py
-├── forecasting.py
-├── metrics.py
-└── visualization.py
+|-- data.py
+|-- features.py
+|-- models.py
+|-- forecast.py
+|-- metrics.py
+|-- visualization.py
+`-- cli.py
 ```
 
 ---
@@ -146,20 +149,20 @@ Example use case:
 - [x] Generic KPI CSV workflow
 - [x] Telecom Italia dataset option
 - [x] Lag/time feature engineering
-- [x] XGBoost/RandomForest model path
+- [x] Deterministic ridge-regression model path
 - [x] Basic autoregressive forecasting
-- [ ] Reproducible sample forecast artifact
-- [ ] Metrics report
-- [ ] Forecast visualization
+- [x] Reproducible sample forecast artifact
+- [x] Metrics report
+- [x] Forecast visualization
 
 ### Engineering Quality
 
-- [ ] Package structure under `src/`
-- [ ] Typed configuration
-- [ ] Unit tests for core modules
+- [x] Package structure under `src/`
+- [x] Sample YAML configuration
+- [x] Unit tests for core modules
 - [ ] CI workflow
-- [ ] Makefile or task runner
-- [ ] Clear data contract
+- [x] Makefile or task runner
+- [x] Clear data contract
 
 ### Telecom Intelligence
 
@@ -183,8 +186,7 @@ Example use case:
 
 Known limitations:
 
-- current implementation is still script-centered
-- no full observability dashboard yet
+- full observability dashboard is out of scope
 - no real operator feedback loop yet
 - no production deployment packaging yet
 - no live RAN data source integration yet

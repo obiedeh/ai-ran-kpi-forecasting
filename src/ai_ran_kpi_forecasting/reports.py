@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from ai_ran_kpi_forecasting.forecasting import ForecastRunResult
 from ai_ran_kpi_forecasting.explainability import write_shap_summary
+from ai_ran_kpi_forecasting.forecast import ForecastRunResult
 from ai_ran_kpi_forecasting.visualization import plot_feature_importance, plot_forecast, plot_pre_post_impact
 
 
@@ -46,7 +46,7 @@ def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> di
         f"- MAE: `{result.metrics['mae']:.4f}`",
         f"- MAPE: `{result.metrics['mape']:.2f}%`",
         "",
-        "These artifacts provide a reproducible benchmark for AI-RAN KPI observability workflows.",
+        "These artifacts provide a reproducible benchmark for AI-RAN and edge infrastructure forecasting workflows.",
     ]
     metrics_md.write_text("\n".join(metrics_lines) + "\n", encoding="utf-8")
 
@@ -448,7 +448,7 @@ def write_scenario_dashboard(
           <tr><td>Congestion</td><td>{congestion_result.cell_id}</td><td>{congestion_result.target_col}</td><td>{congestion_before:.2f}</td><td>{congestion_after:.2f}</td><td>{congestion_peak:.2f}</td><td>{congestion_result.metrics['mae']:.2f}</td></tr>
         </tbody>
       </table>
-      <div class="small">Throughput before/after: {congestion_tp_before:.2f} → {congestion_tp_after:.2f} Mbps. Latency before/after: {congestion_latency_before:.2f} → {congestion_latency_after:.2f} ms.</div>
+      <div class="small">Throughput before/after: {congestion_tp_before:.2f} to {congestion_tp_after:.2f} Mbps. Latency before/after: {congestion_latency_before:.2f} to {congestion_latency_after:.2f} ms.</div>
     </div>
 
     <div class="two">

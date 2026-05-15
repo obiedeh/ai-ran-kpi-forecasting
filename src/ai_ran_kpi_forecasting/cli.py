@@ -12,8 +12,13 @@ from ai_ran_kpi_forecasting.data import (
     generate_outage_telemetry,
     generate_synthetic_telemetry,
 )
-from ai_ran_kpi_forecasting.forecasting import run_forecast_pipeline
-from ai_ran_kpi_forecasting.reports import write_portal_page, write_publish_page, write_report_bundle, write_scenario_dashboard
+from ai_ran_kpi_forecasting.forecast import run_forecast_pipeline
+from ai_ran_kpi_forecasting.reports import (
+    write_portal_page,
+    write_publish_page,
+    write_report_bundle,
+    write_scenario_dashboard,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -33,6 +38,9 @@ def build_parser() -> argparse.ArgumentParser:
     forecast.add_argument("--lags", default="1,2,3,6,12")
     forecast.add_argument("--output-dir", default="reports/forecast_examples/latest")
     forecast.add_argument("--random-state", type=int, default=42)
+
+    sample = subparsers.add_parser("run-sample", help="Run the reproducible sample forecast.")
+    sample.add_argument("--output-dir", default="reports/forecast_examples/latest")
 
     synthetic = subparsers.add_parser("generate-synthetic", help="Generate synthetic telecom telemetry CSV.")
     synthetic.add_argument("--output", default="data/synthetic_ran_kpi.csv")
@@ -213,6 +221,23 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "forecast":
         return run_forecast(args)
+    if args.command == "run-sample":
+        return run_forecast(
+            argparse.Namespace(
+                data="data/ran_kpi_sample.csv",
+                dataset_type="generic",
+                timestamp_col="timestamp",
+                cell_id_col="cell_id",
+                aggregate="hourly",
+                cell_id="CELL_001",
+                kpi_col="prb_dl_util",
+                test_size=0.2,
+                horizon=24,
+                lags="1,2,3,6,12",
+                output_dir=args.output_dir,
+                random_state=42,
+            )
+        )
     if args.command == "generate-synthetic":
         return run_generate_synthetic(args)
     if args.command == "scenario-demo":

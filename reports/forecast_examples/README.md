@@ -22,22 +22,16 @@ Planned report artifacts include:
 
 ```text
 reports/forecast_examples/
-├── latest/
-│   ├── metrics_summary.md
-│   ├── metrics.json
-│   ├── *_forecast.csv
-│   ├── *_forecast.svg
-│   ├── *_impact.svg
-│   ├── feature_importance.csv
-│   ├── feature_importance.svg
-│   └── shap_summary.svg
-├── sample_benchmark.md
-├── prb_dl_util_forecast.csv
-├── prb_dl_util_forecast.svg
-├── metrics_summary.md
-├── feature_importance.svg
-├── congestion_risk_report.md
-└── anomaly_detection_example.md
+|-- latest/
+|   |-- metrics_summary.md
+|   |-- metrics.json
+|   |-- *_forecast.csv
+|   |-- *_forecast.svg
+|   |-- *_impact.svg
+|   |-- feature_importance.csv
+|   |-- feature_importance.svg
+|   `-- shap_summary.svg
+`-- sample_benchmark.md
 ```
 
 ---
