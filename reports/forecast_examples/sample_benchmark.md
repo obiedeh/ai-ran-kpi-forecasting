@@ -15,6 +15,7 @@ This repo uses small, reproducible benchmark artifacts to make AI-RAN forecast b
 - `reports/forecast_examples/latest/prb_dl_util_forecast.csv`
 - `reports/forecast_examples/latest/prb_dl_util_holdout.csv`
 - `reports/forecast_examples/latest/prb_dl_util_forecast.svg`
+- `reports/forecast_examples/latest/prb_dl_util_impact.svg`
 - `reports/forecast_examples/latest/feature_importance.csv`
 - `reports/forecast_examples/latest/feature_importance.svg`
 - `reports/forecast_examples/latest/metrics.json`

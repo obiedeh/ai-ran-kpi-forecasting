@@ -7,7 +7,7 @@ from pathlib import Path
 
 from ai_ran_kpi_forecasting.forecasting import ForecastRunResult
 from ai_ran_kpi_forecasting.explainability import write_shap_summary
-from ai_ran_kpi_forecasting.visualization import plot_feature_importance, plot_forecast
+from ai_ran_kpi_forecasting.visualization import plot_feature_importance, plot_forecast, plot_pre_post_impact
 
 
 def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> dict[str, str]:
@@ -20,6 +20,7 @@ def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> di
     metrics_json = output_dir / "metrics.json"
     metrics_md = output_dir / "metrics_summary.md"
     forecast_svg = output_dir / f"{result.target_col}_forecast.svg"
+    impact_svg = output_dir / f"{result.target_col}_impact.svg"
     importance_csv = output_dir / "feature_importance.csv"
     importance_svg = output_dir / "feature_importance.svg"
     shap_svg = output_dir / "shap_summary.svg"
@@ -29,6 +30,7 @@ def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> di
     result.feature_importance.to_csv(importance_csv, index=False)
     metrics_json.write_text(json.dumps(result.metrics, indent=2) + "\n", encoding="utf-8")
     plot_forecast(result.holdout, result.forecast, forecast_svg, result.target_col)
+    plot_pre_post_impact(result.holdout, result.forecast, impact_svg, result.target_col)
     plot_feature_importance(result.feature_importance, importance_svg)
     shap_path = write_shap_summary(result.model, result.feature_sample, shap_svg)
 
@@ -52,6 +54,7 @@ def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> di
         "metrics_json": str(metrics_json),
         "metrics_markdown": str(metrics_md),
         "forecast_plot": str(forecast_svg),
+        "impact_plot": str(impact_svg),
         "feature_importance_csv": str(importance_csv),
         "shap_summary": str(shap_path) if shap_path is not None else "",
     }

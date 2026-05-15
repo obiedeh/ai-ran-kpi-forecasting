@@ -26,6 +26,7 @@ reports/forecast_examples/
 │   ├── metrics.json
 │   ├── *_forecast.csv
 │   ├── *_forecast.svg
+│   ├── *_impact.svg
 │   ├── feature_importance.csv
 │   ├── feature_importance.svg
 │   └── shap_summary.svg

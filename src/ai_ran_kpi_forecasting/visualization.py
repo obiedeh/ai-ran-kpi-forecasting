@@ -107,3 +107,81 @@ def plot_feature_importance(feature_importance: pd.DataFrame, output_path: str |
 """
     output_path.write_text(svg, encoding="utf-8")
     return output_path
+
+
+def plot_pre_post_impact(
+    holdout: pd.DataFrame,
+    forecast: pd.DataFrame,
+    output_path: str | Path,
+    target_col: str,
+) -> Path:
+    """Write a pre/post impact summary as SVG."""
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    before = holdout["actual"].to_list()
+    after = forecast["y_hat"].to_list()
+    before_mean = sum(before) / max(len(before), 1)
+    after_mean = sum(after) / max(len(after), 1)
+    delta = after_mean - before_mean
+    delta_pct = (delta / before_mean * 100.0) if abs(before_mean) > 1e-9 else 0.0
+
+    width = 1100
+    height = 520
+    pad = 56
+    panel_w = 420
+    panel_h = 300
+    chart_bottom = pad + panel_h
+
+    def line_points(values: list[float], x0: float, y0: float, w: float, h: float) -> str:
+        if not values:
+            return ""
+        vmin = min(values)
+        vmax = max(values)
+        if vmin == vmax:
+            vmax = vmin + 1.0
+        count = len(values)
+        pts = []
+        for idx, val in enumerate(values):
+            x = x0 + (idx / max(count - 1, 1)) * w
+            y = y0 + h - ((val - vmin) / (vmax - vmin)) * h
+            pts.append(f"{x:.1f},{y:.1f}")
+        return " ".join(pts)
+
+    before_points = line_points(before[-min(len(before), 24):], pad, pad + 10, panel_w, panel_h - 40)
+    after_points = line_points(after[: min(len(after), 24)], pad + panel_w + 120, pad + 10, panel_w, panel_h - 40)
+    before_max = max(before) if before else 0.0
+    after_max = max(after) if after else 0.0
+
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="{pad}" y="34" font-family="Arial, sans-serif" font-size="24" fill="#111827">Before / After KPI impact</text>
+  <text x="{pad}" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">historical telemetry versus forecast horizon</text>
+
+  <rect x="{pad}" y="{pad + 10}" width="{panel_w}" height="{panel_h}" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="{pad + panel_w + 120}" y="{pad + 10}" width="{panel_w}" height="{panel_h}" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="{pad + 16}" y="{pad + 36}" font-family="Arial, sans-serif" font-size="14" fill="#111827">Before: actual history</text>
+  <text x="{pad + panel_w + 136}" y="{pad + 36}" font-family="Arial, sans-serif" font-size="14" fill="#111827">After: forecast horizon</text>
+
+  <polyline points="{before_points}" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="{after_points}" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <line x1="{pad}" y1="{chart_bottom}" x2="{pad + panel_w}" y2="{chart_bottom}" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="{pad + panel_w + 120}" y1="{chart_bottom}" x2="{pad + panel_w * 2 + 120}" y2="{chart_bottom}" stroke="#d1d5db" stroke-width="1"/>
+
+  <rect x="{pad}" y="{height - 126}" width="300" height="82" rx="12" fill="#111827"/>
+  <text x="{pad + 18}" y="{height - 94}" font-family="Arial, sans-serif" font-size="13" fill="#cbd5e1">Before average</text>
+  <text x="{pad + 18}" y="{height - 68}" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">{before_mean:.2f}</text>
+
+  <rect x="{pad + 320}" y="{height - 126}" width="300" height="82" rx="12" fill="#1d4ed8"/>
+  <text x="{pad + 338}" y="{height - 94}" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe">After average</text>
+  <text x="{pad + 338}" y="{height - 68}" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">{after_mean:.2f}</text>
+
+  <rect x="{pad + 640}" y="{height - 126}" width="380" height="82" rx="12" fill="#f3f4f6" stroke="#e5e7eb"/>
+  <text x="{pad + 658}" y="{height - 94}" font-family="Arial, sans-serif" font-size="13" fill="#111827">Impact</text>
+  <text x="{pad + 658}" y="{height - 68}" font-family="Arial, sans-serif" font-size="26" fill="#111827">{delta:+.2f} ({delta_pct:+.1f}%)</text>
+  <text x="{pad + 658}" y="{height - 44}" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">peak before {before_max:.2f} | peak after {after_max:.2f}</text>
+</svg>
+"""
+    output_path.write_text(svg, encoding="utf-8")
+    return output_path
