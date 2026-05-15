@@ -1,6 +1,7 @@
 PYTHON ?= python
+REPORT_DIR ?= reports/forecast_examples/latest
 
-.PHONY: install install-dev test lint run-generic run-telecom
+.PHONY: install install-dev test lint run-generic run-telecom synthetic report
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -15,19 +16,27 @@ lint:
 	ruff check .
 
 run-generic:
-	$(PYTHON) ai-ran-kpi-forecasting.py \
+	$(PYTHON) ai-ran-kpi-forecasting.py forecast \
 		--dataset-type generic \
 		--data ./data/ran_kpi_sample.csv \
 		--timestamp-col timestamp \
 		--cell-id-col cell_id \
 		--kpi-col prb_dl_util \
 		--cell-id CELL_001 \
-		--horizon 24
+		--horizon 24 \
+		--output-dir $(REPORT_DIR)
 
 run-telecom:
-	$(PYTHON) ai-ran-kpi-forecasting.py \
+	$(PYTHON) ai-ran-kpi-forecasting.py forecast \
 		--dataset-type telecom-italia-mi \
 		--data ./data/telecom_italia_mi \
 		--aggregate hourly \
 		--kpi-col internet_traffic \
-		--horizon 24
+		--horizon 24 \
+		--output-dir $(REPORT_DIR)
+
+synthetic:
+	$(PYTHON) ai-ran-kpi-forecasting.py generate-synthetic \
+		--output ./data/synthetic_ran_kpi.csv
+
+report: run-generic

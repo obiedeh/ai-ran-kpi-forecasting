@@ -110,9 +110,19 @@ AI-RAN / Edge Operations
 
 ```text
 .
-├── ai-ran-kpi-forecasting.py    # Forecasting pipeline
-├── data/                        # Sample datasets
-├── tests/                       # Smoke tests and validation
+├── ai-ran-kpi-forecasting.py
+├── src/ai_ran_kpi_forecasting/
+│   ├── cli.py
+│   ├── data.py
+│   ├── features.py
+│   ├── forecasting.py
+│   ├── metrics.py
+│   ├── reports.py
+│   ├── visualization.py
+│   └── explainability.py
+├── data/
+├── reports/forecast_examples/
+├── tests/
 ├── requirements.txt
 ├── requirements-dev.txt
 └── README.md
@@ -197,6 +207,12 @@ python -m pip install -r requirements-dev.txt
 pytest -q
 ```
 
+### Generate Synthetic Telemetry
+
+```bash
+python ai-ran-kpi-forecasting.py generate-synthetic --output data/synthetic_ran_kpi.csv
+```
+
 ---
 
 ## Example Usage
@@ -204,14 +220,15 @@ pytest -q
 ### Generic RAN KPI Dataset
 
 ```bash
-python ai-ran-kpi-forecasting.py \
+python ai-ran-kpi-forecasting.py forecast \
   --dataset-type generic \
   --data ./data/ran_kpi_sample.csv \
   --timestamp-col timestamp \
   --cell-id-col cell_id \
   --kpi-col prb_dl_util \
   --cell-id CELL_001 \
-  --horizon 24
+  --horizon 24 \
+  --output-dir reports/forecast_examples/latest
 ```
 
 ---
@@ -219,12 +236,13 @@ python ai-ran-kpi-forecasting.py \
 ### Telecom Italia Dataset
 
 ```bash
-python ai-ran-kpi-forecasting.py \
+python ai-ran-kpi-forecasting.py forecast \
   --dataset-type telecom-italia-mi \
   --data ./data/telecom_italia_mi \
   --aggregate hourly \
   --kpi-col internet_traffic \
-  --horizon 24
+  --horizon 24 \
+  --output-dir reports/forecast_examples/latest
 ```
 
 ---
@@ -250,6 +268,8 @@ Planned future directions include:
 - workload-placement experimentation
 - AI-RAN operational dashboards
 - GPU-accelerated training paths
+
+The current implementation keeps those ideas lean: optional SHAP output, reproducible benchmark bundles, and a small command-line workflow rather than a notebook-first workflow.
 
 ---
 
