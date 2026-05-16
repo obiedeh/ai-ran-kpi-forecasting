@@ -43,9 +43,8 @@ class RidgeForecastRegressor:
         return self.intercept_ + X_scaled @ self.coef_
 
 
-def build_regressor(random_state: int = 42) -> tuple[RidgeForecastRegressor, str]:
+def build_regressor() -> tuple[RidgeForecastRegressor, str]:
     """Build a deterministic baseline regressor."""
-    _ = random_state
     return RidgeForecastRegressor(alpha=1e-4), "ridge_linear"
 
 
@@ -57,7 +56,8 @@ def train_and_evaluate(
     random_state: int = 42,
 ) -> tuple[RidgeForecastRegressor, dict[str, float], pd.DataFrame, str]:
     """Train a model and return metrics plus hold-out predictions."""
-    model, model_name = build_regressor(random_state=random_state)
+    _ = random_state
+    model, model_name = build_regressor()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     metrics = regression_metrics(y_test, y_pred)

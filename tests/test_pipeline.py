@@ -1,5 +1,7 @@
 from pathlib import Path
 
+_SAMPLE_CSV = Path(__file__).parent.parent / "data" / "ran_kpi_sample.csv"
+
 from ai_ran_kpi_forecasting.data import (
     generate_backhaul_telemetry,
     generate_congestion_telemetry,
@@ -39,7 +41,7 @@ def test_synthetic_telemetry_schema():
 
 def test_forecast_pipeline_writes_report_bundle(tmp_path):
     result = run_forecast_pipeline(
-        data="data/ran_kpi_sample.csv",
+        data=str(_SAMPLE_CSV),
         cell_id="CELL_001",
         kpi_col="prb_dl_util",
         horizon=6,

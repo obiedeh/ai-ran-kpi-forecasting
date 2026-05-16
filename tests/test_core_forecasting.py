@@ -1,10 +1,15 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from ai_ran_kpi_forecasting.data import load_ran_kpi_data
 from ai_ran_kpi_forecasting.features import add_lag_features
-from ai_ran_kpi_forecasting.forecast import run_forecast_pipeline, temporal_train_test_split
+from ai_ran_kpi_forecasting.forecast import parse_lags, run_forecast_pipeline, temporal_train_test_split
 from ai_ran_kpi_forecasting.metrics import regression_metrics
+
+_SAMPLE_CSV = Path(__file__).parent.parent / "data" / "ran_kpi_sample.csv"
 
 
 def test_data_loading_orders_by_cell_and_timestamp(tmp_path):
@@ -52,7 +57,7 @@ def test_temporal_train_test_split_preserves_order():
 
 def test_forecast_output_shape():
     result = run_forecast_pipeline(
-        data="data/ran_kpi_sample.csv",
+        data=str(_SAMPLE_CSV),
         cell_id="CELL_001",
         kpi_col="prb_dl_util",
         horizon=8,
@@ -70,3 +75,59 @@ def test_metrics_calculation():
     assert round(metrics["mae"], 4) == 2.6667
     assert round(metrics["rmse"], 4) == 2.8284
     assert round(metrics["mape"], 4) == 13.3333
+
+
+# --- Error-path tests ---
+
+def test_load_ran_kpi_data_missing_file():
+    with pytest.raises(FileNotFoundError):
+        load_ran_kpi_data("/nonexistent/path/telemetry.csv")
+
+
+def test_load_ran_kpi_data_missing_timestamp_column(tmp_path):
+    path = tmp_path / "bad.csv"
+    pd.DataFrame({"cell_id": ["CELL_001"], "prb_dl_util": [50.0]}).to_csv(path, index=False)
+    with pytest.raises(ValueError, match="Timestamp column"):
+        load_ran_kpi_data(path, timestamp_col="timestamp")
+
+
+def test_load_ran_kpi_data_missing_cell_id_column(tmp_path):
+    path = tmp_path / "bad.csv"
+    pd.DataFrame({"timestamp": ["2024-01-01T00:00:00Z"], "prb_dl_util": [50.0]}).to_csv(path, index=False)
+    with pytest.raises(ValueError, match="Cell ID column"):
+        load_ran_kpi_data(path, cell_id_col="cell_id")
+
+
+def test_parse_lags_rejects_zero():
+    with pytest.raises(ValueError, match="positive"):
+        parse_lags("0,1,2")
+
+
+def test_parse_lags_rejects_negative():
+    with pytest.raises(ValueError, match="positive"):
+        parse_lags([-1, 2])
+
+
+def test_parse_lags_rejects_empty():
+    with pytest.raises(ValueError, match="At least one lag"):
+        parse_lags("")
+
+
+def test_temporal_train_test_split_rejects_too_few_samples():
+    X = pd.DataFrame({"x": range(5)})
+    y = pd.Series(range(5))
+    with pytest.raises(ValueError, match="Not enough samples"):
+        temporal_train_test_split(X, y, test_size=0.2)
+
+
+def test_temporal_train_test_split_rejects_invalid_test_size():
+    X = pd.DataFrame({"x": range(20)})
+    y = pd.Series(range(20))
+    with pytest.raises(ValueError, match="test_size"):
+        temporal_train_test_split(X, y, test_size=1.5)
+
+
+def test_add_lag_features_rejects_zero_lag():
+    df = pd.DataFrame({"v": [1.0, 2.0, 3.0]})
+    with pytest.raises(ValueError, match="positive"):
+        add_lag_features(df, "v", [0])

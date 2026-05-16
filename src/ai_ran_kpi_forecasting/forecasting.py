@@ -1,4 +1,4 @@
-"""Backward-compatible imports for the renamed forecast module."""
+# Deprecated shim — import directly from forecast.py and models.py instead.
 
 from ai_ran_kpi_forecasting.forecast import (
     ForecastRunResult,
