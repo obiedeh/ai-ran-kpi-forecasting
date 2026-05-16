@@ -2,7 +2,9 @@ name: ci
 
 on:
   push:
+    branches: ["main", "master"]
   pull_request:
+    branches: ["main", "master"]
 
 jobs:
   test:
@@ -23,9 +25,16 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+      - name: Install mypy
+        run: pip install mypy
+
       - name: Run lint
         run: |
           ruff check .
+
+      - name: Type check
+        run: |
+          mypy src/ai_ran_kpi_forecasting
 
       - name: Run tests
         run: |

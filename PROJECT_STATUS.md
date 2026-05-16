@@ -160,7 +160,7 @@ Example use case:
 - [x] Package structure under `src/`
 - [x] Sample YAML configuration
 - [x] Unit tests for core modules
-- [ ] CI workflow
+- [x] CI workflow
 - [x] Makefile or task runner
 - [x] Clear data contract
 
