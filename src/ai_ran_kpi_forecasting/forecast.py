@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
-
 import pandas as pd
 
 from ai_ran_kpi_forecasting.data import filter_cell, load_ran_kpi_data, load_telecom_italia_mi
@@ -23,7 +21,7 @@ from ai_ran_kpi_forecasting.models import (
 
 @dataclass
 class ForecastRunResult:
-    model: Any
+    model: RidgeForecastRegressor
     metrics: dict[str, float]
     forecast: pd.DataFrame
     holdout: pd.DataFrame
@@ -81,9 +79,9 @@ def forecast_autoregressive(
     last_timestamp = last_row[timestamp_col].iloc[0]
     inferred_freq = pd.infer_freq(df_full[timestamp_col])
     if inferred_freq is None:
-        step = df_full[timestamp_col].diff().dropna().median()
+        step: pd.Timedelta = df_full[timestamp_col].diff().dropna().median()
     else:
-        step = pd.tseries.frequencies.to_offset(inferred_freq)
+        step = pd.tseries.frequencies.to_offset(inferred_freq).nanos * pd.Timedelta(1, "ns")
 
     current_state = last_row.copy()
     forecasts: list[dict[str, Any]] = []

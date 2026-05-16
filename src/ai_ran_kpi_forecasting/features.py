@@ -8,7 +8,10 @@ import numpy as np
 import pandas as pd
 
 
-def choose_kpi_column(df: pd.DataFrame, kpi_col: str | None) -> str:
+_DEFAULT_ID_COLS: frozenset[str] = frozenset({"cell_id", "site_id", "Square id", "square_id", "Square_id"})
+
+
+def choose_kpi_column(df: pd.DataFrame, kpi_col: str | None, exclude_cols: Sequence[str] | None = None) -> str:
     """Validate or infer the target KPI column."""
     if kpi_col is not None:
         if kpi_col not in df.columns:
@@ -17,7 +20,7 @@ def choose_kpi_column(df: pd.DataFrame, kpi_col: str | None) -> str:
             raise ValueError(f"kpi_col '{kpi_col}' is not numeric.")
         return kpi_col
 
-    exclude = {"cell_id", "Square id", "square_id"}
+    exclude = _DEFAULT_ID_COLS | set(exclude_cols or [])
     numeric_cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number) and c not in exclude]
     if not numeric_cols:
         raise ValueError("No numeric KPI column detected. Please specify --kpi-col.")
