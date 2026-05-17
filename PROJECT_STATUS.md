@@ -18,12 +18,14 @@ Implemented capabilities:
 - autoregressive forecast rollout
 - focused tests for data loading, lag features, temporal splitting, forecast shape, and metrics
 - reproducible sample report artifacts
+- committed scenario evidence packs for congestion, backhaul saturation, and outage recovery
+- static evidence portal and publish page for reviewer inspection
 
 Current maturity level:
 
-> Foundation / prototype engineering baseline
+> Portfolio-complete offline forecasting and evidence-generation baseline
 
-This is not yet a full production platform. The current value is that it establishes the first working forecasting layer that future observability, anomaly detection, and AI-RAN decision-support features can build on.
+This is not a live production platform. The current value is that it establishes a reproducible offline forecasting layer, report artifacts, and scenario evidence packs that future observability, anomaly detection, and AI-RAN decision-support features can build on.
 
 ---
 
@@ -56,6 +58,7 @@ Deliverables:
 - add baseline metrics table
 - add one reproducible command that generates results from sample data
 - document assumptions and limitations
+- add scenario dashboards and a static evidence portal
 
 Target evidence files:
 
@@ -70,6 +73,15 @@ reports/
         |-- metrics.json
         `-- metrics_summary.md
 ```
+
+Current evidence map:
+
+- `PORTFOLIO_DELIVERABLES.md`
+- `reports/index.html`
+- `reports/publish/latest/index.html`
+- `reports/scenarios/latest/congestion/dashboard/dashboard.html`
+- `reports/scenarios/latest/backhaul/dashboard/dashboard.html`
+- `reports/scenarios/latest/outage/dashboard/dashboard.html`
 
 ---
 

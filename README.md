@@ -62,6 +62,15 @@ The sample run writes:
 - `reports/forecast_examples/latest/metrics.json`
 - `reports/forecast_examples/latest/metrics_summary.md`
 
+For the reviewer-facing evidence map, see [PORTFOLIO_DELIVERABLES.md](PORTFOLIO_DELIVERABLES.md).
+
+Open the generated static evidence portal:
+
+```text
+reports/index.html
+reports/publish/latest/index.html
+```
+
 ## CLI Usage
 
 Run the reproducible sample:
@@ -97,7 +106,14 @@ make scenario-demo
 make scenario-backhaul
 make scenario-outage
 make portal
+make publish
 ```
+
+Scenario evidence is written under:
+
+- `reports/scenarios/latest/congestion/`
+- `reports/scenarios/latest/backhaul/`
+- `reports/scenarios/latest/outage/`
 
 ## Make Targets
 
