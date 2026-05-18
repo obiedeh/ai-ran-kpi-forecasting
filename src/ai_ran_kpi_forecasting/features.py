@@ -7,7 +7,6 @@ from collections.abc import Sequence
 import numpy as np
 import pandas as pd
 
-
 _DEFAULT_ID_COLS: frozenset[str] = frozenset({"cell_id", "site_id", "Square id", "square_id", "Square_id"})
 
 
@@ -24,7 +23,7 @@ def choose_kpi_column(df: pd.DataFrame, kpi_col: str | None, exclude_cols: Seque
     numeric_cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number) and c not in exclude]
     if not numeric_cols:
         raise ValueError("No numeric KPI column detected. Please specify --kpi-col.")
-    return numeric_cols[0]
+    return str(numeric_cols[0])
 
 
 def engineer_time_features(df: pd.DataFrame, timestamp_col: str = "timestamp") -> pd.DataFrame:

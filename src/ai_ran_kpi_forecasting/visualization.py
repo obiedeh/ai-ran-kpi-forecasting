@@ -21,8 +21,8 @@ def plot_forecast(
     predicted = holdout["prediction"].to_list()
     future = forecast["y_hat"].to_list()
     values = [value for seq in (actual, predicted, future) for value in seq]
-    y_min = min(values)
-    y_max = max(values)
+    y_min = float(min(values))
+    y_max = float(max(values))
     if y_min == y_max:
         y_max = y_min + 1.0
 

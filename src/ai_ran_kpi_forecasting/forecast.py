@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
+
 import pandas as pd
 
 from ai_ran_kpi_forecasting.data import filter_cell, load_ran_kpi_data, load_telecom_italia_mi

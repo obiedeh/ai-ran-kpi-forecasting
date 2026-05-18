@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -40,7 +40,7 @@ class RidgeForecastRegressor:
             raise ValueError("Model is not fitted.")
         X_arr = np.asarray(X, dtype=float)
         X_scaled = (X_arr - self.mean_) / self.scale_
-        return self.intercept_ + X_scaled @ self.coef_
+        return cast(np.ndarray, self.intercept_ + X_scaled @ self.coef_)
 
 
 def build_regressor() -> tuple[RidgeForecastRegressor, str]:
