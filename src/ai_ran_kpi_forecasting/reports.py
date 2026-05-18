@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 
@@ -142,7 +143,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         f"""<section class="card">
           <div class="eyebrow">{card['title']}</div>
           <p>{card['desc']}</p>
-          {render_links(card['links'])}
+          {render_links(cast(list[tuple[str, str]], card['links']))}
         </section>"""
         for card in cards
     )
