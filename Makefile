@@ -2,7 +2,7 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic report scenario-demo scenario-backhaul scenario-outage portal publish
+.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -43,6 +43,26 @@ run-telecom:
 synthetic:
 	$(PYTHON) ai-ran-kpi-forecasting.py generate-synthetic \
 		--output ./data/synthetic_ran_kpi.csv
+
+forecast-edge-ai: synthetic
+	$(PYTHON) ai-ran-kpi-forecasting.py forecast \
+		--dataset-type generic \
+		--data ./data/synthetic_ran_kpi.csv \
+		--timestamp-col timestamp \
+		--cell-id-col cell_id \
+		--kpi-col edge_gpu_util_pct \
+		--cell-id CELL_001 \
+		--horizon 24 \
+		--output-dir reports/forecast_examples/edge_ai/gpu_util
+	$(PYTHON) ai-ran-kpi-forecasting.py forecast \
+		--dataset-type generic \
+		--data ./data/synthetic_ran_kpi.csv \
+		--timestamp-col timestamp \
+		--cell-id-col cell_id \
+		--kpi-col edge_memory_util_pct \
+		--cell-id CELL_001 \
+		--horizon 24 \
+		--output-dir reports/forecast_examples/edge_ai/memory_util
 
 report: run-sample
 

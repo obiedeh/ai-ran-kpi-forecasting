@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="60" y="34" font-family="Arial, sans-serif" font-size="22" fill="#111827">AI-RAN KPI forecast: edge_memory_util_pct</text>
+  <text x="60" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">actual, hold-out prediction, and forward forecast</text>
+  <line x1="60" y1="60" x2="60" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <line x1="60" y1="460" x2="920" y2="460" stroke="#9ca3af" stroke-width="1"/>
+  <polyline points="60.0,231.3 87.7,367.5 115.5,179.7 143.2,268.3 171.0,75.8 198.7,155.7 226.5,205.9 254.2,155.4 281.9,176.3 309.7,185.8 337.4,126.9 365.2,200.8 392.9,214.3 420.6,307.5 448.4,225.1 476.1,460.0 503.9,275.2 531.6,150.5 559.4,257.0 587.1,295.9 614.8,287.2 642.6,266.4 670.3,265.2 698.1,99.9 725.8,154.7 753.5,147.5 781.3,139.2 809.0,60.0 836.8,98.4 864.5,144.5 892.3,135.5 920.0,154.9" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="60.0,310.6 87.7,229.6 115.5,310.9 143.2,313.2 171.0,226.1 198.7,186.0 226.5,176.5 254.2,220.4 281.9,240.2 309.7,152.0 337.4,167.1 365.2,236.3 392.9,213.7 420.6,287.2 448.4,266.4 476.1,358.4 503.9,302.1 531.6,223.8 559.4,214.3 587.1,329.1 614.8,304.2 642.6,325.8 670.3,223.3 698.1,183.5 725.8,187.0 753.5,183.3 781.3,153.8 809.0,143.2 836.8,234.9 864.5,79.5 892.3,86.9 920.0,161.9" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <polyline points="60.0,161.9 97.4,157.5 134.8,160.9 172.2,160.4 209.6,159.3 247.0,160.1 284.3,159.8 321.7,159.7 359.1,159.8 396.5,159.7 433.9,159.7 471.3,159.8 508.7,159.7 546.1,159.8 583.5,159.8 620.9,159.8 658.3,159.8 695.7,159.8 733.0,159.8 770.4,159.8 807.8,159.8 845.2,159.8 882.6,159.8 920.0,159.8" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <rect x="680" y="60" width="300" height="72" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+  <line x1="696" y1="84" x2="730" y2="84" stroke="#111827" stroke-width="2"/>
+  <text x="740" y="88" font-family="Arial, sans-serif" font-size="12" fill="#111827">actual</text>
+  <line x1="696" y1="104" x2="730" y2="104" stroke="#2563eb" stroke-width="2"/>
+  <text x="740" y="108" font-family="Arial, sans-serif" font-size="12" fill="#111827">hold-out prediction</text>
+  <line x1="696" y1="124" x2="730" y2="124" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="740" y="128" font-family="Arial, sans-serif" font-size="12" fill="#111827">forecast</text>
+  <text x="60" y="504" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">2024-01-06 16:00:00+00:00 to 2024-01-08 23:00:00+00:00</text>
+</svg>

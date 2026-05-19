@@ -147,6 +147,12 @@ def generate_synthetic_telemetry(
             latency = float(np.clip(12 + prb_dl_util * 0.16 + rng.normal(0, 1.2), 5, 60))
             packet_loss = float(np.clip((prb_dl_util - 55) * 0.05 + rng.normal(0, 0.2), 0, 5))
             sinr = float(np.clip(24 - prb_dl_util * 0.08 + rng.normal(0, 0.9), 1, 30))
+            edge_gpu_util = float(
+                np.clip(22 + rrc_users * 0.12 + hour_cycle * 6 + rng.normal(0, 3), 5, 98)
+            )
+            edge_memory_util = float(
+                np.clip(40 + rrc_users * 0.10 + weekly_cycle * 4 + rng.normal(0, 2.5), 12, 95)
+            )
             rows.append(
                 {
                     "timestamp": ts,
@@ -163,6 +169,8 @@ def generate_synthetic_telemetry(
                     "latency_ms": round(latency, 3),
                     "packet_loss_pct": round(packet_loss, 3),
                     "sinr_db": round(sinr, 3),
+                    "edge_gpu_util_pct": round(edge_gpu_util, 3),
+                    "edge_memory_util_pct": round(edge_memory_util, 3),
                 }
             )
 

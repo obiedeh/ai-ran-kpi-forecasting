@@ -35,8 +35,12 @@ def test_synthetic_telemetry_schema():
         "latency_ms",
         "packet_loss_pct",
         "sinr_db",
+        "edge_gpu_util_pct",
+        "edge_memory_util_pct",
     } <= set(df.columns)
     assert df["cell_id"].nunique() == 2
+    assert df["edge_gpu_util_pct"].between(5, 98).all()
+    assert df["edge_memory_util_pct"].between(12, 95).all()
 
 
 def test_forecast_pipeline_writes_report_bundle(tmp_path):

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <text x="56" y="34" font-family="Arial, sans-serif" font-size="24" fill="#111827">Before / After KPI impact</text>
+  <text x="56" y="58" font-family="Arial, sans-serif" font-size="12" fill="#4b5563">historical telemetry versus forecast horizon</text>
+
+  <rect x="56" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <rect x="596" y="66" width="420" height="300" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="72" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">Before: actual history</text>
+  <text x="612" y="92" font-family="Arial, sans-serif" font-size="14" fill="#111827">After: forecast horizon</text>
+
+  <polyline points="56.0,175.0 74.3,131.9 92.5,181.9 110.8,206.6 129.0,236.8 147.3,274.4 165.6,261.3 183.8,326.0 202.1,279.0 220.3,257.7 238.6,296.8 256.9,302.1 275.1,273.1 293.4,229.3 311.7,248.9 329.9,193.7 348.2,166.3 366.4,153.4 384.7,162.9 403.0,159.3 421.2,168.5 439.5,66.0 457.7,111.2 476.0,171.9" fill="none" stroke="#111827" stroke-width="2"/>
+  <polyline points="596.0,126.3 614.3,66.0 632.5,307.1 650.8,326.0 669.0,278.6 687.3,303.7 705.6,322.3 723.8,316.8 742.1,316.3 760.3,320.3 778.6,320.8 796.9,320.3 815.1,320.7 833.4,321.0 851.7,321.0 869.9,321.0 888.2,321.1 906.4,321.1 924.7,321.1 943.0,321.1 961.2,321.1 979.5,321.1 997.7,321.1 1016.0,321.1" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <line x1="56" y1="356" x2="476" y2="356" stroke="#d1d5db" stroke-width="1"/>
+  <line x1="596" y1="356" x2="1016" y2="356" stroke="#d1d5db" stroke-width="1"/>
+
+  <rect x="56" y="394" width="300" height="82" rx="12" fill="#111827"/>
+  <text x="74" y="426" font-family="Arial, sans-serif" font-size="13" fill="#cbd5e1">Before average</text>
+  <text x="74" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">44.22</text>
+
+  <rect x="376" y="394" width="300" height="82" rx="12" fill="#1d4ed8"/>
+  <text x="394" y="426" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe">After average</text>
+  <text x="394" y="452" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">49.60</text>
+
+  <rect x="696" y="394" width="380" height="82" rx="12" fill="#f3f4f6" stroke="#e5e7eb"/>
+  <text x="714" y="426" font-family="Arial, sans-serif" font-size="13" fill="#111827">Impact</text>
+  <text x="714" y="452" font-family="Arial, sans-serif" font-size="26" fill="#111827">+5.38 (+12.2%)</text>
+  <text x="714" y="476" font-family="Arial, sans-serif" font-size="11" fill="#6b7280">peak before 61.18 | peak after 50.97</text>
+</svg>
