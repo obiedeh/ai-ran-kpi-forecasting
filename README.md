@@ -30,6 +30,12 @@ This repository is the forecasting substrate underneath that frame: deterministi
 - [Logs](artifacts/logs/)
 - [Reports](artifacts/reports/)
 
+## Recommended GitHub About
+
+- **Suggested short description:** AI infrastructure bridge for forecasting RAN KPIs, detecting congestion signals, and generating operational network intelligence.
+- **Suggested topics/tags:** `ai-ran`, `edge-ai`, `forecasting`, `telemetry`, `time-series`, `operational-ai`, `network-intelligence`
+- **Positioning category:** Strategic Bridge
+
 ## What this repo does
 
 - Loads RAN-style telemetry (PRB utilization, throughput, active users, latency, and — per the data contract — edge GPU and memory utilization) and builds temporal + lag features for forward-looking KPI forecasting.
