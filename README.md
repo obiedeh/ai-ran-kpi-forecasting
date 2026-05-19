@@ -4,6 +4,21 @@ Edge network intelligence — inference-aware workload placement and KPI forecas
 
 This repository is the forecasting substrate underneath that frame: deterministic KPI forecasting on RAN-style telemetry today, with a data contract and roadmap shaped around edge-AI workload placement decisions. See [Implemented vs planned](#implemented-vs-planned) for the honest boundary between what works today and what is on the roadmap.
 
+## Core Stack
+
+**Implemented:** Python · Pandas · deterministic ridge regression · time-series forecasting · RAN KPI analysis · reproducible reports
+
+**Planned / integration path:** operational forecast reports · telemetry validation · edge/AI-RAN deployment context
+
+<p>
+  <img src="https://img.shields.io/badge/Python-3.x-blue" alt="Python" />
+  <img src="https://img.shields.io/badge/Pandas-dataframes-150458" alt="Pandas" />
+  <img src="https://img.shields.io/badge/Ridge%20Regression-deterministic-F7931E" alt="Deterministic ridge regression" />
+  <img src="https://img.shields.io/badge/Time%20Series-forecasting-4B8BBE" alt="Time Series Forecasting" />
+  <img src="https://img.shields.io/badge/AI--RAN-telemetry-76B900" alt="AI-RAN telemetry" />
+  <img src="https://img.shields.io/badge/Reports-reproducible-555555" alt="Reproducible reports" />
+</p>
+
 ## What this repo does
 
 - Loads RAN-style telemetry (PRB utilization, throughput, active users, latency, and — per the data contract — edge GPU and memory utilization) and builds temporal + lag features for forward-looking KPI forecasting.
