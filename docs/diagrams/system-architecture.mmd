@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph Inputs["Telemetry inputs"]
+        sample["Sample RAN KPI CSV\nimplemented"]
+        synthetic["Synthetic KPI generation\nimplemented"]
+        publicdata["Larger public/operator-style dataset\nplanned"]
+    end
+
+    subgraph Forecasting["Forecasting workflow"]
+        loader["data.py\nload and normalize"]
+        features["features.py\ntime and lag features"]
+        model["models.py\ndeterministic ridge baseline"]
+        forecast["forecast.py\nautoregressive rollout"]
+        metrics["metrics.py\nRMSE, MAE, MAPE"]
+    end
+
+    subgraph Evidence["Operational evidence"]
+        reports["reports.py\nMarkdown, CSV, JSON"]
+        plots["visualization.py\nSVG plots"]
+        scenarios["Scenario evidence packs"]
+    end
+
+    subgraph Context["Supporting infrastructure context"]
+        edge["Edge / AI infrastructure handoff\nplanned"]
+        ops["Operational forecast review"]
+    end
+
+    sample --> loader
+    synthetic --> loader
+    publicdata -. planned .-> loader
+    loader --> features --> model --> forecast --> metrics
+    forecast --> reports
+    metrics --> reports
+    reports --> plots
+    reports --> scenarios
+    scenarios --> ops
+    ops -. planned .-> edge
