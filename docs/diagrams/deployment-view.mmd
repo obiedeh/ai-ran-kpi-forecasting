@@ -1,0 +1,22 @@
+flowchart TB
+    subgraph Local["Implemented local mode"]
+        python["Python package"]
+        make["Makefile commands"]
+        sample["Sample KPI run"]
+        tests["pytest"]
+    end
+
+    subgraph Offline["Offline operational analysis"]
+        csv["CSV telemetry"]
+        reports["Forecast reports"]
+        scenarios["Scenario packs"]
+    end
+
+    subgraph Future["Planned edge / AI infrastructure context"]
+        validation["Telemetry validation"]
+        handoff["Edge workload placement handoff"]
+        timing["Timed run artifact"]
+    end
+
+    Local --> Offline
+    Offline --> Future

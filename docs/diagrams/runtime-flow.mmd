@@ -1,0 +1,11 @@
+flowchart LR
+    command["make run-sample or CLI command"]
+    load["Load KPI CSV"]
+    feature["Build time and lag features"]
+    split["Forward-only train/test split"]
+    train["Train deterministic ridge baseline"]
+    forecast["Roll forecast horizon"]
+    evaluate["Compute RMSE, MAE, MAPE"]
+    write["Write reports, plots, metrics JSON"]
+
+    command --> load --> feature --> split --> train --> forecast --> evaluate --> write

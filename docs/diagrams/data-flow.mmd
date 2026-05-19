@@ -1,0 +1,12 @@
+flowchart LR
+    csv["KPI CSV\ncell, timestamp, utilization, throughput, latency"]
+    normalized["Normalized telemetry frame"]
+    features["Temporal and lag features"]
+    predictions["Forecast values"]
+    metrics["Evaluation metrics"]
+    artifacts["CSV, Markdown, SVG, JSON reports"]
+    review["Operational review"]
+
+    csv --> normalized --> features --> predictions --> artifacts
+    predictions --> metrics --> artifacts
+    artifacts --> review

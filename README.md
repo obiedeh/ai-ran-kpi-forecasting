@@ -19,6 +19,17 @@ This repository is the forecasting substrate underneath that frame: deterministi
   <img src="https://img.shields.io/badge/Reports-reproducible-555555" alt="Reproducible reports" />
 </p>
 
+## Architecture and Evidence
+
+- [Architecture overview](docs/architecture.md)
+- [System architecture diagram](docs/diagrams/system-architecture.mmd)
+- [Runtime flow diagram](docs/diagrams/runtime-flow.mmd)
+- [Data flow diagram](docs/diagrams/data-flow.mmd)
+- [Deployment view diagram](docs/diagrams/deployment-view.mmd)
+- [Sample outputs](artifacts/sample-outputs/)
+- [Logs](artifacts/logs/)
+- [Reports](artifacts/reports/)
+
 ## What this repo does
 
 - Loads RAN-style telemetry (PRB utilization, throughput, active users, latency, and — per the data contract — edge GPU and memory utilization) and builds temporal + lag features for forward-looking KPI forecasting.
@@ -234,7 +245,7 @@ See [DATA_CONTRACT.md](DATA_CONTRACT.md) for the full schema, column overrides, 
 |-- ai-ran-kpi-forecasting.py          # thin compatibility wrapper
 |-- configs/sample_config.yaml
 |-- data/ran_kpi_sample.csv
-|-- docs/ARCHITECTURE.md
+|-- docs/architecture.md
 |-- reports/
 |   |-- README.md
 |   |-- sample_metrics_report.md
@@ -268,4 +279,4 @@ See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the honest implemented/planned br
 
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the pipeline diagram and module responsibilities.
+See [docs/architecture.md](docs/architecture.md) for the pipeline diagram and module responsibilities.
