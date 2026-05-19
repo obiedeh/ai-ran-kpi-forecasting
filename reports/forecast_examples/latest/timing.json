@@ -1,0 +1,8 @@
+{
+  "pipeline": "ai-ran-kpi-forecasting.py run-sample",
+  "output_dir": "reports/forecast_examples/latest",
+  "seconds_total": 19.73,
+  "platform": "windows",
+  "python_version": "3.13.13",
+  "note": "Wall-clock for the AI-RAN run-sample pipeline (loader + features + ridge fit + autoregressive forecast + report bundle) on one dev machine; machine-dependent. Reproduce by timing make run-sample on your machine."
+}
