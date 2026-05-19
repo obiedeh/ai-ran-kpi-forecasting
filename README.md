@@ -27,7 +27,8 @@ Source: [`reports/forecast_examples/latest/metrics.json`](reports/forecast_examp
 | MAE | 0.6954 | measured |
 | MAPE | 0.82% | measured |
 | Forecasting accuracy on Telecom Italia MI | `<TO MEASURE>` | Plan: place the Telecom Italia MI dataset under `data/telecom_italia_mi/` (loader already supports it), run `make run-telecom`, capture RMSE/MAE/MAPE into `reports/forecast_examples/telecom_italia/metrics.json`. |
-| Forecasting accuracy on edge GPU / memory utilization KPIs | `<TO MEASURE>` | Plan: extend the `generate-synthetic` CLI to emit `edge_gpu_util_pct` and `edge_memory_util_pct`, run the forecast against each, write metrics into `reports/forecast_examples/edge_ai/metrics.json`. |
+| Forecasting accuracy on `edge_gpu_util_pct` (RMSE / MAE / MAPE) | 3.62 / 2.86 / 6.38% | measured ([reports/forecast_examples/edge_ai/gpu_util/metrics.json](reports/forecast_examples/edge_ai/gpu_util/metrics.json)) — `ridge_linear`, CELL_001, 24-step horizon on synthetic 504-row, 3-cell telemetry; reproduce via `make forecast-edge-ai` |
+| Forecasting accuracy on `edge_memory_util_pct` (RMSE / MAE / MAPE) | 3.21 / 2.65 / 4.44% | measured ([reports/forecast_examples/edge_ai/memory_util/metrics.json](reports/forecast_examples/edge_ai/memory_util/metrics.json)) — same setup as the GPU row |
 | End-to-end forecast wall-clock (s) | `<TO MEASURE>` | Plan: time `make run-sample` end-to-end on the dev machine and write to `reports/forecast_examples/latest/timing.json`. |
 
 The measured numbers are from deterministic sample telemetry — they prove the pipeline is reproducible end-to-end, not that the model has been validated against live operator data. See [Credibility Boundary](#credibility-boundary).
