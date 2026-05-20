@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/obiedeh/ai-ran-kpi-forecasting/blob/main/schemas/a1_policy_v1.json",
+  "title": "A1 Traffic Steering Policy Candidate (v1)",
+  "description": "A1 policy candidate emitted by the KPI forecasting rApp when forecast KPI values cross configured thresholds within the validity window. Shape follows the O-RAN Alliance A1 Policy Type conventions (A1-P interface) — the policy is JSON-typed, scoped to a cell, and references the forecast that produced it so the Near-RT RIC can audit the basis. The Near-RT RIC enforces the policy; this rApp only produces candidates.",
+  "type": "object",
+  "required": ["policy_id", "policy_type", "scope", "validity_window", "forecast_basis", "recommendation"],
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "description": "Globally unique policy identifier. Convention: <policy-type-shortcode>-<cell-id>-<ISO8601-validity-start>."
+    },
+    "policy_type": {
+      "type": "string",
+      "enum": ["traffic_steering"],
+      "description": "Policy type identifier. v1 only supports traffic_steering; future versions can add types (e.g. cell_sleep, capacity_provisioning)."
+    },
+    "policy_type_version": {
+      "type": "string",
+      "default": "v1",
+      "description": "Schema version of this policy type."
+    },
+    "scope": {
+      "type": "object",
+      "required": ["cell_id"],
+      "properties": {
+        "cell_id": {
+          "type": "string",
+          "description": "Cell the policy applies to.",
+          "pattern": "^[A-Za-z0-9_\\-]+$"
+        }
+      }
+    },
+    "validity_window": {
+      "type": "object",
+      "required": ["start", "duration_minutes"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 UTC timestamp when the policy becomes valid."
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Validity duration in minutes from `start`."
+        }
+      }
+    },
+    "forecast_basis": {
+      "type": "object",
+      "required": ["model_name", "target_kpi", "predicted_peak"],
+      "properties": {
+        "model_name": {
+          "type": "string",
+          "description": "Name of the model that produced the forecast (e.g. ridge_linear, gradient_boosting, mlp)."
+        },
+        "target_kpi": {
+          "type": "string",
+          "description": "KPI being forecast (e.g. prb_dl_util)."
+        },
+        "predicted_peak": {
+          "type": "number",
+          "description": "Maximum predicted value of the KPI within the validity window."
+        },
+        "predicted_peak_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp at which the predicted peak occurs."
+        },
+        "threshold_pct": {
+          "type": "number",
+          "description": "Threshold that the predicted peak crossed to trigger this policy candidate."
+        },
+        "model_metrics_ref": {
+          "type": "string",
+          "description": "Path to the metrics.json that documents the model's holdout error — provides the auditable basis for trusting this forecast."
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["load_balance_offload", "no_action"],
+          "description": "Recommended action. load_balance_offload = redirect a fraction of new connection attempts away from this cell; no_action = forecast did not cross thresholds (policy candidate emitted for audit only)."
+        },
+        "target_cells": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Neighbor cells suggested as offload targets. v1 leaves selection to the Near-RT RIC; future versions can constrain."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Human-readable rationale string for operator audit."
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

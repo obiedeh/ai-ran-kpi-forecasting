@@ -93,9 +93,17 @@ model-comparison:
 		--data data/ran_kpi_sample.csv \
 		--output-dir reports/model_comparison
 
+r1-dataflow-demo:
+	$(PYTHON) scripts/simulate_r1_dataflow.py \
+		--kpm-input data/ran_kpi_sample.csv \
+		--cell-id CELL_001 \
+		--kpi-col prb_dl_util \
+		--threshold-pct 80 \
+		--output-dir reports/r1_dataflow_demo
+
 # Full verify: lint + tests + sample forecast + model comparison + scenario packs + portal.
 # Validates that every committed report artifact regenerates from sources.
-verify: lint test run-sample model-comparison scenario-demo scenario-backhaul scenario-outage portal publish
+verify: lint test run-sample model-comparison r1-dataflow-demo scenario-demo scenario-backhaul scenario-outage portal publish
 	@echo
 	@echo "make verify complete. Inspect:"
 	@echo "  reports/forecast_examples/latest/metrics.json"

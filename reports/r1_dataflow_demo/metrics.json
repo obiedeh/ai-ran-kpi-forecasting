@@ -1,0 +1,8 @@
+{
+  "cell_id": "CELL_001",
+  "mae": 0.6954108156007459,
+  "mape": 0.8203620319175726,
+  "model_name": "ridge_linear",
+  "rmse": 0.8368114959180818,
+  "target_col": "prb_dl_util"
+}

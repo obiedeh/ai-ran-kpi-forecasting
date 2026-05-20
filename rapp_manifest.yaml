@@ -1,0 +1,101 @@
+# rApp manifest — AI-for-RAN KPI forecasting rApp
+#
+# Declares this rApp's identity, the R1 data subscriptions it consumes from
+# the Non-RT RIC, the A1 policy types it produces, and the ML artifacts it
+# trains.  Shaped after O-RAN Alliance WG2 Non-RT-RIC-ARCH conventions for
+# rApp manifests — the structure is real, the wire-protocol integration is
+# not exercised (see docs/AI_RAN_INTEGRATION.md for the explicit boundary).
+
+rApp:
+  name: kpi-forecasting-rapp
+  vendor: obiedeh
+  version: 0.3.0
+  description: |
+    AI-for-RAN KPI forecasting rApp. Consumes per-cell KPM measurements
+    over R1, forecasts cell-level KPIs hours ahead via a three-model
+    head-to-head comparison (Ridge / GradientBoosting / MLP), and emits
+    A1 policy candidates for traffic steering ahead of predicted
+    congestion / backhaul-saturation / outage events.
+
+  service_metadata:
+    deployment_target: non-rt-ric
+    timescale: minutes-to-hours
+    expected_invocation: scheduled (e.g. every 15 minutes) + on-demand
+
+  interfaces:
+    # R1 data subscriptions — the rApp's input plane. Maps to KPM Service
+    # Model measurements (3GPP TS 28.552 / O-RAN E2SM-KPM v02.00.05).
+    data_subscriptions:
+      - service: R1-Data
+        consumer_role: ml-consumer
+        kpm_service_model: ORAN.E2SM.KPM.v2
+        schema_ref: schemas/kpm_input_v1.json
+        reporting_period_ms: 60000
+        granularity: per-cell
+        measurements:
+          - PRB.Util.DL.PerCell
+          - PRB.Util.UL.PerCell
+          - Thrp.DL.PerCell.Mbps
+          - Thrp.UL.PerCell.Mbps
+          - RRC.ConnReq.Att.Sum
+          - DRB.RrcConnEstabAtt.Tot
+          - Latency.RTT.PerUE.ms
+          - SINR.DL.PerCell.dB
+        # The repo also forecasts edge-AI KPIs (GPU / memory utilization)
+        # on synthetic data — these are not standard KPM measurements but
+        # show the same forecasting pipeline pattern.
+        optional_extension_measurements:
+          - EdgeAI.GpuUtil.PerCell.Pct
+          - EdgeAI.MemoryUtil.PerCell.Pct
+
+    # A1 policy outputs — the rApp's output plane.
+    policy_outputs:
+      - service: A1-Policy
+        provider_role: policy-producer
+        schema_ref: schemas/a1_policy_v1.json
+        policy_types:
+          - type_id: traffic-steering-v1
+            description: |
+              When forecast PRB DL utilization on a cell exceeds the
+              configured threshold within the validity window, recommend
+              offloading workload from that cell to neighboring cells
+              with available headroom.  The Near-RT RIC enforces the
+              policy via E2 RIC Control messages — this rApp produces
+              the candidate, it does not enforce.
+
+  ml_artifacts:
+    - artifact_id: ridge-linear-baseline
+      framework: scikit-learn (custom RidgeForecastRegressor on NumPy)
+      type: time-series-regression
+      latest_metrics: reports/forecast_examples/latest/metrics.json
+      training_recipe: configs/sample_config.yaml
+    - artifact_id: gradient-boosting-baseline
+      framework: scikit-learn
+      type: time-series-regression
+      latest_metrics: reports/model_comparison/gradient_boosting/metrics.json
+    - artifact_id: mlp-baseline
+      framework: scikit-learn
+      type: time-series-regression
+      latest_metrics: reports/model_comparison/mlp/metrics.json
+
+  # Honest boundary — what's pattern, what's deployment.
+  boundary:
+    pattern_only: true
+    exercised:
+      - KPM input parsing per schemas/kpm_input_v1.json
+      - three-model forecasting pipeline with measured side-by-side metrics
+      - A1 policy candidate generation per schemas/a1_policy_v1.json
+      - end-to-end R1 → forecast → A1 simulation (scripts/simulate_r1_dataflow.py)
+      - deterministic reproduction via `make verify`
+    not_exercised:
+      - live R1 data plane (wire protocol — KPM Service Model over E2/O1)
+      - live A1 policy plane (wire protocol — A1-P/A1-EI)
+      - O-RAN SMO integration
+      - rApp lifecycle (Helm packaging, R1 service registration, dms_cli)
+      - integration with FlexRIC, OSC RIC, Nokia MantaRay, or any other
+        production Non-RT RIC
+    rationale: |
+      This rApp is the engineering pattern, not a deployable artifact.
+      Use it as the reference for "what a real Non-RT RIC KPI-forecasting
+      rApp looks like, end-to-end, with measured ML evidence." Wire-protocol
+      integration is documented in docs/AI_RAN_INTEGRATION.md.

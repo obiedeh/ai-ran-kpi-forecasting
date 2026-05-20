@@ -97,6 +97,25 @@ jobs:
           test -f reports/model_comparison/comparison_metrics.md
           test -f reports/model_comparison/comparison_overlay.svg
 
+      - name: Run R1 → forecast → A1 dataflow simulation
+        run: |
+          python scripts/simulate_r1_dataflow.py \
+            --kpm-input data/ran_kpi_sample.csv \
+            --cell-id CELL_001 \
+            --kpi-col prb_dl_util \
+            --threshold-pct 80 \
+            --output-dir reports/r1_dataflow_demo
+
+      - name: Verify rApp pattern artifacts
+        run: |
+          test -f rapp_manifest.yaml
+          test -f schemas/kpm_input_v1.json
+          test -f schemas/a1_policy_v1.json
+          test -f docs/AI_RAN_INTEGRATION.md
+          test -f reports/r1_dataflow_demo/a1_policy_candidate.json
+          test -f reports/r1_dataflow_demo/forecast.csv
+          test -f reports/r1_dataflow_demo/dataflow_summary.md
+
       - name: Verify scenario artifacts
         run: |
           test -f reports/scenarios/latest/congestion/dashboard/dashboard.html
