@@ -23,7 +23,10 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+# Add both src and the project root so tests can import from both
+# the package (src/ai_ran_kpi_forecasting/...) AND from the top-level
+# scripts/ package (scripts/run_model_comparison.py).
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 
 [tool.mypy]
