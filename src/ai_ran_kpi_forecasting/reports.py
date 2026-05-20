@@ -84,6 +84,34 @@ def write_portal_page(output_path: str | Path) -> Path:
 
     cards = [
         {
+            "title": "Tech brief (1 page)",
+            "desc": "One-page hiring-manager / tech-lead read: what this rApp pattern is, evidence summary, three-model comparison, credibility boundary, try-it-in-5-minutes.",
+            "links": [
+                ("TECH_BRIEF.md", rel(root.parent / "TECH_BRIEF.md")),
+                ("README.md", rel(root.parent / "README.md")),
+            ],
+        },
+        {
+            "title": "rApp pattern artifacts",
+            "desc": "Code-backed AI-for-RAN claims: rApp manifest, KPM input + A1 policy JSON Schemas, end-to-end R1 → forecast → A1 dataflow demo, integration recipe.",
+            "links": [
+                ("rapp_manifest.yaml", rel(root.parent / "rapp_manifest.yaml")),
+                ("KPM input schema", rel(root.parent / "schemas" / "kpm_input_v1.json")),
+                ("A1 policy schema", rel(root.parent / "schemas" / "a1_policy_v1.json")),
+                ("R1 dataflow demo", rel(root / "r1_dataflow_demo" / "dataflow_summary.md")),
+                ("AI-RAN integration", rel(root.parent / "docs" / "AI_RAN_INTEGRATION.md")),
+            ],
+        },
+        {
+            "title": "Three-model comparison",
+            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI still TO MEASURE.",
+            "links": [
+                ("Comparison table (MD)", rel(root / "model_comparison" / "comparison_metrics.md")),
+                ("Comparison table (CSV)", rel(root / "model_comparison" / "comparison_metrics.csv")),
+                ("Comparison overlay SVG", rel(root / "model_comparison" / "comparison_overlay.svg")),
+            ],
+        },
+        {
             "title": "Forecast Evidence Pack",
             "desc": "Baseline KPI forecast, metrics, impact plot, and feature importance for the sample RAN telemetry.",
             "links": [
@@ -198,8 +226,7 @@ def write_portal_page(output_path: str | Path) -> Path:
   <div class="wrap">
     <h1>AI-RAN KPI Forecasting Portal</h1>
     <div class="sub">
-      Evidence-oriented telecom telemetry, baseline forecasting, and pre/post scenario dashboards for AI-RAN observability.
-      The layout is intentionally compact and publishable: one sample forecast pack, one congestion scenario, and one backhaul scenario.
+      Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
     </div>
     <div class="grid">
       {html_cards}
