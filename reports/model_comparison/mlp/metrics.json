@@ -1,0 +1,8 @@
+{
+  "cell_id": "CELL_001",
+  "mae": 19.639909916703303,
+  "mape": 26.9613433968785,
+  "model_name": "mlp",
+  "rmse": 22.59257620531283,
+  "target_col": "prb_dl_util"
+}

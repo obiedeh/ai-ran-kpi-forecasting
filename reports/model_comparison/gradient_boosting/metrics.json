@@ -1,0 +1,8 @@
+{
+  "cell_id": "CELL_001",
+  "mae": 2.628040274264393,
+  "mape": 3.1641320443502963,
+  "model_name": "gradient_boosting",
+  "rmse": 2.875489035353364,
+  "target_col": "prb_dl_util"
+}
