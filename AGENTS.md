@@ -1,6 +1,10 @@
 # AGENTS.md
 
-Repository-level operating instructions for Codex.
+**AI-RAN KPI Forecasting — Non-RT RIC rApp pattern.** Operating instructions for AI coding agents working in this repository.
+
+This is **AI-for-RAN at the operational layer** — the Non-RT RIC rApp pattern for KPI forecasting on RAN telemetry. Companion to [`wireless-link-intelligence-system`](https://github.com/obiedeh/wireless-link-intelligence-system), which targets AI-for-RAN at the PHY layer. Together they cover both tiers of AI-for-RAN.
+
+**This repo is the rApp *pattern*, not a deployed rApp.** Every claim must be backed by a committed artifact: schemas, manifest, code, measured reports. See `docs/AI_RAN_INTEGRATION.md` for the explicit "pattern not deployment" boundary.
 
 For shared engineering standards and skill definitions, read:
 

@@ -1,6 +1,6 @@
-# Portfolio Deliverables
+# Portfolio Deliverables — AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
 
-This file is the reviewer-facing evidence map for the repository. It separates runnable proof from future roadmap items so the project can be evaluated quickly.
+Reviewer-facing evidence map. This repo implements the **AI-for-RAN at the operational layer** rApp pattern — schema-typed KPM input, multi-model forecasting, A1-policy output, scenario evidence packs. Companion to the L1 PHY repo [`wireless-link-intelligence-system`](https://github.com/obiedeh/wireless-link-intelligence-system). Pattern, not deployment — see [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the boundary.
 
 ## One-Command Checks
 
@@ -70,13 +70,13 @@ These numbers are from deterministic sample telemetry and are intended as reprod
 
 ## Credibility Boundary
 
-This project demonstrates offline AI-RAN-style forecasting and operational evidence generation. It does not claim:
+This repo demonstrates the **Non-RT RIC rApp pattern** for AI-for-RAN KPI forecasting on synthetic + small-public telemetry. It does not claim:
 
 - live RAN integration
-- autonomous network control
-- production closed-loop optimization
-- real operator feedback integration
-- private network topology access
+- live Non-RT RIC integration (FlexRIC / OSC RIC / Nokia MantaRay / Ericsson IAP / Mavenir)
+- E2 / A1 / O1 / R1 protocol implementations on the wire (the contracts are documented; the wire protocol is not exercised)
+- autonomous network control or closed-loop policy enforcement
+- production-grade rApp lifecycle (Helm packaging, R1 service registration over real ORAN endpoints)
 
-Those boundaries are intentional and keep the repository credible as a public portfolio artifact.
+The deliverable is the **pattern + schemas + measured forecasting evidence** — enough that a senior AI-RAN engineer reading the repo can confirm this person understands how AI-for-RAN deploys, not enough to drop into a live RIC. See [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the integration recipe with FlexRIC / OSC RIC.
 
