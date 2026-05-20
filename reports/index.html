@@ -48,39 +48,53 @@
   <div class="wrap">
     <h1>AI-RAN KPI Forecasting Portal</h1>
     <div class="sub">
-      Evidence-oriented telecom telemetry, baseline forecasting, and pre/post scenario dashboards for AI-RAN observability.
-      The layout is intentionally compact and publishable: one sample forecast pack, one congestion scenario, and one backhaul scenario.
+      Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
     </div>
     <div class="grid">
       <section class="card">
+          <div class="eyebrow">Tech brief (1 page)</div>
+          <p>One-page hiring-manager / tech-lead read: what this rApp pattern is, evidence summary, three-model comparison, credibility boundary, try-it-in-5-minutes.</p>
+          <ul><li><a href="TECH_BRIEF.md">TECH_BRIEF.md</a></li><li><a href="README.md">README.md</a></li></ul>
+        </section>
+<section class="card">
+          <div class="eyebrow">rApp pattern artifacts</div>
+          <p>Code-backed AI-for-RAN claims: rApp manifest, KPM input + A1 policy JSON Schemas, end-to-end R1 → forecast → A1 dataflow demo, integration recipe.</p>
+          <ul><li><a href="rapp_manifest.yaml">rapp_manifest.yaml</a></li><li><a href="schemas\kpm_input_v1.json">KPM input schema</a></li><li><a href="schemas\a1_policy_v1.json">A1 policy schema</a></li><li><a href="r1_dataflow_demo\dataflow_summary.md">R1 dataflow demo</a></li><li><a href="docs\AI_RAN_INTEGRATION.md">AI-RAN integration</a></li></ul>
+        </section>
+<section class="card">
+          <div class="eyebrow">Three-model comparison</div>
+          <p>Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI still TO MEASURE.</p>
+          <ul><li><a href="model_comparison\comparison_metrics.md">Comparison table (MD)</a></li><li><a href="model_comparison\comparison_metrics.csv">Comparison table (CSV)</a></li><li><a href="model_comparison\comparison_overlay.svg">Comparison overlay SVG</a></li></ul>
+        </section>
+<section class="card">
           <div class="eyebrow">Forecast Evidence Pack</div>
           <p>Baseline KPI forecast, metrics, impact plot, and feature importance for the sample RAN telemetry.</p>
-          <ul><li><a href="forecast_examples/latest/metrics_summary.md">Metrics summary</a></li><li><a href="forecast_examples/latest/prb_dl_util_forecast.svg">Forecast SVG</a></li><li><a href="forecast_examples/latest/prb_dl_util_impact.svg">Impact SVG</a></li></ul>
+          <ul><li><a href="forecast_examples\latest\metrics_summary.md">Metrics summary</a></li><li><a href="forecast_examples\latest\prb_dl_util_forecast.svg">Forecast SVG</a></li><li><a href="forecast_examples\latest\prb_dl_util_impact.svg">Impact SVG</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Congestion Scenario</div>
           <p>Pre-shock versus shock-window evidence showing PRB, throughput, and latency stress on one cell.</p>
-          <ul><li><a href="scenarios/latest/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios\latest\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Backhaul Scenario</div>
           <p>Backhaul saturation example with throughput collapse and latency growth under constrained transport.</p>
-          <ul><li><a href="scenarios/latest/backhaul/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/backhaul/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios\latest\backhaul\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\backhaul\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Cell Outage Scenario</div>
           <p>Cell-level outage and recovery example with throughput collapse, low PRB, and packet loss spikes.</p>
-          <ul><li><a href="scenarios/latest/outage/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/outage/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios\latest\outage\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\outage\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Data Contracts</div>
           <p>Telemetry assumptions and synthetic data contract for reproducible runs.</p>
-          <ul><li><a href="DATA_CONTRACT.md">Data contract</a></li><li><a href="scenarios/README.md">Scenario README</a></li><li><a href="forecast_examples/README.md">Forecast README</a></li></ul>
+          <ul><li><a href="DATA_CONTRACT.md">Data contract</a></li><li><a href="scenarios\README.md">Scenario README</a></li><li><a href="forecast_examples\README.md">Forecast README</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Release Bundle</div>
           <p>Static landing page for GitHub Pages, release uploads, or other publishable report hosting.</p>
-          <ul><li><a href="publish/latest/index.html">Publish page</a></li><li><a href="publish/latest/manifest.json">Manifest</a></li></ul>
+          <ul><li><a href="publish\latest\index.html">Publish page</a></li><li><a href="publish\latest\manifest.json">Manifest</a></li></ul>
         </section>
     </div>
     <div class="footer">
