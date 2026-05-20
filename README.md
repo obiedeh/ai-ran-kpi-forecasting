@@ -4,7 +4,7 @@
 
 The deliverable is the engineering pattern — *not* a deployed rApp on a live RIC. Every claim is backed by a committed artifact: schemas, manifest, code, reports.
 
-> **▶ Open the evidence portal:** [`reports/index.html`](reports/index.html) &nbsp;·&nbsp; [Tech brief](TECH_BRIEF.md) &nbsp;·&nbsp; [Source](https://github.com/obiedeh/ai-ran-kpi-forecasting)
+> **▶ [Open the live evidence portal](https://obiedeh.github.io/ai-ran-kpi-forecasting/reports/index.html)** &nbsp;·&nbsp; [Tech brief](TECH_BRIEF.md) &nbsp;·&nbsp; [AI-RAN integration](docs/AI_RAN_INTEGRATION.md) &nbsp;·&nbsp; [Source](https://github.com/obiedeh/ai-ran-kpi-forecasting)
 
 ---
 
