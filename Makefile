@@ -2,7 +2,7 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish
+.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish model-comparison verify
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -87,3 +87,17 @@ portal:
 publish:
 	$(PYTHON) ai-ran-kpi-forecasting.py publish \
 		--output-dir reports/publish/latest
+
+model-comparison:
+	$(PYTHON) scripts/run_model_comparison.py \
+		--data data/ran_kpi_sample.csv \
+		--output-dir reports/model_comparison
+
+# Full verify: lint + tests + sample forecast + model comparison + scenario packs + portal.
+# Validates that every committed report artifact regenerates from sources.
+verify: lint test run-sample model-comparison scenario-demo scenario-backhaul scenario-outage portal publish
+	@echo
+	@echo "make verify complete. Inspect:"
+	@echo "  reports/forecast_examples/latest/metrics.json"
+	@echo "  reports/model_comparison/comparison_metrics.md"
+	@echo "  reports/index.html"

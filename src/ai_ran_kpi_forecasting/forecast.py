@@ -15,7 +15,7 @@ from ai_ran_kpi_forecasting.features import (
     engineer_time_features,
 )
 from ai_ran_kpi_forecasting.models import (
-    RidgeForecastRegressor,
+    DEFAULT_MODEL,
     feature_importance_frame,
     train_and_evaluate,
 )
@@ -23,7 +23,7 @@ from ai_ran_kpi_forecasting.models import (
 
 @dataclass
 class ForecastRunResult:
-    model: RidgeForecastRegressor
+    model: Any  # one of: RidgeForecastRegressor, _GradientBoostingWrapper, _MLPWrapper
     metrics: dict[str, float]
     forecast: pd.DataFrame
     holdout: pd.DataFrame
@@ -65,7 +65,7 @@ def temporal_train_test_split(
 
 
 def forecast_autoregressive(
-    model: RidgeForecastRegressor,
+    model: Any,
     df_full: pd.DataFrame,
     target_col: str,
     timestamp_col: str,
@@ -120,6 +120,7 @@ def run_forecast_pipeline(
     horizon: int = 24,
     lags: str | list[int] = "1,2,3,6,12",
     random_state: int = 42,
+    model_name: str = DEFAULT_MODEL,
 ) -> ForecastRunResult:
     """Load telemetry, train a forecaster, and return all report-ready outputs."""
     lag_values = parse_lags(lags)
@@ -146,6 +147,7 @@ def run_forecast_pipeline(
         y_train,
         y_test,
         random_state=random_state,
+        model_name=model_name,
     )
     holdout.insert(0, "timestamp", df_fe.loc[X_test.index, timestamp_col].to_numpy())
     forecast = forecast_autoregressive(

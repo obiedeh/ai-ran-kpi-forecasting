@@ -82,6 +82,21 @@ jobs:
           python ai-ran-kpi-forecasting.py publish \
             --output-dir reports/publish/latest
 
+      - name: Run three-model comparison (Ridge / GBR / MLP)
+        run: |
+          python scripts/run_model_comparison.py \
+            --data data/ran_kpi_sample.csv \
+            --output-dir reports/model_comparison
+
+      - name: Verify model-comparison artifacts
+        run: |
+          test -f reports/model_comparison/ridge_linear/metrics.json
+          test -f reports/model_comparison/gradient_boosting/metrics.json
+          test -f reports/model_comparison/mlp/metrics.json
+          test -f reports/model_comparison/comparison_metrics.csv
+          test -f reports/model_comparison/comparison_metrics.md
+          test -f reports/model_comparison/comparison_overlay.svg
+
       - name: Verify scenario artifacts
         run: |
           test -f reports/scenarios/latest/congestion/dashboard/dashboard.html
