@@ -1,0 +1,25 @@
+{
+  "forecast_basis": {
+    "model_metrics_ref": "reports/forecast_examples/latest/metrics.json",
+    "model_name": "ridge_linear",
+    "predicted_peak": 56.306060143747175,
+    "predicted_peak_timestamp": "2024-01-03T04:00:00Z",
+    "target_kpi": "prb_dl_util",
+    "threshold_pct": 80.0
+  },
+  "policy_id": "ts-CELL_001-20240103T000000Z",
+  "policy_type": "traffic_steering",
+  "policy_type_version": "v1",
+  "recommendation": {
+    "action": "no_action",
+    "rationale": "Forecast prb_dl_util on CELL_001 peaks at 56.31 (model=ridge_linear, threshold=80.0). No policy action required.",
+    "target_cells": []
+  },
+  "scope": {
+    "cell_id": "CELL_001"
+  },
+  "validity_window": {
+    "duration_minutes": 1440,
+    "start": "2024-01-03T00:00:00Z"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/obiedeh/ai-ran-kpi-forecasting/blob/main/schemas/kpm_input_v1.json",
+  "title": "KPM Input Records (v1)",
+  "description": "Tabular KPM measurement records as consumed by the KPI forecasting rApp over R1-Data. Mirrors DATA_CONTRACT.md. The wire format for KPM is ASN.1 over E2/O1 in real deployments; this JSON shape is the in-process representation after the R1 data-services layer has decoded it.",
+  "type": "object",
+  "required": ["records"],
+  "properties": {
+    "records": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/KpmRecord" },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "KpmRecord": {
+      "type": "object",
+      "description": "One KPM measurement record for one cell at one timestamp.",
+      "required": ["timestamp", "cell_id"],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 UTC timestamp aligned to the reporting period."
+        },
+        "cell_id": {
+          "type": "string",
+          "description": "Identifier of the reporting cell (e.g. NR Cell Global Identifier or operator-internal cell ID).",
+          "pattern": "^[A-Za-z0-9_\\-]+$"
+        },
+        "site_id": {
+          "type": "string",
+          "description": "Identifier of the site hosting the cell."
+        },
+        "sector_id": {
+          "type": "string",
+          "description": "Identifier of the sector within the site."
+        },
+        "technology": {
+          "type": "string",
+          "enum": ["5G_NR", "LTE"],
+          "description": "Radio access technology of the cell."
+        },
+        "prb_dl_util": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Downlink Physical Resource Block utilization (%). Maps to PRB.Util.DL.PerCell in the KPM service model."
+        },
+        "prb_ul_util": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Uplink PRB utilization (%). Maps to PRB.Util.UL.PerCell."
+        },
+        "throughput_dl_mbps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean downlink throughput (Mbps). Maps to Thrp.DL.PerCell.Mbps."
+        },
+        "throughput_ul_mbps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean uplink throughput (Mbps). Maps to Thrp.UL.PerCell.Mbps."
+        },
+        "rrc_users": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active RRC-connected users in the reporting period."
+        },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean round-trip latency (ms). Maps to Latency.RTT.PerUE.ms averaged over cell."
+        },
+        "packet_loss_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Packet loss rate (%)."
+        },
+        "sinr_db": {
+          "type": "number",
+          "description": "Downlink SINR averaged over UEs in cell (dB). Maps to SINR.DL.PerCell.dB."
+        },
+        "edge_gpu_util_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Optional extension: GPU utilization at the cell's co-located edge inference site (%). Not a standard KPM measurement; this repo's synthetic-data forecasting demo exercises the same pipeline on this signal."
+        },
+        "edge_memory_util_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Optional extension: edge inference site memory utilization (%)."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
