@@ -14,6 +14,8 @@
       --blue: #2563eb;
       --green: #0f766e;
       --gold: #a16207;
+      --orange: #c2410c;
+      --red: #b91c1c;
     }
     body {
       margin: 0;
@@ -26,7 +28,8 @@
     .wrap { max-width: 1400px; margin: 0 auto; padding: 28px; }
     h1 { margin: 0 0 8px; font-size: 34px; }
     .sub { color: var(--muted); max-width: 900px; line-height: 1.5; }
-    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+    .section-title { margin: 24px 0 10px; font-size: 20px; }
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
     .summary-card {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -35,7 +38,7 @@
     }
     .summary-card strong { display: block; margin-top: 10px; font-size: 22px; }
     .summary-card small { display: block; margin-top: 6px; color: var(--muted); line-height: 1.4; }
-    .status-good, .status-warn {
+    .status-good, .status-warn, .status-risk, .status-neutral {
       display: inline-block;
       padding: 3px 8px;
       border-radius: 999px;
@@ -46,7 +49,10 @@
     }
     .status-good { background: #e2f1ec; color: var(--green); }
     .status-warn { background: #fdf3df; color: var(--gold); }
+    .status-risk { background: #fee2e2; color: var(--red); }
+    .status-neutral { background: #edf1f6; color: #475569; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
+    .ops-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
     .card {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -56,13 +62,28 @@
     }
     .eyebrow { color: var(--blue); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
     .card p { color: var(--muted); line-height: 1.5; }
+    .wide-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-top: 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .wide-card h2 { margin: 8px 0; font-size: 20px; }
+    .wide-card p { color: var(--muted); line-height: 1.55; }
+    .section-copy { max-width: 980px; }
+    .boundary { color: #475569; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
     ul { padding-left: 18px; margin: 0; }
     li { margin: 8px 0; }
     a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .footer { margin-top: 22px; color: var(--muted); font-size: 13px; }
     @media (max-width: 880px) {
-      .grid, .summary { grid-template-columns: 1fr; }
+      .grid, .summary, .ops-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -72,28 +93,102 @@
     <div class="sub">
       Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
     </div>
+    <h2 class="section-title">Network operations summary</h2>
     <div class="summary">
       <article class="summary-card">
-          <span class="status-good">Forecast baseline</span>
-          <strong>0.84 RMSE / 0.70 MAE</strong>
-          <small>Ridge baseline on deterministic sample telemetry</small>
+          <span class="status-neutral">Forecast horizon</span>
+          <strong>24 steps</strong>
+          <small>Autoregressive PRB DL utilization forecast</small>
         </article>
 <article class="summary-card">
-          <span class="status-good">Model comparison</span>
+          <span class="status-good">Most congested KPI</span>
+          <strong>prb_dl_util peak 56.31</strong>
+          <small>Existing sample forecast output</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Best model</span>
           <strong>ridge_linear (0.84 RMSE)</strong>
           <small>Same KPI, same forward temporal split</small>
         </article>
 <article class="summary-card">
-          <span class="status-good">Operational scenarios</span>
-          <strong>3 packs</strong>
-          <small>Congestion, backhaul saturation, and cell outage evidence</small>
+          <span class="status-warn">Worst scenario</span>
+          <strong>backhaul (4.70 RMSE)</strong>
+          <small>Highest RMSE across generated scenario packs</small>
         </article>
 <article class="summary-card">
-          <span class="status-warn">rApp boundary</span>
-          <strong>pattern only</strong>
-          <small>Schemas and A1 candidate output; no live RIC integration claim</small>
+          <span class="status-good">Congestion risk</span>
+          <strong>Stable</strong>
+          <small>Project-defined operational threshold tier</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">A1 policy status</span>
+          <strong>no_action</strong>
+          <small>Advisory policy candidate, not closed-loop control</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Scenario count</span>
+          <strong>3 measured</strong>
+          <small>Congestion, backhaul, and outage packs</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Validation status</span>
+          <strong>CI green</strong>
+          <small>Lint, mypy, tests, report generation, and artifact checks</small>
         </article>
     </div>
+    
+    <section class="wide-card">
+      <div class="eyebrow">What operators should do</div>
+      <div class="ops-grid">
+        <div>
+          <h2>Decision-support readout</h2>
+          <p>The current sample forecast peaks at <strong>56.31</strong> against an advisory policy threshold of <strong>80.0</strong>, so the generated A1 candidate recommends <strong>no_action</strong>. Operators would keep monitoring PRB utilization and scenario sensitivity, especially because the scenario packs show higher forecast error during stress windows.</p>
+        </div>
+        <div>
+          <h2>Policy interpretation</h2>
+          <p>Forecast prb_dl_util on CELL_001 peaks at 56.31 (model=ridge_linear, threshold=80.0). No policy action required.</p>
+          <p class="boundary">This is a policy recommendation artifact only. It does not execute A1 transport, control a live RAN, or apply autonomous traffic steering.</p>
+        </div>
+      </div>
+    </section>
+    
+    
+    <section class="wide-card">
+      <div class="eyebrow">Congestion risk tiers</div>
+      <p class="section-copy">Project-defined operational thresholds over forecast PRB DL utilization. These thresholds turn existing forecast values into readable risk tiers; they are not operator SLA values.</p>
+      <table>
+        <thead><tr><th>Tier</th><th>Forecast PRB DL util</th><th>Operational interpretation</th></tr></thead>
+        <tbody><tr><td><span class="status-good">Stable</span></td><td>< 60</td><td>Routine monitoring; no action implied by this project threshold.</td></tr>
+<tr><td><span class="status-warn">Elevated</span></td><td>60-74.99</td><td>Watch capacity pressure and compare forecast drift across the next horizon.</td></tr>
+<tr><td><span class="status-risk">Congested</span></td><td>75-84.99</td><td>Prepare traffic-steering or capacity investigation as an advisory candidate.</td></tr>
+<tr><td><span class="status-risk">Critical</span></td><td>>= 85</td><td>Escalate planning review; this is still decision support, not closed-loop control.</td></tr></tbody>
+      </table>
+    </section>
+    
+    
+    <section class="wide-card">
+      <div class="eyebrow">Model reliability</div>
+      <p class="section-copy">Ridge, GradientBoosting, and MLP are compared on the same sample KPI and forward temporal split. The simpler Ridge baseline is currently the most trustworthy result; the MLP underfits badly on this tiny sample and remains visible as a weak result.</p>
+      <table>
+        <thead><tr><th>Model</th><th>RMSE</th><th>MAE</th><th>MAPE</th><th>Readout</th></tr></thead>
+        <tbody><tr><td>ridge_linear</td><td>0.84</td><td>0.70</td><td>0.82%</td><td>best current baseline</td></tr>
+<tr><td>gradient_boosting</td><td>2.88</td><td>2.63</td><td>3.16%</td><td>weaker on this small sample</td></tr>
+<tr><td>mlp</td><td>22.59</td><td>19.64</td><td>26.96%</td><td>weaker on this small sample</td></tr></tbody>
+      </table>
+    </section>
+    
+    
+    <section class="wide-card">
+      <div class="eyebrow">Scenario comparison</div>
+      <p class="section-copy">Scenario packs are deterministic stress overlays on synthetic telemetry. Higher error under a scenario is a signal to monitor transition windows and policy timing, not proof of live-network behavior.</p>
+      <table>
+        <thead><tr><th>Scenario</th><th>RMSE</th><th>MAE</th><th>Status</th></tr></thead>
+        <tbody><tr><td>congestion</td><td>4.11</td><td>3.30</td><td>measured</td></tr>
+<tr><td>backhaul</td><td>4.70</td><td>3.91</td><td>highest error scenario</td></tr>
+<tr><td>outage</td><td>4.59</td><td>3.80</td><td>measured</td></tr></tbody>
+      </table>
+    </section>
+    
     <div class="grid">
       <section class="card">
           <div class="eyebrow">Tech brief (1 page)</div>
@@ -141,6 +236,12 @@
           <ul><li><a href="publish/latest/index.html">Publish page</a></li><li><a href="publish/latest/manifest.json">Manifest</a></li></ul>
         </section>
     </div>
+    
+    <section class="wide-card">
+      <div class="eyebrow">Engineering boundaries</div>
+      <p class="section-copy">Synthetic/simulated KPI environment; not connected to live RAN; Non-RT operational simulation only; no real xApp or deployed rApp; no production O-RAN integration; forecasting is not autonomous control; policy outputs are advisory only.</p>
+    </section>
+    
     <div class="footer">
       Generated from the repository's report artifacts and synthetic telecom telemetry utilities.
     </div>

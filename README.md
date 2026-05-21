@@ -42,6 +42,20 @@ Full numbers + methodology in [Measured metrics](#measured-metrics) below. Limit
 
 ---
 
+## Operational Intelligence Dashboard
+
+The live evidence portal is organized as a Non-RT RIC operational forecasting dashboard, not a notebook export:
+
+- KPI forecasting summary: horizon, peak PRB forecast, best measured model, scenario count, and validation status.
+- Congestion interpretation: project-defined Stable / Elevated / Congested / Critical risk tiers over existing forecast outputs.
+- Policy recommendation layer: typed KPM input to forecast to A1 policy candidate, framed as advisory decision support only.
+- Model comparison: Ridge / GradientBoosting / MLP metrics shown side-by-side, including weak MLP performance.
+- Scenario evidence: congestion, backhaul saturation, and cell outage dashboards generated from existing synthetic telemetry artifacts.
+- Engineering boundaries: synthetic KPI environment, no live RAN connection, no deployed rApp/xApp, no autonomous control.
+- Reproducible workflow: `make verify` regenerates reports, scenario dashboards, portal, publish bundle, model comparison, and R1-to-A1 demo.
+
+---
+
 ## Engineering practices that matter here
 
 The concrete decisions that separate a clean Non-RT RIC rApp pattern from a forecasting tutorial:
