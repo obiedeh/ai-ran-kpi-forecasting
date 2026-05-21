@@ -56,6 +56,20 @@ The live evidence portal is organized as a Non-RT RIC operational forecasting da
 
 ---
 
+## Architecture
+
+The architecture is documented in [docs/architecture.md](docs/architecture.md), with Mermaid diagrams under [docs/diagrams/](docs/diagrams/).
+
+```mermaid
+flowchart LR
+    A[RAN KPI CSV / synthetic telemetry] --> B[Schema and feature pipeline]
+    B --> C[Forecasting models and scenario runners]
+    C --> D[A1 policy candidate and evidence artifacts]
+    D --> E[Portal, dashboards, and operator review]
+```
+
+---
+
 ## Engineering practices that matter here
 
 The concrete decisions that separate a clean Non-RT RIC rApp pattern from a forecasting tutorial:
@@ -160,6 +174,22 @@ make publish
 ```
 
 Open `reports/index.html` for the reviewer-facing evidence portal.
+
+## Run This Demo
+
+```bash
+make run-sample
+make scenario-demo
+make model-comparison
+make portal
+make publish
+```
+
+Then open:
+
+- [Live evidence portal](https://obiedeh.github.io/ai-ran-kpi-forecasting/reports/index.html)
+- [Published local portal](reports/publish/latest/index.html)
+- [Scenario dashboards](reports/scenarios/latest/)
 
 ### Without make (Windows or direct Python)
 
