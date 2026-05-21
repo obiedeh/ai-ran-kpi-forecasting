@@ -147,15 +147,16 @@ def train_and_evaluate(
     X_test: pd.DataFrame,
     y_train: pd.Series,
     y_test: pd.Series,
-    random_state: int = 42,
+    random_state: int = 42,  # noqa: ARG001 — kept for API compat; seeding is model-internal
     model_name: str = DEFAULT_MODEL,
 ) -> tuple[Any, dict[str, float], pd.DataFrame, str]:
     """Train a model and return metrics + hold-out predictions.
 
-    The ``random_state`` parameter is accepted for backwards compatibility;
-    deterministic seeding is built into the model wrappers themselves.
+    Note: ``random_state`` is **not forwarded** to the model. Deterministic
+    seeding is baked into each wrapper (``random_state=42`` hard-coded). The
+    parameter is retained so callers that pass it do not break, but it has no
+    effect. Do not rely on it to vary model outcomes.
     """
-    _ = random_state
     model, name = build_regressor(model_name)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)

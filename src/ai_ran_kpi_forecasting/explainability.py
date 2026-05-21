@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -34,6 +35,7 @@ def write_shap_summary(model, X_sample: pd.DataFrame, output_path: str | Path) -
         plt.tight_layout()
         plt.savefig(output_path, dpi=140)
         plt.close()
-    except Exception:
+    except Exception as exc:
+        warnings.warn(f"SHAP summary skipped: {exc}", stacklevel=2)
         return None
     return output_path

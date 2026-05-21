@@ -1,6 +1,10 @@
+import json
 from pathlib import Path
 
+import pandas as pd
+
 _SAMPLE_CSV = Path(__file__).parent.parent / "data" / "ran_kpi_sample.csv"
+_SCHEMA_DIR = Path(__file__).parent.parent / "schemas"
 
 from ai_ran_kpi_forecasting.data import (
     generate_backhaul_telemetry,
@@ -15,6 +19,7 @@ from ai_ran_kpi_forecasting.reports import (
     write_report_bundle,
     write_scenario_dashboard,
 )
+from ai_ran_kpi_forecasting.visualization import plot_feature_importance, plot_forecast
 
 
 def test_synthetic_telemetry_schema():
@@ -165,3 +170,64 @@ def test_outage_scenario_and_publish_page(tmp_path):
     assert Path(artifacts["dashboard_summary"]).exists()
     assert Path(publish_path).exists()
     assert Path(publish_path).with_name("manifest.json").exists()
+
+
+# --- Previously missing coverage ---
+
+
+def test_plot_forecast_writes_valid_svg(tmp_path):
+    """plot_forecast must produce a file whose content is a valid SVG root element."""
+    holdout = pd.DataFrame({
+        "timestamp": pd.date_range("2024-01-01", periods=4, freq="1h", tz="UTC"),
+        "actual": [40.0, 42.0, 41.0, 43.0],
+        "prediction": [39.5, 42.5, 41.5, 43.5],
+    })
+    forecast_df = pd.DataFrame({
+        "timestamp": pd.date_range("2024-01-01 04:00", periods=2, freq="1h", tz="UTC"),
+        "forecast_step": [1, 2],
+        "y_hat": [44.0, 45.0],
+    })
+    out = tmp_path / "fc.svg"
+    plot_forecast(holdout, forecast_df, out, "prb_dl_util")
+
+    assert out.exists()
+    content = out.read_text(encoding="utf-8")
+    assert content.startswith("<svg")
+    assert "prb_dl_util" in content
+
+
+def test_plot_feature_importance_writes_valid_svg(tmp_path):
+    """plot_feature_importance must write an SVG and not contain the old 'linear baseline' subtitle."""
+    fi = pd.DataFrame({"feature": ["lag_1", "hour_sin", "dow_cos"], "importance": [0.5, 0.3, 0.1]})
+    out = tmp_path / "fi.svg"
+    plot_feature_importance(fi, out)
+
+    assert out.exists()
+    content = out.read_text(encoding="utf-8")
+    assert content.startswith("<svg")
+    assert "linear baseline" not in content
+
+
+def test_synthetic_telemetry_technology_matches_kpm_schema():
+    """generate_synthetic_telemetry must emit 'technology' values in the KPM schema enum."""
+    schema = json.loads((_SCHEMA_DIR / "kpm_input_v1.json").read_text(encoding="utf-8"))
+    allowed = set(schema["definitions"]["KpmRecord"]["properties"]["technology"]["enum"])
+
+    df = generate_synthetic_telemetry(cells=2, periods=5, seed=0)
+
+    for tech in df["technology"].unique():
+        assert tech in allowed, f"technology {tech!r} not in schema enum {allowed}"
+
+
+def test_write_report_bundle_returns_feature_importance_svg_path(tmp_path):
+    """write_report_bundle must include 'feature_importance_svg' in the returned dict."""
+    result = run_forecast_pipeline(
+        data=str(_SAMPLE_CSV),
+        cell_id="CELL_001",
+        kpi_col="prb_dl_util",
+        horizon=4,
+    )
+    artifacts = write_report_bundle(result, tmp_path)
+
+    assert "feature_importance_svg" in artifacts
+    assert Path(artifacts["feature_importance_svg"]).exists()

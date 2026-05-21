@@ -59,6 +59,7 @@ def write_report_bundle(result: ForecastRunResult, output_dir: str | Path) -> di
         "forecast_plot": str(forecast_svg),
         "impact_plot": str(impact_svg),
         "feature_importance_csv": str(importance_csv),
+        "feature_importance_svg": str(importance_svg),
         "shap_summary": str(shap_path) if shap_path is not None else "",
     }
 
