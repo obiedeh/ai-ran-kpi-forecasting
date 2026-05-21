@@ -79,11 +79,9 @@ def forecast_autoregressive(
 
     last_row = df_full.iloc[-1:].copy()
     last_timestamp = last_row[timestamp_col].iloc[0]
-    inferred_freq = pd.infer_freq(df_full[timestamp_col])
-    if inferred_freq is None:
-        step: pd.Timedelta = df_full[timestamp_col].diff().dropna().median()
-    else:
-        step = pd.tseries.frequencies.to_offset(inferred_freq).nanos * pd.Timedelta(1, "ns")
+    # Always derive step from median diff — handles irregular and variable-period
+    # frequencies (monthly, quarterly, business-day) that have no fixed .nanos.
+    step: pd.Timedelta = pd.Timedelta(df_full[timestamp_col].diff().dropna().median())
 
     current_state = last_row.copy()
     forecasts: list[dict[str, Any]] = []

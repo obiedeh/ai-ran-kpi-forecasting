@@ -9,6 +9,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+# Single source of truth for scenario shock parameters.
+# Used both as function defaults below and by cli.py for dashboard statistics.
+SCENARIO_SHOCKS: dict[str, tuple[float, int]] = {
+    "congestion": (0.62, 18),
+    "backhaul": (0.58, 20),
+    "outage": (0.66, 14),
+}
+
 
 def load_ran_kpi_data(
     path: str | Path,
@@ -159,7 +167,7 @@ def generate_synthetic_telemetry(
                     "cell_id": cell_id,
                     "site_id": site_id,
                     "sector_id": sector_id,
-                    "technology": "5G NSA",
+                    "technology": "5G_NR",
                     "band": "n78",
                     "prb_dl_util": round(prb_dl_util, 3),
                     "prb_ul_util": round(prb_ul_util, 3),
@@ -184,8 +192,8 @@ def generate_congestion_telemetry(
     seed: int = 42,
     start: str = "2024-01-01",
     congested_cell: str = "CELL_001",
-    shock_start: float = 0.62,
-    shock_duration: int = 18,
+    shock_start: float = SCENARIO_SHOCKS["congestion"][0],
+    shock_duration: int = SCENARIO_SHOCKS["congestion"][1],
 ) -> pd.DataFrame:
     """Generate a synthetic congestion event for before/after reporting."""
     df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)
@@ -220,8 +228,8 @@ def generate_backhaul_telemetry(
     seed: int = 42,
     start: str = "2024-01-01",
     affected_cell: str = "CELL_001",
-    shock_start: float = 0.58,
-    shock_duration: int = 20,
+    shock_start: float = SCENARIO_SHOCKS["backhaul"][0],
+    shock_duration: int = SCENARIO_SHOCKS["backhaul"][1],
 ) -> pd.DataFrame:
     """Generate a synthetic backhaul saturation event for dashboard evidence."""
     df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)
@@ -254,8 +262,8 @@ def generate_outage_telemetry(
     seed: int = 42,
     start: str = "2024-01-01",
     affected_cell: str = "CELL_001",
-    shock_start: float = 0.66,
-    shock_duration: int = 14,
+    shock_start: float = SCENARIO_SHOCKS["outage"][0],
+    shock_duration: int = SCENARIO_SHOCKS["outage"][1],
 ) -> pd.DataFrame:
     """Generate a synthetic cell outage and recovery event for dashboard evidence."""
     df = generate_synthetic_telemetry(cells=cells, periods=periods, freq=freq, seed=seed, start=start)

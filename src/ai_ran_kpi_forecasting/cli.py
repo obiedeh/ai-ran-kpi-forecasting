@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from ai_ran_kpi_forecasting.data import (
+    SCENARIO_SHOCKS,
     generate_backhaul_telemetry,
     generate_congestion_telemetry,
     generate_outage_telemetry,
@@ -110,6 +111,7 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     baseline_data = generate_synthetic_telemetry(cells=args.cells, periods=args.periods, freq=args.freq, seed=args.seed)
+    shock_start, shock_duration = SCENARIO_SHOCKS[args.scenario_type]
     if args.scenario_type == "backhaul":
         scenario_data = generate_backhaul_telemetry(
             cells=args.cells,
@@ -119,8 +121,6 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
             affected_cell=args.cell_id,
         )
         scenario_name = "AI-RAN backhaul saturation scenario"
-        shock_start = 0.58
-        shock_duration = 20
     elif args.scenario_type == "outage":
         scenario_data = generate_outage_telemetry(
             cells=args.cells,
@@ -130,8 +130,6 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
             affected_cell=args.cell_id,
         )
         scenario_name = "AI-RAN cell outage recovery scenario"
-        shock_start = 0.66
-        shock_duration = 14
     else:
         scenario_data = generate_congestion_telemetry(
             cells=args.cells,
@@ -141,8 +139,6 @@ def run_scenario_demo(args: argparse.Namespace) -> int:
             congested_cell=args.cell_id,
         )
         scenario_name = "AI-RAN congestion scenario"
-        shock_start = 0.62
-        shock_duration = 18
 
     baseline_data_path = output_dir / "baseline_telemetry.csv"
     scenario_data_path = output_dir / f"{args.scenario_type}_telemetry.csv"
