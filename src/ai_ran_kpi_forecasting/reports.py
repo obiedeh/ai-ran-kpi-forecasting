@@ -93,6 +93,11 @@ def write_portal_page(output_path: str | Path) -> Path:
             return {}
         return cast(dict[str, object], json.loads(path.read_text(encoding="utf-8")))
 
+    def number_or_none(value: object) -> float | None:
+        if isinstance(value, int | float | str):
+            return float(value)
+        return None
+
     latest_metrics = read_json(forecast_root / "metrics.json")
     comparison_csv = root / "model_comparison" / "comparison_metrics.csv"
     if comparison_csv.exists():
@@ -102,10 +107,10 @@ def write_portal_page(output_path: str | Path) -> Path:
     else:
         best_model_text = "not measured"
 
-    latest_rmse = latest_metrics.get("rmse")
-    latest_mae = latest_metrics.get("mae")
+    latest_rmse = number_or_none(latest_metrics.get("rmse"))
+    latest_mae = number_or_none(latest_metrics.get("mae"))
     sample_metric_text = (
-        f"{float(latest_rmse):.2f} RMSE / {float(latest_mae):.2f} MAE"
+        f"{latest_rmse:.2f} RMSE / {latest_mae:.2f} MAE"
         if latest_rmse is not None and latest_mae is not None
         else "not measured"
     )
