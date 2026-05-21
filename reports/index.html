@@ -12,6 +12,8 @@
       --text: #0f172a;
       --muted: #64748b;
       --blue: #2563eb;
+      --green: #0f766e;
+      --gold: #a16207;
     }
     body {
       margin: 0;
@@ -24,6 +26,26 @@
     .wrap { max-width: 1400px; margin: 0 auto; padding: 28px; }
     h1 { margin: 0 0 8px; font-size: 34px; }
     .sub { color: var(--muted); max-width: 900px; line-height: 1.5; }
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .summary-card strong { display: block; margin-top: 10px; font-size: 22px; }
+    .summary-card small { display: block; margin-top: 6px; color: var(--muted); line-height: 1.4; }
+    .status-good, .status-warn {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-good { background: #e2f1ec; color: var(--green); }
+    .status-warn { background: #fdf3df; color: var(--gold); }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
     .card {
       background: var(--panel);
@@ -40,7 +62,7 @@
     a:hover { text-decoration: underline; }
     .footer { margin-top: 22px; color: var(--muted); font-size: 13px; }
     @media (max-width: 880px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid, .summary { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -50,51 +72,73 @@
     <div class="sub">
       Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
     </div>
+    <div class="summary">
+      <article class="summary-card">
+          <span class="status-good">Forecast baseline</span>
+          <strong>0.84 RMSE / 0.70 MAE</strong>
+          <small>Ridge baseline on deterministic sample telemetry</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Model comparison</span>
+          <strong>ridge_linear (0.84 RMSE)</strong>
+          <small>Same KPI, same forward temporal split</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Operational scenarios</span>
+          <strong>3 packs</strong>
+          <small>Congestion, backhaul saturation, and cell outage evidence</small>
+        </article>
+<article class="summary-card">
+          <span class="status-warn">rApp boundary</span>
+          <strong>pattern only</strong>
+          <small>Schemas and A1 candidate output; no live RIC integration claim</small>
+        </article>
+    </div>
     <div class="grid">
       <section class="card">
           <div class="eyebrow">Tech brief (1 page)</div>
           <p>One-page hiring-manager / tech-lead read: what this rApp pattern is, evidence summary, three-model comparison, credibility boundary, try-it-in-5-minutes.</p>
-          <ul><li><a href="TECH_BRIEF.md">TECH_BRIEF.md</a></li><li><a href="README.md">README.md</a></li></ul>
+          <ul><li><a href="../TECH_BRIEF.md">TECH_BRIEF.md</a></li><li><a href="../README.md">README.md</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">rApp pattern artifacts</div>
           <p>Code-backed AI-for-RAN claims: rApp manifest, KPM input + A1 policy JSON Schemas, end-to-end R1 → forecast → A1 dataflow demo, integration recipe.</p>
-          <ul><li><a href="rapp_manifest.yaml">rapp_manifest.yaml</a></li><li><a href="schemas\kpm_input_v1.json">KPM input schema</a></li><li><a href="schemas\a1_policy_v1.json">A1 policy schema</a></li><li><a href="r1_dataflow_demo\dataflow_summary.md">R1 dataflow demo</a></li><li><a href="docs\AI_RAN_INTEGRATION.md">AI-RAN integration</a></li></ul>
+          <ul><li><a href="../rapp_manifest.yaml">rapp_manifest.yaml</a></li><li><a href="../schemas/kpm_input_v1.json">KPM input schema</a></li><li><a href="../schemas/a1_policy_v1.json">A1 policy schema</a></li><li><a href="r1_dataflow_demo/dataflow_summary.md">R1 dataflow demo</a></li><li><a href="../docs/AI_RAN_INTEGRATION.md">AI-RAN integration</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Three-model comparison</div>
           <p>Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI still TO MEASURE.</p>
-          <ul><li><a href="model_comparison\comparison_metrics.md">Comparison table (MD)</a></li><li><a href="model_comparison\comparison_metrics.csv">Comparison table (CSV)</a></li><li><a href="model_comparison\comparison_overlay.svg">Comparison overlay SVG</a></li></ul>
+          <ul><li><a href="model_comparison/comparison_metrics.md">Comparison table (MD)</a></li><li><a href="model_comparison/comparison_metrics.csv">Comparison table (CSV)</a></li><li><a href="model_comparison/comparison_overlay.svg">Comparison overlay SVG</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Forecast Evidence Pack</div>
           <p>Baseline KPI forecast, metrics, impact plot, and feature importance for the sample RAN telemetry.</p>
-          <ul><li><a href="forecast_examples\latest\metrics_summary.md">Metrics summary</a></li><li><a href="forecast_examples\latest\prb_dl_util_forecast.svg">Forecast SVG</a></li><li><a href="forecast_examples\latest\prb_dl_util_impact.svg">Impact SVG</a></li></ul>
+          <ul><li><a href="forecast_examples/latest/metrics_summary.md">Metrics summary</a></li><li><a href="forecast_examples/latest/prb_dl_util_forecast.svg">Forecast SVG</a></li><li><a href="forecast_examples/latest/prb_dl_util_impact.svg">Impact SVG</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Congestion Scenario</div>
           <p>Pre-shock versus shock-window evidence showing PRB, throughput, and latency stress on one cell.</p>
-          <ul><li><a href="scenarios\latest\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios/latest/congestion/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/congestion/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Backhaul Scenario</div>
           <p>Backhaul saturation example with throughput collapse and latency growth under constrained transport.</p>
-          <ul><li><a href="scenarios\latest\backhaul\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\backhaul\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios/latest/backhaul/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/backhaul/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Cell Outage Scenario</div>
           <p>Cell-level outage and recovery example with throughput collapse, low PRB, and packet loss spikes.</p>
-          <ul><li><a href="scenarios\latest\outage\dashboard\dashboard.html">Dashboard</a></li><li><a href="scenarios\latest\outage\dashboard\dashboard_summary.md">Scenario summary</a></li></ul>
+          <ul><li><a href="scenarios/latest/outage/dashboard/dashboard.html">Dashboard</a></li><li><a href="scenarios/latest/outage/dashboard/dashboard_summary.md">Scenario summary</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Data Contracts</div>
           <p>Telemetry assumptions and synthetic data contract for reproducible runs.</p>
-          <ul><li><a href="DATA_CONTRACT.md">Data contract</a></li><li><a href="scenarios\README.md">Scenario README</a></li><li><a href="forecast_examples\README.md">Forecast README</a></li></ul>
+          <ul><li><a href="../DATA_CONTRACT.md">Data contract</a></li><li><a href="scenarios/README.md">Scenario README</a></li><li><a href="forecast_examples/README.md">Forecast README</a></li></ul>
         </section>
 <section class="card">
           <div class="eyebrow">Release Bundle</div>
           <p>Static landing page for GitHub Pages, release uploads, or other publishable report hosting.</p>
-          <ul><li><a href="publish\latest\index.html">Publish page</a></li><li><a href="publish\latest\manifest.json">Manifest</a></li></ul>
+          <ul><li><a href="publish/latest/index.html">Publish page</a></li><li><a href="publish/latest/manifest.json">Manifest</a></li></ul>
         </section>
     </div>
     <div class="footer">
