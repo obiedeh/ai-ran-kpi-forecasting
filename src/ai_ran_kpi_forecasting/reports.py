@@ -74,33 +74,67 @@ def write_portal_page(output_path: str | Path) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     root = output_path.parent
+    repo_root = root.parent
     forecast_root = root / "forecast_examples" / "latest"
     scenarios_root = root / "scenarios" / "latest"
 
     def rel(path: Path) -> str:
+        path = Path(path)
         try:
-            return str(path.relative_to(root))
+            return path.relative_to(root).as_posix()
         except ValueError:
-            return str(path)
+            try:
+                return f"../{path.relative_to(repo_root).as_posix()}"
+            except ValueError:
+                return path.as_posix()
+
+    def read_json(path: Path) -> dict[str, object]:
+        if not path.exists():
+            return {}
+        return cast(dict[str, object], json.loads(path.read_text(encoding="utf-8")))
+
+    latest_metrics = read_json(forecast_root / "metrics.json")
+    comparison_csv = root / "model_comparison" / "comparison_metrics.csv"
+    if comparison_csv.exists():
+        comparison = pd.read_csv(comparison_csv)
+        best_model = comparison.sort_values("rmse").iloc[0]
+        best_model_text = f"{best_model['model_name']} ({best_model['rmse']:.2f} RMSE)"
+    else:
+        best_model_text = "not measured"
+
+    latest_rmse = latest_metrics.get("rmse")
+    latest_mae = latest_metrics.get("mae")
+    sample_metric_text = (
+        f"{float(latest_rmse):.2f} RMSE / {float(latest_mae):.2f} MAE"
+        if latest_rmse is not None and latest_mae is not None
+        else "not measured"
+    )
+
+    summary_cards = [
+        ("Forecast baseline", sample_metric_text, "Ridge baseline on deterministic sample telemetry", "status-good"),
+        ("Model comparison", best_model_text, "Same KPI, same forward temporal split", "status-good"),
+        ("Operational scenarios", "3 packs", "Congestion, backhaul saturation, and cell outage evidence", "status-good"),
+        ("rApp boundary", "pattern only", "Schemas and A1 candidate output; no live RIC integration claim", "status-warn"),
+    ]
 
     cards = [
         {
             "title": "Tech brief (1 page)",
             "desc": "One-page hiring-manager / tech-lead read: what this rApp pattern is, evidence summary, three-model comparison, credibility boundary, try-it-in-5-minutes.",
             "links": [
-                ("TECH_BRIEF.md", rel(root.parent / "TECH_BRIEF.md")),
-                ("README.md", rel(root.parent / "README.md")),
+                ("TECH_BRIEF.md", rel(repo_root / "TECH_BRIEF.md")),
+                ("README.md", rel(repo_root / "README.md")),
             ],
         },
         {
             "title": "rApp pattern artifacts",
             "desc": "Code-backed AI-for-RAN claims: rApp manifest, KPM input + A1 policy JSON Schemas, end-to-end R1 → forecast → A1 dataflow demo, integration recipe.",
             "links": [
-                ("rapp_manifest.yaml", rel(root.parent / "rapp_manifest.yaml")),
-                ("KPM input schema", rel(root.parent / "schemas" / "kpm_input_v1.json")),
-                ("A1 policy schema", rel(root.parent / "schemas" / "a1_policy_v1.json")),
+                ("rapp_manifest.yaml", rel(repo_root / "rapp_manifest.yaml")),
+                ("KPM input schema", rel(repo_root / "schemas" / "kpm_input_v1.json")),
+                ("A1 policy schema", rel(repo_root / "schemas" / "a1_policy_v1.json")),
                 ("R1 dataflow demo", rel(root / "r1_dataflow_demo" / "dataflow_summary.md")),
-                ("AI-RAN integration", rel(root.parent / "docs" / "AI_RAN_INTEGRATION.md")),
+                ("AI-RAN integration", rel(repo_root / "docs" / "AI_RAN_INTEGRATION.md")),
             ],
         },
         {
@@ -125,8 +159,8 @@ def write_portal_page(output_path: str | Path) -> Path:
             "title": "Congestion Scenario",
             "desc": "Pre-shock versus shock-window evidence showing PRB, throughput, and latency stress on one cell.",
             "links": [
-                ("Dashboard", rel(scenarios_root / "dashboard" / "dashboard.html")),
-                ("Scenario summary", rel(scenarios_root / "dashboard" / "dashboard_summary.md")),
+                ("Dashboard", rel(scenarios_root / "congestion" / "dashboard" / "dashboard.html")),
+                ("Scenario summary", rel(scenarios_root / "congestion" / "dashboard" / "dashboard_summary.md")),
             ],
         },
         {
@@ -149,7 +183,7 @@ def write_portal_page(output_path: str | Path) -> Path:
             "title": "Data Contracts",
             "desc": "Telemetry assumptions and synthetic data contract for reproducible runs.",
             "links": [
-                ("Data contract", rel(root.parent / "DATA_CONTRACT.md")),
+                ("Data contract", rel(repo_root / "DATA_CONTRACT.md")),
                 ("Scenario README", rel(root / "scenarios" / "README.md")),
                 ("Forecast README", rel(root / "forecast_examples" / "README.md")),
             ],
@@ -176,6 +210,14 @@ def write_portal_page(output_path: str | Path) -> Path:
         </section>"""
         for card in cards
     )
+    html_summary_cards = "\n".join(
+        f"""<article class="summary-card">
+          <span class="{status_class}">{label}</span>
+          <strong>{value}</strong>
+          <small>{desc}</small>
+        </article>"""
+        for label, value, desc, status_class in summary_cards
+    )
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -191,6 +233,8 @@ def write_portal_page(output_path: str | Path) -> Path:
       --text: #0f172a;
       --muted: #64748b;
       --blue: #2563eb;
+      --green: #0f766e;
+      --gold: #a16207;
     }}
     body {{
       margin: 0;
@@ -203,6 +247,26 @@ def write_portal_page(output_path: str | Path) -> Path:
     .wrap {{ max-width: 1400px; margin: 0 auto; padding: 28px; }}
     h1 {{ margin: 0 0 8px; font-size: 34px; }}
     .sub {{ color: var(--muted); max-width: 900px; line-height: 1.5; }}
+    .summary {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }}
+    .summary-card {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }}
+    .summary-card strong {{ display: block; margin-top: 10px; font-size: 22px; }}
+    .summary-card small {{ display: block; margin-top: 6px; color: var(--muted); line-height: 1.4; }}
+    .status-good, .status-warn {{
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }}
+    .status-good {{ background: #e2f1ec; color: var(--green); }}
+    .status-warn {{ background: #fdf3df; color: var(--gold); }}
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }}
     .card {{
       background: var(--panel);
@@ -219,7 +283,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     a:hover {{ text-decoration: underline; }}
     .footer {{ margin-top: 22px; color: var(--muted); font-size: 13px; }}
     @media (max-width: 880px) {{
-      .grid {{ grid-template-columns: 1fr; }}
+      .grid, .summary {{ grid-template-columns: 1fr; }}
     }}
   </style>
 </head>
@@ -228,6 +292,9 @@ def write_portal_page(output_path: str | Path) -> Path:
     <h1>AI-RAN KPI Forecasting Portal</h1>
     <div class="sub">
       Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
+    </div>
+    <div class="summary">
+      {html_summary_cards}
     </div>
     <div class="grid">
       {html_cards}

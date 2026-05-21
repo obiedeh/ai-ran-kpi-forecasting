@@ -27,7 +27,7 @@ The GitHub Actions workflow runs the same core checks and verifies that report a
 | Unit tests | `tests/` |
 | CI workflow | `.github/workflows/ci.yml` |
 | Data contract | `DATA_CONTRACT.md` |
-| Architecture notes | `docs/ARCHITECTURE.md` |
+| Architecture notes | `docs/architecture.md` |
 | Project honesty/status | `PROJECT_STATUS.md` |
 
 ## Evidence Artifacts
@@ -79,4 +79,3 @@ This repo demonstrates the **Non-RT RIC rApp pattern** for AI-for-RAN KPI foreca
 - production-grade rApp lifecycle (Helm packaging, R1 service registration over real ORAN endpoints)
 
 The deliverable is the **pattern + schemas + measured forecasting evidence** — enough that a senior AI-RAN engineer reading the repo can confirm this person understands how AI-for-RAN deploys, not enough to drop into a live RIC. See [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the integration recipe with FlexRIC / OSC RIC.
-

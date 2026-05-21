@@ -132,7 +132,12 @@ def test_backhaul_scenario_and_portal(tmp_path):
 
     assert Path(artifacts["dashboard_html"]).exists()
     assert Path(portal_path).exists()
-    assert "Backhaul Scenario" in portal_path.read_text(encoding="utf-8")
+    portal_html = portal_path.read_text(encoding="utf-8")
+    assert "Backhaul Scenario" in portal_html
+    assert "Forecast baseline" in portal_html
+    assert "scenarios/latest/congestion/dashboard/dashboard.html" in portal_html
+    assert "schemas/kpm_input_v1.json" in portal_html
+    assert "\\" not in portal_html
 
 
 def test_outage_scenario_and_publish_page(tmp_path):
