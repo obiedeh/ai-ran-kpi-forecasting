@@ -134,7 +134,12 @@ def test_backhaul_scenario_and_portal(tmp_path):
     assert Path(portal_path).exists()
     portal_html = portal_path.read_text(encoding="utf-8")
     assert "Backhaul Scenario" in portal_html
-    assert "Forecast baseline" in portal_html
+    assert "Network operations summary" in portal_html
+    assert "Forecast horizon" in portal_html
+    assert "What operators should do" in portal_html
+    assert "Congestion risk tiers" in portal_html
+    assert "Model reliability" in portal_html
+    assert "Engineering boundaries" in portal_html
     assert "scenarios/latest/congestion/dashboard/dashboard.html" in portal_html
     assert "schemas/kpm_input_v1.json" in portal_html
     assert "\\" not in portal_html

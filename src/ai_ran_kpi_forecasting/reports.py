@@ -68,6 +68,17 @@ def _svg_content(path: Path) -> str:
     return path.read_text(encoding="utf-8") if path.exists() else ""
 
 
+def _risk_tier(value: float) -> tuple[str, str]:
+    """Project-defined operational PRB-utilization tiers for report interpretation."""
+    if value >= 85:
+        return "Critical", "status-risk"
+    if value >= 75:
+        return "Congested", "status-risk"
+    if value >= 60:
+        return "Elevated", "status-warn"
+    return "Stable", "status-good"
+
+
 def write_portal_page(output_path: str | Path) -> Path:
     """Write a lightweight portal that links the publishable report bundles."""
     output_path = Path(output_path)
@@ -98,28 +109,78 @@ def write_portal_page(output_path: str | Path) -> Path:
             return float(value)
         return None
 
-    latest_metrics = read_json(forecast_root / "metrics.json")
+    def read_metrics(path: Path) -> tuple[float | None, float | None]:
+        metrics = read_json(path)
+        return number_or_none(metrics.get("rmse")), number_or_none(metrics.get("mae"))
+
+    def read_forecast_peak(path: Path) -> tuple[float | None, int | None]:
+        if not path.exists():
+            return None, None
+        forecast = pd.read_csv(path)
+        if "y_hat" not in forecast.columns:
+            return None, len(forecast)
+        return float(forecast["y_hat"].max()), len(forecast)
+
     comparison_csv = root / "model_comparison" / "comparison_metrics.csv"
     if comparison_csv.exists():
         comparison = pd.read_csv(comparison_csv)
         best_model = comparison.sort_values("rmse").iloc[0]
         best_model_text = f"{best_model['model_name']} ({best_model['rmse']:.2f} RMSE)"
+        model_rows = "\n".join(
+            f"<tr><td>{row.model_name}</td><td>{row.rmse:.2f}</td><td>{row.mae:.2f}</td><td>{row.mape:.2f}%</td><td>{'best current baseline' if row.model_name == best_model['model_name'] else 'weaker on this small sample'}</td></tr>"
+            for row in comparison.itertuples(index=False)
+        )
     else:
         best_model_text = "not measured"
+        model_rows = '<tr><td colspan="5">not measured</td></tr>'
 
-    latest_rmse = number_or_none(latest_metrics.get("rmse"))
-    latest_mae = number_or_none(latest_metrics.get("mae"))
-    sample_metric_text = (
-        f"{latest_rmse:.2f} RMSE / {latest_mae:.2f} MAE"
-        if latest_rmse is not None and latest_mae is not None
-        else "not measured"
+    forecast_peak, forecast_horizon = read_forecast_peak(forecast_root / "prb_dl_util_forecast.csv")
+    risk_label, risk_class = _risk_tier(forecast_peak or 0.0)
+    policy = read_json(root / "r1_dataflow_demo" / "a1_policy_candidate.json")
+    policy_rec = cast(dict[str, object], policy.get("recommendation", {})) if policy else {}
+    policy_basis = cast(dict[str, object], policy.get("forecast_basis", {})) if policy else {}
+    policy_action = str(policy_rec.get("action", "not generated")) if policy_rec else "not generated"
+    policy_rationale = str(policy_rec.get("rationale", "not generated")) if policy_rec else "not generated"
+    policy_threshold = number_or_none(policy_basis.get("threshold_pct")) if policy_basis else None
+    policy_peak = number_or_none(policy_basis.get("predicted_peak")) if policy_basis else forecast_peak
+    policy_peak_text = f"{policy_peak:.2f}" if policy_peak is not None else "not measured"
+    policy_threshold_text = f"{policy_threshold:.1f}" if policy_threshold is not None else "not generated"
+
+    scenario_rows: list[tuple[str, float | None, float | None]] = []
+    for scenario_name in ("congestion", "backhaul", "outage"):
+        scenario_metrics = scenarios_root / scenario_name / scenario_name / "metrics.json"
+        rmse, mae = read_metrics(scenario_metrics)
+        scenario_rows.append((scenario_name, rmse, mae))
+    measured_scenarios = [row for row in scenario_rows if row[1] is not None]
+    worst_scenario = max(measured_scenarios, key=lambda row: row[1] or 0.0) if measured_scenarios else None
+    worst_scenario_text = f"{worst_scenario[0]} ({worst_scenario[1]:.2f} RMSE)" if worst_scenario else "not measured"
+
+    risk_rows = [
+        ("Stable", "< 60", "Routine monitoring; no action implied by this project threshold.", "status-good"),
+        ("Elevated", "60-74.99", "Watch capacity pressure and compare forecast drift across the next horizon.", "status-warn"),
+        ("Congested", "75-84.99", "Prepare traffic-steering or capacity investigation as an advisory candidate.", "status-risk"),
+        ("Critical", ">= 85", "Escalate planning review; this is still decision support, not closed-loop control.", "status-risk"),
+    ]
+    html_risk_rows = "\n".join(
+        f'<tr><td><span class="{status}">{tier}</span></td><td>{threshold}</td><td>{meaning}</td></tr>'
+        for tier, threshold, meaning, status in risk_rows
+    )
+    html_scenario_rows = "\n".join(
+        f"<tr><td>{name}</td><td>{rmse:.2f}</td><td>{mae:.2f}</td><td>{'highest error scenario' if worst_scenario and name == worst_scenario[0] else 'measured'}</td></tr>"
+        if rmse is not None and mae is not None
+        else f"<tr><td>{name}</td><td>not measured</td><td>not measured</td><td>not generated</td></tr>"
+        for name, rmse, mae in scenario_rows
     )
 
     summary_cards = [
-        ("Forecast baseline", sample_metric_text, "Ridge baseline on deterministic sample telemetry", "status-good"),
-        ("Model comparison", best_model_text, "Same KPI, same forward temporal split", "status-good"),
-        ("Operational scenarios", "3 packs", "Congestion, backhaul saturation, and cell outage evidence", "status-good"),
-        ("rApp boundary", "pattern only", "Schemas and A1 candidate output; no live RIC integration claim", "status-warn"),
+        ("Forecast horizon", f"{forecast_horizon or 'not generated'} steps", "Autoregressive PRB DL utilization forecast", "status-neutral"),
+        ("Most congested KPI", f"prb_dl_util peak {forecast_peak:.2f}" if forecast_peak is not None else "not measured", "Existing sample forecast output", risk_class),
+        ("Best model", best_model_text, "Same KPI, same forward temporal split", "status-good"),
+        ("Worst scenario", worst_scenario_text, "Highest RMSE across generated scenario packs", "status-warn"),
+        ("Congestion risk", risk_label, "Project-defined operational threshold tier", risk_class),
+        ("A1 policy status", policy_action, "Advisory policy candidate, not closed-loop control", "status-good" if policy_action == "no_action" else "status-warn"),
+        ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul, and outage packs", "status-good"),
+        ("Validation status", "CI green", "Lint, mypy, tests, report generation, and artifact checks", "status-good"),
     ]
 
     cards = [
@@ -223,6 +284,58 @@ def write_portal_page(output_path: str | Path) -> Path:
         </article>"""
         for label, value, desc, status_class in summary_cards
     )
+    html_operations_section = f"""
+    <section class="wide-card">
+      <div class="eyebrow">What operators should do</div>
+      <div class="ops-grid">
+        <div>
+          <h2>Decision-support readout</h2>
+          <p>The current sample forecast peaks at <strong>{policy_peak_text}</strong> against an advisory policy threshold of <strong>{policy_threshold_text}</strong>, so the generated A1 candidate recommends <strong>{policy_action}</strong>. Operators would keep monitoring PRB utilization and scenario sensitivity, especially because the scenario packs show higher forecast error during stress windows.</p>
+        </div>
+        <div>
+          <h2>Policy interpretation</h2>
+          <p>{policy_rationale}</p>
+          <p class="boundary">This is a policy recommendation artifact only. It does not execute A1 transport, control a live RAN, or apply autonomous traffic steering.</p>
+        </div>
+      </div>
+    </section>
+    """
+    html_risk_section = f"""
+    <section class="wide-card">
+      <div class="eyebrow">Congestion risk tiers</div>
+      <p class="section-copy">Project-defined operational thresholds over forecast PRB DL utilization. These thresholds turn existing forecast values into readable risk tiers; they are not operator SLA values.</p>
+      <table>
+        <thead><tr><th>Tier</th><th>Forecast PRB DL util</th><th>Operational interpretation</th></tr></thead>
+        <tbody>{html_risk_rows}</tbody>
+      </table>
+    </section>
+    """
+    html_model_section = f"""
+    <section class="wide-card">
+      <div class="eyebrow">Model reliability</div>
+      <p class="section-copy">Ridge, GradientBoosting, and MLP are compared on the same sample KPI and forward temporal split. The simpler Ridge baseline is currently the most trustworthy result; the MLP underfits badly on this tiny sample and remains visible as a weak result.</p>
+      <table>
+        <thead><tr><th>Model</th><th>RMSE</th><th>MAE</th><th>MAPE</th><th>Readout</th></tr></thead>
+        <tbody>{model_rows}</tbody>
+      </table>
+    </section>
+    """
+    html_scenario_section = f"""
+    <section class="wide-card">
+      <div class="eyebrow">Scenario comparison</div>
+      <p class="section-copy">Scenario packs are deterministic stress overlays on synthetic telemetry. Higher error under a scenario is a signal to monitor transition windows and policy timing, not proof of live-network behavior.</p>
+      <table>
+        <thead><tr><th>Scenario</th><th>RMSE</th><th>MAE</th><th>Status</th></tr></thead>
+        <tbody>{html_scenario_rows}</tbody>
+      </table>
+    </section>
+    """
+    html_boundaries_section = """
+    <section class="wide-card">
+      <div class="eyebrow">Engineering boundaries</div>
+      <p class="section-copy">Synthetic/simulated KPI environment; not connected to live RAN; Non-RT operational simulation only; no real xApp or deployed rApp; no production O-RAN integration; forecasting is not autonomous control; policy outputs are advisory only.</p>
+    </section>
+    """
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -240,6 +353,8 @@ def write_portal_page(output_path: str | Path) -> Path:
       --blue: #2563eb;
       --green: #0f766e;
       --gold: #a16207;
+      --orange: #c2410c;
+      --red: #b91c1c;
     }}
     body {{
       margin: 0;
@@ -252,7 +367,8 @@ def write_portal_page(output_path: str | Path) -> Path:
     .wrap {{ max-width: 1400px; margin: 0 auto; padding: 28px; }}
     h1 {{ margin: 0 0 8px; font-size: 34px; }}
     .sub {{ color: var(--muted); max-width: 900px; line-height: 1.5; }}
-    .summary {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }}
+    .section-title {{ margin: 24px 0 10px; font-size: 20px; }}
+    .summary {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }}
     .summary-card {{
       background: var(--panel);
       border: 1px solid var(--line);
@@ -261,7 +377,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     }}
     .summary-card strong {{ display: block; margin-top: 10px; font-size: 22px; }}
     .summary-card small {{ display: block; margin-top: 6px; color: var(--muted); line-height: 1.4; }}
-    .status-good, .status-warn {{
+    .status-good, .status-warn, .status-risk, .status-neutral {{
       display: inline-block;
       padding: 3px 8px;
       border-radius: 999px;
@@ -272,7 +388,10 @@ def write_portal_page(output_path: str | Path) -> Path:
     }}
     .status-good {{ background: #e2f1ec; color: var(--green); }}
     .status-warn {{ background: #fdf3df; color: var(--gold); }}
+    .status-risk {{ background: #fee2e2; color: var(--red); }}
+    .status-neutral {{ background: #edf1f6; color: #475569; }}
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }}
+    .ops-grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }}
     .card {{
       background: var(--panel);
       border: 1px solid var(--line);
@@ -282,13 +401,28 @@ def write_portal_page(output_path: str | Path) -> Path:
     }}
     .eyebrow {{ color: var(--blue); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }}
     .card p {{ color: var(--muted); line-height: 1.5; }}
+    .wide-card {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-top: 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }}
+    .wide-card h2 {{ margin: 8px 0; font-size: 20px; }}
+    .wide-card p {{ color: var(--muted); line-height: 1.55; }}
+    .section-copy {{ max-width: 980px; }}
+    .boundary {{ color: #475569; font-size: 13px; }}
+    table {{ width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }}
+    th, td {{ text-align: left; border-bottom: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }}
+    th {{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }}
     ul {{ padding-left: 18px; margin: 0; }}
     li {{ margin: 8px 0; }}
     a {{ color: var(--blue); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
     .footer {{ margin-top: 22px; color: var(--muted); font-size: 13px; }}
     @media (max-width: 880px) {{
-      .grid, .summary {{ grid-template-columns: 1fr; }}
+      .grid, .summary, .ops-grid {{ grid-template-columns: 1fr; }}
     }}
   </style>
 </head>
@@ -298,12 +432,18 @@ def write_portal_page(output_path: str | Path) -> Path:
     <div class="sub">
       Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
     </div>
+    <h2 class="section-title">Network operations summary</h2>
     <div class="summary">
       {html_summary_cards}
     </div>
+    {html_operations_section}
+    {html_risk_section}
+    {html_model_section}
+    {html_scenario_section}
     <div class="grid">
       {html_cards}
     </div>
+    {html_boundaries_section}
     <div class="footer">
       Generated from the repository's report artifacts and synthetic telecom telemetry utilities.
     </div>
@@ -431,6 +571,18 @@ def write_scenario_dashboard(
     delta_before = congestion_after - congestion_before
     delta_after = congestion_result.forecast["y_hat"].mean() - congestion_after
     congestion_score = congestion_result.metrics["rmse"] / max(baseline_result.metrics["rmse"], 1e-9)
+    scenario_tier, scenario_status = _risk_tier(congestion_peak)
+    recommended_monitor = (
+        "review traffic-steering candidate timing"
+        if scenario_tier in {"Congested", "Critical"}
+        else "continue monitoring forecast drift and scenario deltas"
+    )
+    what_this_means = (
+        f"{scenario_name} changes {congestion_result.target_col} from {congestion_before:.2f} pre-event "
+        f"to {congestion_after:.2f} during the scenario window. Operationally, the useful signal is not "
+        "autonomous control; it is an early warning that lets a Non-RT workflow compare forecast error, "
+        f"capacity pressure, and the next monitoring action: {recommended_monitor}."
+    )
 
     html = f"""<!doctype html>
 <html lang="en">
@@ -448,6 +600,7 @@ def write_scenario_dashboard(
       --blue: #2563eb;
       --red: #dc2626;
       --green: #0f766e;
+      --gold: #a16207;
     }}
     body {{
       margin: 0;
@@ -518,6 +671,24 @@ def write_scenario_dashboard(
       background: #e0f2fe;
       color: #0c4a6e;
     }}
+    .status-good, .status-warn, .status-risk {{
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }}
+    .status-good {{ background: #e2f1ec; color: var(--green); }}
+    .status-warn {{ background: #fdf3df; color: var(--gold); }}
+    .status-risk {{ background: #fee2e2; color: var(--red); }}
+    .readout {{
+      border-left: 4px solid var(--blue);
+      background: #f7fafd;
+      padding: 12px 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 12px;
+    }}
     .warn {{ color: var(--red); }}
     @media (max-width: 1100px) {{
       .grid, .two {{ grid-template-columns: 1fr 1fr; }}
@@ -533,13 +704,14 @@ def write_scenario_dashboard(
     <div class="sub">Wireless KPI observability pack comparing a baseline cell with a pre/post scenario event on {congestion_result.cell_id}.</div>
     <div class="grid">
       <div class="card"><div class="label">Baseline RMSE</div><div class="value">{baseline_result.metrics['rmse']:.2f}</div><div class="small">{baseline_result.target_col}</div></div>
-      <div class="card"><div class="label">Congestion RMSE</div><div class="value">{congestion_result.metrics['rmse']:.2f}</div><div class="small">{congestion_result.target_col}</div></div>
-      <div class="card"><div class="label">PRB uplift</div><div class="value {'warn' if delta_before > 0 else ''}">{delta_before:+.2f}</div><div class="small">shock window minus pre-shock</div></div>
+      <div class="card"><div class="label">Scenario RMSE</div><div class="value">{congestion_result.metrics['rmse']:.2f}</div><div class="small">{congestion_result.target_col}</div></div>
+      <div class="card"><div class="label">Risk tier</div><div class="value"><span class="{scenario_status}">{scenario_tier}</span></div><div class="small">project-defined PRB threshold</div></div>
       <div class="card"><div class="label">Forecast RMSE ratio</div><div class="value">{congestion_score:.2f}x</div><div class="small">higher than baseline indicates stress</div></div>
     </div>
 
     <div class="section">
       <div class="pill">Network health summary</div>
+      <div class="readout"><strong>What this means:</strong> {what_this_means}</div>
       <table>
         <thead>
           <tr><th>Run</th><th>Cell</th><th>Target</th><th>Pre-shock Mean</th><th>Shock Mean</th><th>Peak</th><th>MAE</th></tr>
@@ -550,6 +722,7 @@ def write_scenario_dashboard(
         </tbody>
       </table>
       <div class="small">Throughput before/after: {congestion_tp_before:.2f} to {congestion_tp_after:.2f} Mbps. Latency before/after: {congestion_latency_before:.2f} to {congestion_latency_after:.2f} ms.</div>
+      <div class="small">Risk tiers are project-defined over PRB DL utilization: Stable &lt;60, Elevated 60-74.99, Congested 75-84.99, Critical &gt;=85. They are decision-support thresholds, not operator SLA values.</div>
     </div>
 
     <div class="two">

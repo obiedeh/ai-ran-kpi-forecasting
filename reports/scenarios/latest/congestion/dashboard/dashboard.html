@@ -14,6 +14,7 @@
       --blue: #2563eb;
       --red: #dc2626;
       --green: #0f766e;
+      --gold: #a16207;
     }
     body {
       margin: 0;
@@ -84,6 +85,24 @@
       background: #e0f2fe;
       color: #0c4a6e;
     }
+    .status-good, .status-warn, .status-risk {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status-good { background: #e2f1ec; color: var(--green); }
+    .status-warn { background: #fdf3df; color: var(--gold); }
+    .status-risk { background: #fee2e2; color: var(--red); }
+    .readout {
+      border-left: 4px solid var(--blue);
+      background: #f7fafd;
+      padding: 12px 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 12px;
+    }
     .warn { color: var(--red); }
     @media (max-width: 1100px) {
       .grid, .two { grid-template-columns: 1fr 1fr; }
@@ -99,13 +118,14 @@
     <div class="sub">Wireless KPI observability pack comparing a baseline cell with a pre/post scenario event on CELL_001.</div>
     <div class="grid">
       <div class="card"><div class="label">Baseline RMSE</div><div class="value">4.39</div><div class="small">prb_dl_util</div></div>
-      <div class="card"><div class="label">Congestion RMSE</div><div class="value">4.11</div><div class="small">prb_dl_util</div></div>
-      <div class="card"><div class="label">PRB uplift</div><div class="value warn">+11.24</div><div class="small">shock window minus pre-shock</div></div>
+      <div class="card"><div class="label">Scenario RMSE</div><div class="value">4.11</div><div class="small">prb_dl_util</div></div>
+      <div class="card"><div class="label">Risk tier</div><div class="value"><span class="status-risk">Congested</span></div><div class="small">project-defined PRB threshold</div></div>
       <div class="card"><div class="label">Forecast RMSE ratio</div><div class="value">0.94x</div><div class="small">higher than baseline indicates stress</div></div>
     </div>
 
     <div class="section">
       <div class="pill">Network health summary</div>
+      <div class="readout"><strong>What this means:</strong> AI-RAN congestion scenario changes prb_dl_util from 40.71 pre-event to 51.95 during the scenario window. Operationally, the useful signal is not autonomous control; it is an early warning that lets a Non-RT workflow compare forecast error, capacity pressure, and the next monitoring action: review traffic-steering candidate timing.</div>
       <table>
         <thead>
           <tr><th>Run</th><th>Cell</th><th>Target</th><th>Pre-shock Mean</th><th>Shock Mean</th><th>Peak</th><th>MAE</th></tr>
@@ -115,7 +135,8 @@
           <tr><td>Congestion</td><td>CELL_001</td><td>prb_dl_util</td><td>40.71</td><td>51.95</td><td>77.05</td><td>3.30</td></tr>
         </tbody>
       </table>
-      <div class="small">Throughput before/after: 125.50 → 106.10 Mbps. Latency before/after: 18.24 → 23.57 ms.</div>
+      <div class="small">Throughput before/after: 125.50 to 106.10 Mbps. Latency before/after: 18.24 to 23.57 ms.</div>
+      <div class="small">Risk tiers are project-defined over PRB DL utilization: Stable &lt;60, Elevated 60-74.99, Congested 75-84.99, Critical &gt;=85. They are decision-support thresholds, not operator SLA values.</div>
     </div>
 
     <div class="two">
