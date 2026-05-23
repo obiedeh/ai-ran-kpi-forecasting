@@ -2,13 +2,13 @@
 
 ## System Purpose
 
-This repository is the supporting AI-RAN and edge-infrastructure telemetry workflow in the portfolio. It keeps the focus practical: KPI CSV ingestion, deterministic forecasting, congestion-style signals, and reproducible operational reports that can inform future edge AI placement decisions.
+This repository is the supporting AI-RAN and edge-infrastructure telemetry workflow in the portfolio. It keeps the focus practical: KPI CSV ingestion, temporal forecasting, scenario evidence, advisory policy candidates, and reproducible operational reports.
 
 ## Current Implementation Status
 
 - **Implemented:** CSV telemetry loading, feature generation, deterministic ridge regression, autoregressive forecasting, metrics, SVG/Markdown/JSON report artifacts, scenario evidence packs, and tests.
 - **Runnable scaffold:** `make run-sample`, `make run-scenarios`, and CLI-driven report generation.
-- **Planned integration path:** operational forecast reports, telemetry validation, edge workload context, and future AI-RAN deployment framing.
+- **Planned integration path:** operational forecast reports, telemetry validation, edge workload context, and future Non-RT RIC integration work when a target environment exists.
 - **Future validation:** larger public/operator-style datasets and timed end-to-end run evidence.
 
 ## Main Components
@@ -45,7 +45,7 @@ RAN-style KPI rows become normalized time-series records. Feature generation add
 ## Known Limitations
 
 - Measured metrics are from deterministic sample telemetry unless otherwise stated.
-- Telecom Italia MI and edge GPU/memory benchmarks remain `<TO MEASURE>` where listed in the README.
+- Telecom Italia MI is benchmark-ready, pending local public dataset files. No benchmark metric is claimed yet.
 - This repo supports the edge AI infrastructure story; it is not the flagship Physical AI platform.
 
 ## Next Validation Step

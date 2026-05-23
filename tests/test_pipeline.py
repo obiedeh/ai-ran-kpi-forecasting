@@ -136,18 +136,18 @@ def test_backhaul_scenario_and_portal(tmp_path):
     portal_html = portal_path.read_text(encoding="utf-8")
     dashboard_html = Path(portal_path).with_name("dashboard.html").read_text(encoding="utf-8")
     assert "Backhaul Scenario" in portal_html
-    assert "Network operations summary" in portal_html
+    assert "Executive KPI cards" in portal_html
     assert "Forecast horizon" in portal_html
-    assert "What operators should do" in portal_html
+    assert "What an operator should notice" in portal_html
     assert "Congestion risk tiers" in portal_html
     assert "Model reliability" in portal_html
     assert "Benchmark readiness: Telecom Italia MI" in portal_html
-    assert "ready to run when local public dataset files are available" in portal_html
+    assert "Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet." in portal_html
     assert "reports/forecast_examples/telecom_italia_mi/" in portal_html
     assert "Engineering boundaries" in portal_html
     assert "AI-RAN KPI Forecasting Dashboard" in dashboard_html
-    assert "not connected to live RAN" in dashboard_html
-    assert "not autonomous control" in dashboard_html
+    assert "does not connect to a live RAN" in dashboard_html
+    assert "does not perform autonomous control" in dashboard_html
     assert "scenarios/latest/congestion/dashboard/dashboard.html" in portal_html
     assert "schemas/kpm_input_v1.json" in portal_html
     assert "\\" not in portal_html

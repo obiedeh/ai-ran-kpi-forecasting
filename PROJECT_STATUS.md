@@ -36,13 +36,13 @@ Telecom Italia MI benchmark status:
 - Loader path: `ai_ran_kpi_forecasting.data.load_telecom_italia_mi`
 - Make target: `make run-telecom`
 - Output target: `reports/forecast_examples/telecom_italia_mi/`
-- Published result: not claimed until local public dataset files are available and metrics are generated
+- Published result: Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.
 
 ---
 
 ## Credibility Rules
 
-This repository should not claim capabilities that are not backed by code, reports, plots, tests, or reproducible examples.
+This repository should not claim capabilities that are not backed by code, reports, plots, tests, or reproducible examples. The current deliverable is a tested evidence pattern, not a live network system.
 
 Use this standard:
 
@@ -214,7 +214,7 @@ Known limitations:
 - no production deployment packaging yet
 - no live RAN data source integration yet
 - no live Non-RT RIC deployment
-- Telecom Italia MI metrics are not claimed until local dataset files are available and the benchmark is generated
+- Telecom Italia MI is benchmark-ready, pending local public dataset files; no benchmark metric is claimed yet
 
 These limitations are intentional and tracked so the repo stays honest.
 

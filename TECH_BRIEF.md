@@ -1,6 +1,6 @@
 # Tech brief — AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
 
-A one-page brief for a senior tech-leader or hiring-manager review. Read this if you are evaluating whether a candidate can ship the AI-for-RAN operational-layer pattern that an actual RIC integration would consume — schema-typed input, multi-model evaluation, A1 policy output, evidence-led reporting, with the wire-protocol integration boundary disclosed honestly.
+A one-page brief for a senior tech-leader or hiring-manager review. Read this if you want to see whether the repo is more than a KPI forecasting script: schema-typed input, time-ordered evaluation, advisory A1 policy output, evidence-led reporting, and a clear boundary before live RIC integration.
 
 Every claim below links to a committed artifact.
 
@@ -8,11 +8,11 @@ Every claim below links to a committed artifact.
 
 ## What this repo demonstrates
 
-The [AI-RAN Alliance](https://ai-ran.org/) (NVIDIA, NTT DOCOMO, Microsoft, SoftBank, Nokia, Ericsson, Samsung, founded Feb 2024) defines three pillars: **AI-and-RAN** (shared GPU infrastructure), **AI-on-RAN** (AI delivered over the RAN), and **AI-for-RAN** (AI used to improve the RAN itself).
+The operating question is straightforward: can a Non-RT intelligence layer see KPI degradation early enough to recommend a policy review before the cell is already in trouble?
 
-This repo targets **AI-for-RAN at the operational layer**: the Non-RT RIC rApp pattern for KPI forecasting. The companion repo [`wireless-link-intelligence-system`](https://github.com/obiedeh/wireless-link-intelligence-system) targets AI-for-RAN at the **PHY layer** (channel estimation, OFDM, INT8 ONNX deployment). Together they cover both tiers of the AI-for-RAN pillar.
+This repo targets **AI-for-RAN at the operational layer**: the Non-RT RIC rApp pattern for KPI forecasting, scenario evidence, and advisory policy candidates.
 
-**This is the rApp pattern, not a deployed rApp.** The manifest, schemas, ML pipeline, and A1-policy output are real and tested; the wire-protocol integration with a live Non-RT RIC is intentionally not exercised. See [Credibility Boundary](#credibility-boundary).
+**This is the rApp pattern, not a deployed rApp.** The manifest, schemas, ML pipeline, and A1-policy output are real and tested; the wire-protocol integration with a live Non-RT RIC is intentionally not exercised. The point is not that Ridge regression is novel. The point is that the forecasting workflow is wrapped in the contracts, evidence artifacts, and policy boundaries expected from an AI-for-RAN operational intelligence pattern.
 
 ---
 
@@ -28,7 +28,7 @@ This repo targets **AI-for-RAN at the operational layer**: the Non-RT RIC rApp p
 | **End-to-end R1 → forecast → A1 dataflow demo** | exercised on sample CSV | [`reports/r1_dataflow_demo/`](reports/r1_dataflow_demo/) |
 | **Scenario evidence packs** | congestion + backhaul saturation + cell outage | [`reports/scenarios/latest/`](reports/scenarios/latest/) |
 | Sample forecast metrics (ridge baseline, PRB DL util) | RMSE 0.84 · MAE 0.70 · MAPE 0.82 % | [`reports/forecast_examples/latest/metrics.json`](reports/forecast_examples/latest/metrics.json) |
-| Telecom Italia MI benchmark | ready to run when local public dataset files are available | will land in `reports/forecast_examples/telecom_italia_mi/` |
+| Telecom Italia MI benchmark | Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. | will land in `reports/forecast_examples/telecom_italia_mi/` |
 | Tests | **40 / 40** (incl. 9 for A1 policy + 12 for model comparison) | [`tests/`](tests/) + `pytest -q` |
 | CI | green on Linux | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
 | End-to-end reproducible | `make verify` regenerates every committed artifact | [`Makefile`](Makefile) |
@@ -87,7 +87,7 @@ On the seeded 49-row sample:
 | `gradient_boosting` | 2.88 | 2.63 | 3.16 % |
 | `mlp` | 22.59 | 19.64 | 26.96 % (underfits) |
 
-Honest reading: with 49 rows × 1 cell, the linear baseline dominates. Tree ensembles need more data to express their non-linearity advantage; small neural networks need both more data and tuning. This is the textbook **small-data finding** — surfaced as a calibrated result, not hidden by reporting only the winner.
+Honest reading: with 49 rows × 1 cell, the linear baseline dominates. Tree ensembles need more data to express their non-linearity advantage; small neural networks need both more data and tuning. This is a small-data finding, and it stays visible instead of being hidden behind only the winning model.
 
 The Telecom Italia MI public benchmark is the next step where GBR and MLP may catch up or pull ahead. The loader and `make run-telecom` path are implemented, but no benchmark result is claimed until local public dataset files are available and `reports/forecast_examples/telecom_italia_mi/metrics.json` is generated.
 
@@ -97,7 +97,7 @@ The Telecom Italia MI public benchmark is the next step where GBR and MLP may ca
 
 | Practice | Evidence |
 |---|---|
-| **Schema-typed input / output** | `schemas/kpm_input_v1.json` + `schemas/a1_policy_v1.json` — the contracts a real Non-RT RIC would enforce, codified in JSON Schema |
+| **Schema-typed input / output** | `schemas/kpm_input_v1.json` + `schemas/a1_policy_v1.json` — the boundaries around the model, codified in JSON Schema |
 | **rApp manifest with explicit boundary block** | `rapp_manifest.yaml` lists what's exercised vs not (live R1 wire protocol, live A1-P, OSC SMO integration — all honestly "not exercised") |
 | **Forecast carries audit trail into the policy** | `forecast_basis` block in every A1 policy candidate records the model name, predicted peak, threshold crossed, and metrics-ref so operators can audit the policy back to its training run |
 | **No-shuffle temporal split** | All three models trained on the same forward-only split — no leakage |
@@ -117,7 +117,7 @@ This repo demonstrates the Non-RT RIC rApp pattern for AI-for-RAN KPI forecastin
 - autonomous network control or closed-loop policy enforcement
 - production rApp lifecycle (Helm packaging, R1 service registration via dms_cli)
 
-The Telecom Italia MI public benchmark is **ready to run when local public dataset files are available**. The loader is implemented per `DATA_CONTRACT.md`; run `make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi` against the actual dataset to generate metrics. Until that artifact exists, this repo does not claim Telecom Italia MI benchmark accuracy.
+The Telecom Italia MI public benchmark is **Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.** The loader is implemented per `DATA_CONTRACT.md`; run `make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi` against the actual dataset to generate metrics. Until that artifact exists, this repo does not claim Telecom Italia MI benchmark accuracy.
 
 See [`docs/AI_RAN_INTEGRATION.md`](docs/AI_RAN_INTEGRATION.md) for the integration recipe and the explicit "pattern, not deployment" rationale.
 
@@ -154,6 +154,6 @@ Inspect:
 5. **Observability** — metrics on forecast errors, policy emission rates, model staleness, and structured logging for the policy audit trail.
 6. **Multi-cell scaling** — current pipeline is single-cell per invocation; production needs batched multi-cell forecasting and per-site routing of policies.
 
-None of these are large; they're scope decisions tied to a specific Non-RT RIC deployment. The boundary is honest: this repo is the **evidence + pattern**, not the **deployable rApp**.
+These are not claimed in this repo because they depend on a specific Non-RT RIC environment and operator data source. The boundary is clear: this repo is the **evidence + pattern**, not the **deployable rApp**.
 
 For the reviewer-facing checklist see [`PORTFOLIO_DELIVERABLES.md`](PORTFOLIO_DELIVERABLES.md). For implemented-vs-planned tracking see [`PROJECT_STATUS.md`](PROJECT_STATUS.md).

@@ -173,20 +173,20 @@ def write_portal_page(output_path: str | Path) -> Path:
     )
 
     summary_cards = [
-        ("Forecast horizon", f"{forecast_horizon or 'not generated'} steps", "Autoregressive PRB DL utilization forecast", "status-neutral"),
-        ("Most congested KPI", f"prb_dl_util peak {forecast_peak:.2f}" if forecast_peak is not None else "not measured", "Existing sample forecast output", risk_class),
-        ("Best model", best_model_text, "Same KPI, same forward temporal split", "status-good"),
-        ("Worst scenario", worst_scenario_text, "Highest RMSE across generated scenario packs", "status-warn"),
-        ("Congestion risk", risk_label, "Project-defined operational threshold tier", risk_class),
-        ("A1 policy status", policy_action, "Advisory policy candidate, not closed-loop control", "status-good" if policy_action == "no_action" else "status-warn"),
-        ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul, and outage packs", "status-good"),
-        ("Validation status", "CI green", "Lint, mypy, tests, report generation, and artifact checks", "status-good"),
+        ("Forecast horizon", f"{forecast_horizon or 'not generated'} steps", "Forward PRB utilization forecast from committed sample telemetry", "status-neutral"),
+        ("Most congested KPI", f"prb_dl_util peak {forecast_peak:.2f}" if forecast_peak is not None else "not measured", "The current forecast stays below the advisory threshold", risk_class),
+        ("Best model", best_model_text, "Same KPI and same time-ordered split across all models", "status-good"),
+        ("Worst scenario", worst_scenario_text, "Highest error among the generated stress packs", "status-warn"),
+        ("Congestion risk", risk_label, "Project-defined risk tier, not an operator SLA", risk_class),
+        ("A1 policy status", policy_action, "Candidate only; no network control is executed", "status-good" if policy_action == "no_action" else "status-warn"),
+        ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul saturation, and outage evidence", "status-good"),
+        ("Validation status", "local tests pass", "Lint, tests, report generation, and artifact checks", "status-good"),
     ]
 
     cards = [
         {
             "title": "Tech brief (1 page)",
-            "desc": "One-page hiring-manager / tech-lead read: what this rApp pattern is, evidence summary, three-model comparison, credibility boundary, try-it-in-5-minutes.",
+            "desc": "A short engineering brief: what I built, what the evidence says, and where the live-RIC boundary starts.",
             "links": [
                 ("TECH_BRIEF.md", rel(repo_root / "TECH_BRIEF.md")),
                 ("README.md", rel(repo_root / "README.md")),
@@ -194,7 +194,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         },
         {
             "title": "rApp pattern artifacts",
-            "desc": "Code-backed AI-for-RAN claims: rApp manifest, KPM input + A1 policy JSON Schemas, end-to-end R1 → forecast → A1 dataflow demo, integration recipe.",
+            "desc": "The contracts around the model: rApp manifest, KPM input schema, advisory A1 output schema, and the R1-style dataflow demo.",
             "links": [
                 ("rapp_manifest.yaml", rel(repo_root / "rapp_manifest.yaml")),
                 ("KPM input schema", rel(repo_root / "schemas" / "kpm_input_v1.json")),
@@ -205,7 +205,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         },
         {
             "title": "Three-model comparison",
-            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI is ready to run when local public dataset files are available.",
+            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI and time split. Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.",
             "links": [
                 ("Comparison table (MD)", rel(root / "model_comparison" / "comparison_metrics.md")),
                 ("Comparison table (CSV)", rel(root / "model_comparison" / "comparison_metrics.csv")),
@@ -286,16 +286,16 @@ def write_portal_page(output_path: str | Path) -> Path:
     )
     html_operations_section = f"""
     <section class="wide-card">
-      <div class="eyebrow">What operators should do</div>
+      <div class="eyebrow">What an operator should notice</div>
       <div class="ops-grid">
         <div>
-          <h2>Decision-support readout</h2>
-          <p>The current sample forecast peaks at <strong>{policy_peak_text}</strong> against an advisory policy threshold of <strong>{policy_threshold_text}</strong>, so the generated A1 candidate recommends <strong>{policy_action}</strong>. Operators would keep monitoring PRB utilization and scenario sensitivity, especially because the scenario packs show higher forecast error during stress windows.</p>
+          <h2>Forecast evidence before action</h2>
+          <p>The current sample forecast peaks at <strong>{policy_peak_text}</strong> against an advisory policy threshold of <strong>{policy_threshold_text}</strong>, so the generated A1 candidate recommends <strong>{policy_action}</strong>. The useful signal is not that Ridge regression is novel. The useful signal is that the forecast is wrapped in typed input, an auditable policy candidate, and scenario evidence an engineer can inspect.</p>
         </div>
         <div>
           <h2>Policy interpretation</h2>
           <p>{policy_rationale}</p>
-          <p class="boundary">This is a policy recommendation artifact only. It does not execute A1 transport, control a live RAN, or apply autonomous traffic steering.</p>
+          <p class="boundary">The dashboard does not pretend to control the network. It shows forecast evidence, scenario impact, and an advisory A1 policy candidate before any human or downstream system takes action.</p>
         </div>
       </div>
     </section>
@@ -313,7 +313,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     html_model_section = f"""
     <section class="wide-card">
       <div class="eyebrow">Model reliability</div>
-      <p class="section-copy">Ridge, GradientBoosting, and MLP are compared on the same sample KPI and forward temporal split. The simpler Ridge baseline is currently the most trustworthy result; the MLP underfits badly on this tiny sample and remains visible as a weak result.</p>
+      <p class="section-copy">The model is the least interesting part of this repo. Ridge, GradientBoosting, and MLP are compared on the same sample KPI and forward temporal split so the weak result stays visible: Ridge is best on this tiny sample, while the MLP underfits badly.</p>
       <table>
         <thead><tr><th>Model</th><th>RMSE</th><th>MAE</th><th>MAPE</th><th>Readout</th></tr></thead>
         <tbody>{model_rows}</tbody>
@@ -333,14 +333,14 @@ def write_portal_page(output_path: str | Path) -> Path:
     html_benchmark_section = """
     <section class="wide-card">
       <div class="eyebrow">Benchmark readiness: Telecom Italia MI</div>
-      <p class="section-copy">The public Telecom Italia Milan path is implemented but not measured in the committed artifacts because the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>. Until that output exists, this project does not claim Telecom Italia MI benchmark accuracy.</p>
+      <p class="section-copy">Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. The public Telecom Italia Milan path is implemented, but the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>.</p>
       <table>
         <thead><tr><th>Item</th><th>Status</th></tr></thead>
         <tbody>
           <tr><td>Loader path</td><td><code>ai_ran_kpi_forecasting.data.load_telecom_italia_mi</code></td></tr>
           <tr><td>Make target</td><td><code>make run-telecom</code></td></tr>
           <tr><td>Output target</td><td><code>reports/forecast_examples/telecom_italia_mi/</code></td></tr>
-          <tr><td>Published result</td><td>not claimed until generated locally from dataset files</td></tr>
+          <tr><td>Published result</td><td>Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.</td></tr>
         </tbody>
       </table>
     </section>
@@ -348,7 +348,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     html_boundaries_section = """
     <section class="wide-card">
       <div class="eyebrow">Engineering boundaries</div>
-      <p class="section-copy">Synthetic/simulated KPI environment; not connected to live RAN; Non-RT operational simulation only; no real xApp or deployed rApp; no production O-RAN integration; forecasting is not autonomous control; policy outputs are advisory only.</p>
+      <p class="section-copy">The boundary is simple: this is a reproducible rApp pattern, not a deployed RIC workload. It uses synthetic and sample telemetry, does not connect to a live RAN, does not deploy an xApp or rApp, does not execute wire-protocol A1 transport, and does not perform autonomous control.</p>
     </section>
     """
 
@@ -380,8 +380,23 @@ def write_portal_page(output_path: str | Path) -> Path:
         var(--bg);
     }}
     .wrap {{ max-width: 1400px; margin: 0 auto; padding: 28px; }}
+    header {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }}
     h1 {{ margin: 0 0 8px; font-size: 34px; }}
     .sub {{ color: var(--muted); max-width: 900px; line-height: 1.5; }}
+    .nav {{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }}
+    .nav a {{
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: #f8fafc;
+      font-size: 13px;
+    }}
     .section-title {{ margin: 24px 0 10px; font-size: 20px; }}
     .summary {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }}
     .summary-card {{
@@ -443,11 +458,19 @@ def write_portal_page(output_path: str | Path) -> Path:
 </head>
 <body>
   <div class="wrap">
-    <h1>AI-RAN KPI Forecasting Portal</h1>
-    <div class="sub">
-      Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input to three-model forecasting (Ridge / GBR / MLP) to advisory A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment; live RIC integration is intentionally not exercised.
-    </div>
-    <h2 class="section-title">Network operations summary</h2>
+    <header>
+      <h1>AI-RAN KPI Forecasting Portal</h1>
+      <div class="sub">
+        I built this because RAN operations cannot rely only on after-the-fact dashboards. The page shows a Non-RT RIC / rApp pattern: schema-typed KPM telemetry in, time-ordered forecasts out, advisory A1 policy candidates generated, and evidence artifacts kept visible for review. Pattern, not deployment.
+      </div>
+      <div class="nav">
+        <a href="dashboard.html">Open dashboard</a>
+        <a href="../README.md">README</a>
+        <a href="../TECH_BRIEF.md">Tech brief</a>
+        <a href="../PROJECT_STATUS.md">Project status</a>
+      </div>
+    </header>
+    <h2 class="section-title">Executive KPI cards</h2>
     <div class="summary">
       {html_summary_cards}
     </div>
