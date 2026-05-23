@@ -205,7 +205,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         },
         {
             "title": "Three-model comparison",
-            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI still TO MEASURE.",
+            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI, same temporal split. Honest small-data finding surfaced; Telecom Italia MI is ready to run when local public dataset files are available.",
             "links": [
                 ("Comparison table (MD)", rel(root / "model_comparison" / "comparison_metrics.md")),
                 ("Comparison table (CSV)", rel(root / "model_comparison" / "comparison_metrics.csv")),
@@ -330,6 +330,21 @@ def write_portal_page(output_path: str | Path) -> Path:
       </table>
     </section>
     """
+    html_benchmark_section = """
+    <section class="wide-card">
+      <div class="eyebrow">Benchmark readiness: Telecom Italia MI</div>
+      <p class="section-copy">The public Telecom Italia Milan path is implemented but not measured in the committed artifacts because the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>. Until that output exists, this project does not claim Telecom Italia MI benchmark accuracy.</p>
+      <table>
+        <thead><tr><th>Item</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Loader path</td><td><code>ai_ran_kpi_forecasting.data.load_telecom_italia_mi</code></td></tr>
+          <tr><td>Make target</td><td><code>make run-telecom</code></td></tr>
+          <tr><td>Output target</td><td><code>reports/forecast_examples/telecom_italia_mi/</code></td></tr>
+          <tr><td>Published result</td><td>not claimed until generated locally from dataset files</td></tr>
+        </tbody>
+      </table>
+    </section>
+    """
     html_boundaries_section = """
     <section class="wide-card">
       <div class="eyebrow">Engineering boundaries</div>
@@ -430,7 +445,7 @@ def write_portal_page(output_path: str | Path) -> Path:
   <div class="wrap">
     <h1>AI-RAN KPI Forecasting Portal</h1>
     <div class="sub">
-      Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input → three-model forecasting (Ridge / GBR / MLP) → A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment — wire-protocol integration with a live Non-RT RIC is documented but not exercised.
+      Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting. Schema-typed KPM input to three-model forecasting (Ridge / GBR / MLP) to advisory A1 policy candidate output, plus pre/post scenario evidence for congestion / backhaul saturation / cell outage. Pattern, not deployment; live RIC integration is intentionally not exercised.
     </div>
     <h2 class="section-title">Network operations summary</h2>
     <div class="summary">
@@ -440,6 +455,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     {html_risk_section}
     {html_model_section}
     {html_scenario_section}
+    {html_benchmark_section}
     <div class="grid">
       {html_cards}
     </div>
@@ -452,6 +468,15 @@ def write_portal_page(output_path: str | Path) -> Path:
 </html>
 """
     output_path.write_text(html, encoding="utf-8")
+    if output_path.name == "index.html":
+        dashboard_html = html.replace(
+            "<title>AI-RAN KPI Forecasting Portal</title>",
+            "<title>AI-RAN KPI Forecasting Dashboard</title>",
+        ).replace(
+            "<h1>AI-RAN KPI Forecasting Portal</h1>",
+            "<h1>AI-RAN KPI Forecasting Dashboard</h1>",
+        )
+        output_path.with_name("dashboard.html").write_text(dashboard_html, encoding="utf-8")
     return output_path
 
 

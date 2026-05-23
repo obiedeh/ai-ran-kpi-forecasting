@@ -109,3 +109,4 @@ verify: lint test run-sample model-comparison r1-dataflow-demo scenario-demo sce
 	@echo "  reports/forecast_examples/latest/metrics.json"
 	@echo "  reports/model_comparison/comparison_metrics.md"
 	@echo "  reports/index.html"
+	@echo "  reports/dashboard.html"
