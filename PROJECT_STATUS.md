@@ -1,12 +1,12 @@
 # Project Status
 
-This document separates what currently exists from what is planned. The goal is to keep the repository credible, measurable, and useful as it evolves from a forecasting script into an AI-native telecom intelligence platform.
+This document separates what currently exists from what is planned. The goal is to keep the repository credible, measurable, and useful as a Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting and advisory A1 policy generation.
 
 ---
 
 ## Current State
 
-The repository currently provides a runnable forecasting workflow for RAN-style KPI time series.
+The repository currently provides a runnable forecasting workflow for RAN-style KPI time series plus generated evidence artifacts for operator review.
 
 Implemented capabilities:
 
@@ -19,13 +19,24 @@ Implemented capabilities:
 - focused tests for data loading, lag features, temporal splitting, forecast shape, and metrics
 - reproducible sample report artifacts
 - committed scenario evidence packs for congestion, backhaul saturation, and outage recovery
-- static evidence portal and publish page for reviewer inspection
+- static evidence portal, top-level dashboard, and publish page for reviewer inspection
+- schema-typed KPM-style input contract
+- schema-typed advisory A1 policy candidate output
+- rApp manifest documenting identity, inputs, outputs, and boundaries
+- R1-style dataflow demo from KPM-style input to forecast to A1 candidate
 
 Current maturity level:
 
-> Portfolio-complete offline forecasting and evidence-generation baseline
+> Portfolio-complete Non-RT RIC rApp pattern for offline KPI forecasting, advisory policy candidates, and evidence generation
 
-This is not a live production platform. The current value is that it establishes a reproducible offline forecasting layer, report artifacts, and scenario evidence packs that future observability, anomaly detection, and AI-RAN decision-support features can build on.
+This is not a live RIC deployment. The current value is that it establishes a reproducible offline forecasting layer, typed contracts, advisory policy output, report artifacts, and scenario evidence packs that future observability, benchmark, and integration work can build on.
+
+Telecom Italia MI benchmark status:
+
+- Loader path: `ai_ran_kpi_forecasting.data.load_telecom_italia_mi`
+- Make target: `make run-telecom`
+- Output target: `reports/forecast_examples/telecom_italia_mi/`
+- Published result: not claimed until local public dataset files are available and metrics are generated
 
 ---
 
@@ -39,8 +50,8 @@ Use this standard:
 |---|---|
 | Forecasting works | forecast output, test run, sample plot |
 | Model quality improved | baseline comparison and metrics |
-| Operationally useful | scenario, threshold, alert, or decision-support example |
-| AI-RAN aligned | clear connection to RAN telemetry, edge workload, or private 5G use case |
+| Operationally useful | scenario, threshold, advisory policy, or decision-support example |
+| AI-RAN aligned | clear connection to RAN telemetry, typed rApp contracts, edge workload, or private 5G use case |
 | Production-ready | tests, CI, configs, reproducible runs, documentation, failure handling |
 
 ---
@@ -178,19 +189,19 @@ Example use case:
 
 ### Telecom Intelligence
 
-- [ ] Congestion risk score
+- [x] Congestion risk tiering in generated portal/dashboard
 - [ ] Anomaly detection baseline
-- [ ] Multi-KPI scenario
+- [x] Multi-scenario evidence packs
 - [ ] Cell/site risk ranking
-- [ ] Operational recommendation output
+- [x] Advisory A1 policy candidate output
 
 ### AI-RAN Extension
 
-- [ ] Edge workload trace simulation
+- [x] Edge workload trace simulation
 - [ ] Inference-aware capacity planning example
 - [ ] Private 5G robotics scenario
-- [ ] AI-RAN architecture diagram
-- [ ] Dashboard or report export
+- [x] AI-RAN architecture diagram
+- [x] Dashboard or report export
 
 ---
 
@@ -198,11 +209,12 @@ Example use case:
 
 Known limitations:
 
-- full observability dashboard is out of scope
+- live observability dashboard is out of scope
 - no real operator feedback loop yet
 - no production deployment packaging yet
 - no live RAN data source integration yet
-- AI-RAN workload placement logic is planned, not implemented
+- no live Non-RT RIC deployment
+- Telecom Italia MI metrics are not claimed until local dataset files are available and the benchmark is generated
 
 These limitations are intentional and tracked so the repo stays honest.
 
