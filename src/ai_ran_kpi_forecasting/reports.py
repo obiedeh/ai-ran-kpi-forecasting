@@ -153,7 +153,6 @@ def write_portal_page(output_path: str | Path) -> Path:
         scenario_rows.append((scenario_name, rmse, mae))
     measured_scenarios = [row for row in scenario_rows if row[1] is not None]
     worst_scenario = max(measured_scenarios, key=lambda row: row[1] or 0.0) if measured_scenarios else None
-    worst_scenario_text = f"{worst_scenario[0]} ({worst_scenario[1]:.2f} RMSE)" if worst_scenario else "not measured"
 
     risk_rows = [
         ("Stable", "< 60", "Routine monitoring; no action implied by this project threshold.", "status-good"),
@@ -174,12 +173,12 @@ def write_portal_page(output_path: str | Path) -> Path:
 
     summary_cards = [
         ("Forecast horizon", f"{forecast_horizon or 'not generated'} steps", "Forward PRB utilization forecast from committed sample telemetry", "status-neutral"),
-        ("Most congested KPI", f"prb_dl_util peak {forecast_peak:.2f}" if forecast_peak is not None else "not measured", "The current forecast stays below the advisory threshold", risk_class),
-        ("Best model", best_model_text, "Same KPI and same time-ordered split across all models", "status-good"),
-        ("Worst scenario", worst_scenario_text, "Highest error among the generated stress packs", "status-warn"),
-        ("Congestion risk", risk_label, "Project-defined risk tier, not an operator SLA", risk_class),
-        ("A1 policy status", policy_action, "Candidate only; no network control is executed", "status-good" if policy_action == "no_action" else "status-warn"),
+        ("Target KPI", "prb_dl_util", "Downlink PRB utilization is the current forecast target", "status-neutral"),
+        ("Best measured model", best_model_text, "Same KPI and same time-ordered split across all models", "status-good"),
+        ("Peak forecast", f"{forecast_peak:.2f}" if forecast_peak is not None else "not measured", f"Project-defined risk tier: {risk_label}", risk_class),
         ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul saturation, and outage evidence", "status-good"),
+        ("A1 policy status", policy_action, "Candidate only; no network control is executed", "status-good" if policy_action == "no_action" else "status-warn"),
+        ("Benchmark status", "Pending local dataset", "Telecom Italia MI path is prepared, but no benchmark metric is claimed yet.", "status-warn"),
         ("Validation status", "local tests pass", "Lint, tests, report generation, and artifact checks", "status-good"),
     ]
 
@@ -286,7 +285,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     )
     html_operations_section = f"""
     <section class="wide-card">
-      <div class="eyebrow">What an operator should notice</div>
+      <div class="eyebrow">Operational interpretation</div>
       <div class="ops-grid">
         <div>
           <h2>Forecast evidence before action</h2>

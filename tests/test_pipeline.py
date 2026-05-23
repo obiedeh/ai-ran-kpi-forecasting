@@ -138,7 +138,12 @@ def test_backhaul_scenario_and_portal(tmp_path):
     assert "Backhaul Scenario" in portal_html
     assert "Executive KPI cards" in portal_html
     assert "Forecast horizon" in portal_html
-    assert "What an operator should notice" in portal_html
+    assert "Target KPI" in portal_html
+    assert "Best measured model" in portal_html
+    assert "Peak forecast" in portal_html
+    assert "Benchmark status" in portal_html
+    assert "Pending local dataset" in portal_html
+    assert "Operational interpretation" in portal_html
     assert "Congestion risk tiers" in portal_html
     assert "Model reliability" in portal_html
     assert "Benchmark readiness: Telecom Italia MI" in portal_html

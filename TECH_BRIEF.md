@@ -156,4 +156,4 @@ Inspect:
 
 These are not claimed in this repo because they depend on a specific Non-RT RIC environment and operator data source. The boundary is clear: this repo is the **evidence + pattern**, not the **deployable rApp**.
 
-For the reviewer-facing checklist see [`PORTFOLIO_DELIVERABLES.md`](PORTFOLIO_DELIVERABLES.md). For implemented-vs-planned tracking see [`PROJECT_STATUS.md`](PROJECT_STATUS.md).
+For the evidence checklist see [`PORTFOLIO_DELIVERABLES.md`](PORTFOLIO_DELIVERABLES.md). For implemented-vs-planned tracking see [`PROJECT_STATUS.md`](PROJECT_STATUS.md).

@@ -188,21 +188,25 @@ tests/                           unit and pipeline tests
 rapp_manifest.yaml               rApp identity, inputs, outputs, and boundary
 ```
 
-## What a hiring manager should notice
+## Engineering signal
 
-- The repo uses temporal evaluation instead of shuffled train/test splits.
-- The input and output contracts are typed and inspectable.
-- Forecasts are connected to advisory policy candidates, not presented as isolated charts.
-- Weak model results are visible instead of hidden.
-- The public benchmark path is ready, but unmeasured results are not fabricated.
-- The HTML evidence pack is generated and GitHub Pages compatible.
+This project is designed around the operational shape of an AI-for-RAN workflow, not just model accuracy. The core signal is the boundary discipline around the model: typed telemetry input, time-ordered evaluation, scenario evidence, advisory policy output, and explicit limits around deployment.
 
-## Roadmap: high-value next steps only
+- Temporal evaluation is used instead of shuffled train/test splits, so the forecast is tested closer to how it would behave in operation.
+- KPM-style input and A1 advisory output are defined as typed contracts, making the system boundaries inspectable.
+- Forecast outputs are connected to advisory policy candidates instead of being left as standalone charts.
+- Weak model results remain visible in the evidence pack, because hiding them would make the evaluation less credible.
+- The Telecom Italia MI benchmark path is prepared, but no benchmark result is claimed until the dataset is run locally.
+- The HTML evidence pack is generated and GitHub Pages compatible, so results can be reviewed without cloning the repo.
 
-1. Run the Telecom Italia MI benchmark locally and commit the resulting metrics.
-2. Add multi-cell batch forecasting while preserving temporal evaluation.
-3. Add model-drift and retraining-readiness reports.
-4. Add a real RIC integration adapter only when a target Non-RT RIC environment exists.
+## Next engineering steps
+
+The next steps are intentionally narrow: improve evidence quality before adding integration complexity.
+
+1. Run the Telecom Italia MI benchmark locally and publish the measured metrics.
+2. Extend the workflow to multi-cell batch forecasting while preserving temporal evaluation and no-leakage feature rules.
+3. Add drift and retraining-readiness reports so the project reflects an operational AI lifecycle.
+4. Add a real Non-RT RIC adapter only when there is a target OSC RIC, FlexRIC, or vendor RIC environment to test against.
 
 ## License
 
