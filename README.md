@@ -10,13 +10,15 @@ This is not a claim of a deployed RIC application. It is a reproducible engineer
 
 ## Why this exists
 
-AI-for-RAN work is easy to overstate when it is only a time-series model with telecom labels. A useful Non-RT RIC rApp pattern needs more than forecasts: it needs typed RAN telemetry boundaries, temporal evaluation, policy-output contracts, scenario evidence, and a clear line between advisory output and live network control.
+RAN operations cannot rely only on after-the-fact dashboards. The practical question is whether a non-real-time intelligence layer can see KPI degradation early enough to recommend a policy review before the cell is already in trouble.
 
-I built this repo to show that pattern in a small, reproducible form.
+From an engineering standpoint, I built this as a bridge between telecom KPI analytics and the way AI-for-RAN work is expected to be packaged: contracts, evidence, policy boundaries, and reproducible artifacts. A forecasting model alone is not enough signal.
+
+The Non-RT RIC / rApp model is the relevant O-RAN architectural pattern for this class of non-real-time RAN intelligence: telemetry-driven analytics, forecasting, policy recommendation, and model lifecycle support. This repo implements that pattern on synthetic/sample telemetry; integration with FlexRIC, OSC RIC, or a vendor RIC is documented but not exercised.
 
 ## What problem it solves
 
-Operators need to know which cells may become congested, which KPI trend is driving the risk, and whether an advisory policy candidate is justified before the network enters a worse state. This repo turns RAN-style KPI telemetry into forward forecasts, risk tiers, scenario readouts, and A1-shaped policy candidates for operator review.
+This project asks a more operational question than “can a model forecast a KPI?” It asks whether a Non-RT intelligence layer can package forecast evidence, scenario impact, and an advisory A1 policy candidate in a way an engineer could inspect before taking action.
 
 ## The engineering pattern
 
@@ -51,7 +53,7 @@ GitHub shows committed HTML files as source code. Use the GitHub Pages links abo
 | Sample forecast metrics | RMSE 0.8368, MAE 0.6954, MAPE 0.8204% | `reports/forecast_examples/latest/metrics.json` |
 | R1-style dataflow demo | KPM-style input to forecast to A1 candidate | `reports/r1_dataflow_demo/` |
 | Scenario evidence | congestion, backhaul saturation, cell outage | `reports/scenarios/latest/` |
-| Telecom Italia MI benchmark | ready to run when local public dataset files are available | `reports/forecast_examples/telecom_italia_mi/` |
+| Telecom Italia MI benchmark | Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. | `reports/forecast_examples/telecom_italia_mi/` |
 | Reproducibility | `make verify` regenerates committed evidence artifacts | `Makefile` |
 
 ## What makes this more than a forecasting notebook
@@ -100,7 +102,7 @@ The committed measured results use deterministic sample telemetry, not live oper
 | Gradient boosting RMSE | 2.8755 | weaker on current sample |
 | MLP RMSE | 22.5926 | underfits current sample |
 
-The small-data result is intentionally visible: Ridge wins here. The public Telecom Italia MI path exists to test whether model ranking changes on a larger dataset.
+The small-data result is intentionally visible: Ridge wins here. The model is the least interesting part of the repo; the useful part is the engineering boundary around the model. The public Telecom Italia MI path exists to test whether model ranking changes on a larger dataset.
 
 ## Benchmark readiness: Telecom Italia MI
 
@@ -111,7 +113,7 @@ Current status:
 - Loader path: `ai_ran_kpi_forecasting.data.load_telecom_italia_mi`
 - Make target: `make run-telecom`
 - Output target: `reports/forecast_examples/telecom_italia_mi/`
-- Published result: not claimed unless generated locally
+- Published result: Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.
 
 To run when data is available:
 
@@ -122,9 +124,15 @@ cat reports/forecast_examples/telecom_italia_mi/metrics.json
 
 Until that artifact exists, this repo does not claim Telecom Italia MI benchmark accuracy.
 
+## GitHub repo description
+
+Recommended description:
+
+> Non-RT RIC rApp pattern for AI-RAN KPI forecasting, scenario evidence, and advisory A1 policy generation.
+
 ## Credibility boundary
 
-This repo demonstrates a Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting on synthetic and small sample telemetry. It does not claim:
+This repo demonstrates a Non-RT RIC rApp pattern for AI-for-RAN KPI forecasting on synthetic and small sample telemetry. The boundary is not a weakness; it is what keeps the evidence useful. It does not claim:
 
 - live RAN integration
 - live Non-RT RIC deployment
