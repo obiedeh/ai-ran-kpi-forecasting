@@ -19,7 +19,7 @@ Implemented capabilities:
 - focused tests for data loading, lag features, temporal splitting, forecast shape, and metrics
 - reproducible sample report artifacts
 - committed scenario evidence packs for congestion, backhaul saturation, and outage recovery
-- static evidence portal, top-level dashboard, and publish page for reviewer inspection
+- static evidence portal, top-level dashboard, and publish page for public inspection
 - schema-typed KPM-style input contract
 - schema-typed advisory A1 policy candidate output
 - rApp manifest documenting identity, inputs, outputs, and boundaries
