@@ -1,0 +1,304 @@
+{
+  "note": "Two runs of deploy/thor/run_benchmark.py on the same device differing only in onnxruntime session options. Deltas are variant minus baseline. Board power includes unrelated host activity; the idle baselines of each run are given for reference.",
+  "same_device": true,
+  "baseline": {
+    "run_id": "4b57e8b36e86",
+    "session_options": {
+      "intra_op_num_threads": "runtime default",
+      "inter_op_num_threads": "runtime default",
+      "allow_spinning": true,
+      "provider_requested": "cpu"
+    },
+    "idle_vin_p50_mw": 24164.0,
+    "duration_per_tier_s": 120.0,
+    "loadavg_1m_at_start": 1.9794921875
+  },
+  "variant": {
+    "run_id": "3e55b967a7ea",
+    "session_options": {
+      "intra_op_num_threads": 1,
+      "inter_op_num_threads": 1,
+      "allow_spinning": false,
+      "provider_requested": "cpu"
+    },
+    "idle_vin_p50_mw": 25798.0,
+    "duration_per_tier_s": 300.0,
+    "loadavg_1m_at_start": 2.8515625
+  },
+  "rows": [
+    {
+      "model": "ridge_linear",
+      "target_rps": 100.0,
+      "baseline": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0114,
+        "p95_ms": 0.0118,
+        "p99_ms": 0.0155,
+        "max_ms": 0.2684,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0625,
+        "vin_p50_mw": 24138.0,
+        "vin_peak_mw": 25422.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 39.781,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0112,
+        "p95_ms": 0.0116,
+        "p99_ms": 0.0146,
+        "max_ms": 0.2721,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0608,
+        "vin_p50_mw": 24264.0,
+        "vin_peak_mw": 25896.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 43.718,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": -0.0002,
+        "p95_ms": -0.0002,
+        "p99_ms": -0.0009,
+        "max_ms": 0.0037,
+        "deadline_misses": 0,
+        "process_rss_gb": -0.0017,
+        "vin_p50_mw": 126.0,
+        "vin_peak_mw": 474.0,
+        "vdd_cpu_soc_mss_p50_mw": 0.0,
+        "tj_peak_c": 3.937
+      }
+    },
+    {
+      "model": "ridge_linear",
+      "target_rps": 1000.0,
+      "baseline": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.0113,
+        "p95_ms": 0.0115,
+        "p99_ms": 0.0118,
+        "max_ms": 3.1404,
+        "deadline_misses": 4,
+        "process_rss_gb": 0.066,
+        "vin_p50_mw": 24184.0,
+        "vin_peak_mw": 25268.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 39.593,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.0112,
+        "p95_ms": 0.0115,
+        "p99_ms": 0.0118,
+        "max_ms": 0.7658,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0694,
+        "vin_p50_mw": 24170.0,
+        "vin_peak_mw": 25528.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 41.562,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": -0.0001,
+        "p95_ms": 0.0,
+        "p99_ms": 0.0,
+        "max_ms": -2.3746,
+        "deadline_misses": -4,
+        "process_rss_gb": 0.0034,
+        "vin_p50_mw": -14.0,
+        "vin_peak_mw": 260.0,
+        "vdd_cpu_soc_mss_p50_mw": 0.0,
+        "tj_peak_c": 1.969
+      }
+    },
+    {
+      "model": "gradient_boosting",
+      "target_rps": 100.0,
+      "baseline": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0238,
+        "p95_ms": 0.0537,
+        "p99_ms": 0.1071,
+        "max_ms": 6.311,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0678,
+        "vin_p50_mw": 53096.0,
+        "vin_peak_mw": 54690.0,
+        "vdd_cpu_soc_mss_p50_mw": 34580.0,
+        "tj_peak_c": 54.156,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0152,
+        "p95_ms": 0.0157,
+        "p99_ms": 0.0174,
+        "max_ms": 0.3918,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0719,
+        "vin_p50_mw": 24134.0,
+        "vin_peak_mw": 26126.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 40.312,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": -0.0086,
+        "p95_ms": -0.038,
+        "p99_ms": -0.0897,
+        "max_ms": -5.9192,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0041,
+        "vin_p50_mw": -28962.0,
+        "vin_peak_mw": -28564.0,
+        "vdd_cpu_soc_mss_p50_mw": -27111.0,
+        "tj_peak_c": -13.844
+      }
+    },
+    {
+      "model": "gradient_boosting",
+      "target_rps": 1000.0,
+      "baseline": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.0196,
+        "p95_ms": 0.0222,
+        "p99_ms": 0.0269,
+        "max_ms": 12.7173,
+        "deadline_misses": 18342,
+        "process_rss_gb": 0.0681,
+        "vin_p50_mw": 54114.0,
+        "vin_peak_mw": 55588.0,
+        "vdd_cpu_soc_mss_p50_mw": 35366.0,
+        "tj_peak_c": 56.656,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.015,
+        "p95_ms": 0.0153,
+        "p99_ms": 0.0155,
+        "max_ms": 1.1181,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0729,
+        "vin_p50_mw": 24112.0,
+        "vin_peak_mw": 25446.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 40.25,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": -0.0046,
+        "p95_ms": -0.0069,
+        "p99_ms": -0.0114,
+        "max_ms": -11.5992,
+        "deadline_misses": -18342,
+        "process_rss_gb": 0.0048,
+        "vin_p50_mw": -30002.0,
+        "vin_peak_mw": -30142.0,
+        "vdd_cpu_soc_mss_p50_mw": -27897.0,
+        "tj_peak_c": -16.406
+      }
+    },
+    {
+      "model": "mlp",
+      "target_rps": 100.0,
+      "baseline": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0082,
+        "p95_ms": 0.0097,
+        "p99_ms": 0.0208,
+        "max_ms": 0.169,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0699,
+        "vin_p50_mw": 24706.0,
+        "vin_peak_mw": 26382.0,
+        "vdd_cpu_soc_mss_p50_mw": 7862.0,
+        "tj_peak_c": 49.0,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 100.0,
+        "p50_ms": 0.0203,
+        "p95_ms": 0.0208,
+        "p99_ms": 0.0221,
+        "max_ms": 0.3755,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0735,
+        "vin_p50_mw": 24076.0,
+        "vin_peak_mw": 25318.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 40.062,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": 0.0121,
+        "p95_ms": 0.0111,
+        "p99_ms": 0.0013,
+        "max_ms": 0.2065,
+        "deadline_misses": 0,
+        "process_rss_gb": 0.0036,
+        "vin_p50_mw": -630.0,
+        "vin_peak_mw": -1064.0,
+        "vdd_cpu_soc_mss_p50_mw": -393.0,
+        "tj_peak_c": -8.938
+      }
+    },
+    {
+      "model": "mlp",
+      "target_rps": 1000.0,
+      "baseline": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.008,
+        "p95_ms": 0.0083,
+        "p99_ms": 0.0088,
+        "max_ms": 0.1745,
+        "deadline_misses": 201,
+        "process_rss_gb": 0.0721,
+        "vin_p50_mw": 24574.0,
+        "vin_peak_mw": 26794.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 43.031,
+        "provider": "CPUExecutionProvider"
+      },
+      "variant": {
+        "actual_rps": 1000.0,
+        "p50_ms": 0.0202,
+        "p95_ms": 0.0206,
+        "p99_ms": 0.0208,
+        "max_ms": 1.3493,
+        "deadline_misses": 2,
+        "process_rss_gb": 0.0748,
+        "vin_p50_mw": 24110.0,
+        "vin_peak_mw": 25540.0,
+        "vdd_cpu_soc_mss_p50_mw": 7469.0,
+        "tj_peak_c": 39.937,
+        "provider": "CPUExecutionProvider"
+      },
+      "delta": {
+        "actual_rps": 0.0,
+        "p50_ms": 0.0122,
+        "p95_ms": 0.0123,
+        "p99_ms": 0.012,
+        "max_ms": 1.1748,
+        "deadline_misses": -199,
+        "process_rss_gb": 0.0027,
+        "vin_p50_mw": -464.0,
+        "vin_peak_mw": -1254.0,
+        "vdd_cpu_soc_mss_p50_mw": 0.0,
+        "tj_peak_c": -3.094
+      }
+    }
+  ],
+  "sources": {
+    "reports/thor_benchmark/default_threads.json": "01875f53219a72811f110ddc6bf75b835be4e9445fc6be4f71cf6128af5881af",
+    "reports/thor_benchmark/thor_benchmark.json": "de09d2ccdfbc6698a6f1f739fff4df73f725701a1b9218c6f468f47028d6ec74"
+  }
+}

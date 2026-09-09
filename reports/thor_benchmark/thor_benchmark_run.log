@@ -1,0 +1,112 @@
+Hardware: {
+  "host": "jetsonthor",
+  "machine": "aarch64",
+  "kernel": "6.8.12-tegra",
+  "soc": "tegra264",
+  "devicetree_compatible": [
+    "nvidia,p4071-0000+p3834-0008",
+    "nvidia,p3834-0008",
+    "nvidia,tegra264"
+  ],
+  "is_jetson": true,
+  "l4t_release": "# R38 (release), REVISION: 4.0, GCID: 43443517, BOARD: generic, EABI: aarch64, DATE: Wed Dec 31 00:15:19 UTC 2025",
+  "nvpmodel": "NV Power Mode: 120W 1",
+  "cpu_count": 14,
+  "mem_total_gb": 122.82,
+  "loadavg_1m_at_start": 2.8515625,
+  "loadavg_5m_at_start": 3.0126953125,
+  "python": "3.12.3",
+  "onnxruntime": "1.29.0",
+  "numpy": "2.5.3",
+  "available_providers": [
+    "CUDAExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "git_sha": null,
+  "benchmark_started_at": "2026-09-09T17:13:16.674764+00:00"
+}
+
+Idle baseline: sampling 60s before load
+
+============================================================
+Benchmarking: ridge_linear (ridge_linear_prb_dl_util.onnx) input (1, 16)
+  Execution provider: CPUExecutionProvider
+  Single-inference p50: 0.0067 ms
+
+  Tier 10 events/s for 300s
+    ... 601 samples, 60s elapsed
+    ... 1201 samples, 120s elapsed
+    ... 1801 samples, 180s elapsed
+    ... 2401 samples, 240s elapsed
+    n=3001 actual=10.0 ev/s p50=0.1607 p95=0.1638 p99=0.1804 ms misses=0
+
+  Tier 100 events/s for 300s
+    ... 6001 samples, 60s elapsed
+    ... 12001 samples, 120s elapsed
+    ... 18001 samples, 180s elapsed
+    ... 24001 samples, 240s elapsed
+    n=30001 actual=100.0 ev/s p50=0.0112 p95=0.0116 p99=0.0146 ms misses=0
+
+  Tier 1000 events/s for 300s
+    ... 60001 samples, 60s elapsed
+    ... 120001 samples, 120s elapsed
+    ... 180001 samples, 180s elapsed
+    ... 240001 samples, 240s elapsed
+    n=300001 actual=1000.0 ev/s p50=0.0112 p95=0.0115 p99=0.0118 ms misses=0
+
+============================================================
+Benchmarking: gradient_boosting (gradient_boosting_prb_dl_util.onnx) input (1, 16)
+  Execution provider: CPUExecutionProvider
+  Single-inference p50: 0.0142 ms
+
+  Tier 10 events/s for 300s
+    ... 601 samples, 60s elapsed
+    ... 1201 samples, 120s elapsed
+    ... 1801 samples, 180s elapsed
+    ... 2401 samples, 240s elapsed
+    n=3001 actual=10.0 ev/s p50=0.1687 p95=0.1728 p99=0.1752 ms misses=0
+
+  Tier 100 events/s for 300s
+    ... 6001 samples, 60s elapsed
+    ... 12001 samples, 120s elapsed
+    ... 18001 samples, 180s elapsed
+    ... 24001 samples, 240s elapsed
+    n=30001 actual=100.0 ev/s p50=0.0152 p95=0.0157 p99=0.0174 ms misses=0
+
+  Tier 1000 events/s for 300s
+    ... 60001 samples, 60s elapsed
+    ... 120001 samples, 120s elapsed
+    ... 180001 samples, 180s elapsed
+    ... 240001 samples, 240s elapsed
+    n=300001 actual=1000.0 ev/s p50=0.015 p95=0.0153 p99=0.0155 ms misses=0
+
+============================================================
+Benchmarking: mlp (mlp_prb_dl_util.onnx) input (1, 16)
+  Execution provider: CPUExecutionProvider
+  Single-inference p50: 0.0174 ms
+
+  Tier 10 events/s for 300s
+    ... 601 samples, 60s elapsed
+    ... 1201 samples, 120s elapsed
+    ... 1801 samples, 180s elapsed
+    ... 2401 samples, 240s elapsed
+    n=3001 actual=10.0 ev/s p50=0.2011 p95=0.2037 p99=0.2051 ms misses=0
+
+  Tier 100 events/s for 300s
+    ... 6001 samples, 60s elapsed
+    ... 12001 samples, 120s elapsed
+    ... 18001 samples, 180s elapsed
+    ... 24001 samples, 240s elapsed
+    n=30001 actual=100.0 ev/s p50=0.0203 p95=0.0208 p99=0.0221 ms misses=0
+
+  Tier 1000 events/s for 300s
+    ... 60001 samples, 60s elapsed
+    ... 120001 samples, 120s elapsed
+    ... 180001 samples, 180s elapsed
+    ... 240001 samples, 240s elapsed
+    n=300001 actual=1000.0 ev/s p50=0.0202 p95=0.0206 p99=0.0208 ms misses=2
+
+Idle baseline: sampling 60s after load
+
+Wrote reports/airan/thor_benchmark.json
+Gates: {"detector_p95_latency_ms": "not measured", "forecaster_p95_latency_ms": "not measured", "throughput_at_1000_rps": "not measured", "memory_footprint_gb": "pass"}
