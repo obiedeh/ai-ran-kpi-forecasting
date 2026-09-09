@@ -1,1 +1,10 @@
-{"status":"failed","reason":"Primary benchmark remained in the idle-baseline phase for 17m10s without advancing to a tier or writing JSON. The benchmark process was terminated; no performance numbers were produced.","command":".venv/bin/python run_benchmark.py --models-dir models/airan --models-spec models/airan/models_spec.json --duration 300 --tiers 10,100,1000 --intra-op-threads 1 --inter-op-threads 1 --no-spin --provider cpu --idle-seconds 60 --output reports/airan/thor_benchmark.json","device":"Jetson AGX Thor (tegra264)","provider":"CPUExecutionProvider","log":"primary_run.log"}
+{
+  "status": "failed",
+  "reason": "Primary benchmark remained in the idle-baseline phase for 17m10s without advancing to a tier or writing JSON. The benchmark process was terminated; no performance numbers were produced.",
+  "command": ".venv/bin/python run_benchmark.py --models-dir models/airan --models-spec models/airan/models_spec.json --duration 300 --tiers 10,100,1000 --intra-op-threads 1 --inter-op-threads 1 --no-spin --provider cpu --idle-seconds 60 --output reports/airan/thor_benchmark.json",
+  "device": "Jetson AGX Thor (tegra264)",
+  "provider": "CPUExecutionProvider",
+  "log": "primary_run.log",
+  "resolution": "Reviewed 2026-09-09: the harness block-buffered stdout when redirected, so the log stopped at the idle-baseline line while the process was still running (60 s idle plus three 300 s tiers is 16 min for the first model alone). The run was terminated at 17m10s, not hung. The harness now line-buffers output and prints a heartbeat; the run is to be repeated. No performance numbers from this attempt exist or are claimed.",
+  "superseded_by": null
+}
