@@ -149,9 +149,9 @@
           <small>Candidate only; no network control is executed</small>
         </article>
 <article class="summary-card">
-          <span class="status-warn">Benchmark status</span>
-          <strong>Pending local dataset</strong>
-          <small>Telecom Italia MI path is prepared, but no benchmark metric is claimed yet.</small>
+          <span class="status-good">Benchmark status</span>
+          <strong>3 cells measured</strong>
+          <small>Telecom Italia MI, hourly internet_traffic, 2013-11-01 to 2014-01-01; per-cell hold-out with naive baselines</small>
         </article>
 <article class="summary-card">
           <span class="status-good">Validation status</span>
@@ -214,16 +214,11 @@
     
     
     <section class="wide-card">
-      <div class="eyebrow">Benchmark readiness: Telecom Italia MI</div>
-      <p class="section-copy">Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. The public Telecom Italia Milan path is implemented, but the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>.</p>
+      <div class="eyebrow">Measured: Telecom Italia MI benchmark</div>
+      <p class="section-copy">Public Milan grid dataset (<a href="https://doi.org/10.7910/DVN/EGZHFV">doi:10.7910/DVN/EGZHFV</a>, ODbL 1.0 (Open Database License), per the Dataverse terms of use), 62 daily files from 2013-11-01 to 2014-01-01, 319,896,289 raw rows. Hourly <code>internet_traffic</code> per square, three squares chosen by activity level (largest total, nearest the median, nearest the 10th percentile), time-ordered split with the last 20% held out, features are calendar terms and lags of the target only. RMSE in the dataset's activity units; every figure links to its file. Generated 2026-09-09T21:26:47Z. Full record: <a href="forecast_examples/telecom_italia_mi/summary.json">summary.json</a>, <a href="forecast_examples/telecom_italia_mi/dataset.json">dataset.json</a>.</p>
       <table>
-        <thead><tr><th>Item</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>Loader path</td><td><code>ai_ran_kpi_forecasting.data.load_telecom_italia_mi</code></td></tr>
-          <tr><td>Make target</td><td><code>make run-telecom</code></td></tr>
-          <tr><td>Output target</td><td><code>reports/forecast_examples/telecom_italia_mi/</code></td></tr>
-          <tr><td>Published result</td><td>Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.</td></tr>
-        </tbody>
+        <thead><tr><th>Cell</th><th>Hours</th><th>Test rows</th><th>ridge_linear RMSE</th><th>gradient_boosting RMSE</th><th>mlp RMSE</th><th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
+        <tbody><tr><td>high (5161)</td><td>1488</td><td>293</td><td><a href="forecast_examples/telecom_italia_mi/5161/ridge_linear/metrics.json">1697.5</a></td><td><a href="forecast_examples/telecom_italia_mi/5161/gradient_boosting/metrics.json">2793.5</a></td><td><a href="forecast_examples/telecom_italia_mi/5161/mlp/metrics.json">7653.1</a></td><td><a href="forecast_examples/telecom_italia_mi/5161/baselines.json">2407.7</a></td><td>4163.1</td></tr><tr><td>mid (3168)</td><td>1488</td><td>293</td><td><a href="forecast_examples/telecom_italia_mi/3168/ridge_linear/metrics.json">24.3</a></td><td><a href="forecast_examples/telecom_italia_mi/3168/gradient_boosting/metrics.json">26.9</a></td><td><a href="forecast_examples/telecom_italia_mi/3168/mlp/metrics.json">245.8</a></td><td><a href="forecast_examples/telecom_italia_mi/3168/baselines.json">15.9</a></td><td>43.8</td></tr><tr><td>low (9408)</td><td>1488</td><td>293</td><td><a href="forecast_examples/telecom_italia_mi/9408/ridge_linear/metrics.json">6.0</a></td><td><a href="forecast_examples/telecom_italia_mi/9408/gradient_boosting/metrics.json">5.1</a></td><td><a href="forecast_examples/telecom_italia_mi/9408/mlp/metrics.json">79.8</a></td><td><a href="forecast_examples/telecom_italia_mi/9408/baselines.json">4.4</a></td><td>7.8</td></tr></tbody>
       </table>
     </section>
     

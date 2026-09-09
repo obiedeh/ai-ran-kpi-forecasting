@@ -2,7 +2,7 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev export-onnx test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish model-comparison verify
+.PHONY: install install-dev export-onnx test lint run-sample run-generic run-telecom fetch-telecom benchmark-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish model-comparison verify
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -39,6 +39,14 @@ run-telecom:
 		--kpi-col internet_traffic \
 		--horizon 24 \
 		--output-dir $(REPORT_DIR)
+
+fetch-telecom:
+	$(PYTHON) scripts/fetch_telecom_italia_mi.py --email $(EMAIL) --out ./data/telecom_italia_mi
+
+benchmark-telecom:
+	$(PYTHON) scripts/run_telecom_italia_benchmark.py \
+		--data ./data/telecom_italia_mi \
+		--output-dir reports/forecast_examples/telecom_italia_mi
 
 synthetic:
 	$(PYTHON) ai-ran-kpi-forecasting.py generate-synthetic \

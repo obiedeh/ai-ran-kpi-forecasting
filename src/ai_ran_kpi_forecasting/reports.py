@@ -88,6 +88,11 @@ def write_portal_page(output_path: str | Path) -> Path:
     repo_root = root.parent
     forecast_root = root / "forecast_examples" / "latest"
     scenarios_root = root / "scenarios" / "latest"
+    telecom_root = root / "forecast_examples" / "telecom_italia_mi"
+    telecom_summary_path = telecom_root / "summary.json"
+    telecom_summary: dict | None = (
+        json.loads(telecom_summary_path.read_text(encoding="utf-8")) if telecom_summary_path.exists() else None
+    )
 
     def rel(path: Path) -> str:
         path = Path(path)
@@ -178,7 +183,13 @@ def write_portal_page(output_path: str | Path) -> Path:
         ("Peak forecast", f"{forecast_peak:.2f}" if forecast_peak is not None else "not measured", f"Project-defined risk tier: {risk_label}", risk_class),
         ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul saturation, and outage evidence", "status-good"),
         ("A1 policy status", policy_action, "Candidate only; no network control is executed", "status-good" if policy_action == "no_action" else "status-warn"),
-        ("Benchmark status", "Pending local dataset", "Telecom Italia MI path is prepared, but no benchmark metric is claimed yet.", "status-warn"),
+        (
+            ("Benchmark status", f"{len(telecom_summary['cells'])} cells measured",
+             f"Telecom Italia MI, hourly internet_traffic, {telecom_summary['dataset']['first_day']} to "
+             f"{telecom_summary['dataset']['last_day']}; per-cell hold-out with naive baselines", "status-good")
+            if telecom_summary
+            else ("Benchmark status", "Pending local dataset", "Telecom Italia MI path is prepared, but no benchmark metric is claimed yet.", "status-warn")
+        ),
         ("Validation status", "local tests pass", "Lint, tests, report generation, and artifact checks", "status-good"),
     ]
 
@@ -329,21 +340,50 @@ def write_portal_page(output_path: str | Path) -> Path:
       </table>
     </section>
     """
-    html_benchmark_section = """
+    if telecom_summary:
+        cells = telecom_summary["cells"]
+        model_names = telecom_summary["models"]
+        header_cells = "".join(f"<th>{m} RMSE</th>" for m in model_names)
+        rows = []
+        for cid, cell in cells.items():
+            model_cells = "".join(
+                f"<td><a href=\"{rel(telecom_root / cid / m / 'metrics.json')}\">{cell['models'][m]['rmse']:.1f}</a></td>"
+                for m in model_names
+            )
+            base = cell["baselines"]
+            rows.append(
+                f"<tr><td>{cell['level']} ({cid})</td><td>{cell['hours']}</td><td>{cell['split']['n_test']}</td>"
+                f"{model_cells}"
+                f"<td><a href=\"{rel(telecom_root / cid / 'baselines.json')}\">{base['naive_last_value']['rmse']:.1f}</a></td>"
+                f"<td>{base['seasonal_naive_24h']['rmse']:.1f}</td></tr>"
+            )
+        ds = telecom_summary["dataset"]
+        html_benchmark_section = f"""
     <section class="wide-card">
-      <div class="eyebrow">Benchmark readiness: Telecom Italia MI</div>
-      <p class="section-copy">Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. The public Telecom Italia Milan path is implemented, but the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>.</p>
+      <div class="eyebrow">Measured: Telecom Italia MI benchmark</div>
+      <p class="section-copy">Public Milan grid dataset (<a href="https://doi.org/10.7910/DVN/EGZHFV">doi:10.7910/DVN/EGZHFV</a>, {ds['license']}), {ds['n_files']} daily files from {ds['first_day']} to {ds['last_day']}, {ds['total_rows']:,} raw rows. Hourly <code>{telecom_summary['kpi']}</code> per square, three squares chosen by activity level (largest total, nearest the median, nearest the 10th percentile), time-ordered split with the last {int(telecom_summary['test_size'] * 100)}% held out, features are calendar terms and lags of the target only. RMSE in the dataset's activity units; every figure links to its file. Generated {telecom_summary['generated_utc']}. Full record: <a href="{rel(telecom_root / 'summary.json')}">summary.json</a>, <a href="{rel(telecom_root / 'dataset.json')}">dataset.json</a>.</p>
       <table>
-        <thead><tr><th>Item</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>Loader path</td><td><code>ai_ran_kpi_forecasting.data.load_telecom_italia_mi</code></td></tr>
-          <tr><td>Make target</td><td><code>make run-telecom</code></td></tr>
-          <tr><td>Output target</td><td><code>reports/forecast_examples/telecom_italia_mi/</code></td></tr>
-          <tr><td>Published result</td><td>Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.</td></tr>
-        </tbody>
+        <thead><tr><th>Cell</th><th>Hours</th><th>Test rows</th>{header_cells}<th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
+        <tbody>{''.join(rows)}</tbody>
       </table>
     </section>
     """
+    else:
+        html_benchmark_section = """
+        <section class="wide-card">
+          <div class="eyebrow">Benchmark readiness: Telecom Italia MI</div>
+          <p class="section-copy">Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. The public Telecom Italia Milan path is implemented, but the dataset is not stored in this repo. Place the public dataset files under <code>data/telecom_italia_mi/</code>, then run <code>make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi</code>.</p>
+          <table>
+            <thead><tr><th>Item</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Loader path</td><td><code>ai_ran_kpi_forecasting.data.load_telecom_italia_mi</code></td></tr>
+              <tr><td>Make target</td><td><code>make run-telecom</code></td></tr>
+              <tr><td>Output target</td><td><code>reports/forecast_examples/telecom_italia_mi/</code></td></tr>
+              <tr><td>Published result</td><td>Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.</td></tr>
+            </tbody>
+          </table>
+        </section>
+        """
     html_boundaries_section = """
     <section class="wide-card">
       <div class="eyebrow">Engineering boundaries</div>
