@@ -41,6 +41,30 @@ Claude Code = production-readiness check before merge
 
 ---
 
+# Evidence Commit Rule
+
+Evidence files are committed when they are produced, not in a cleanup pass
+later. Every number cited in the README, the portal, `reports/README.md` or
+a write-up must resolve to a tracked file in a fresh clone.
+
+Whenever a run produces a report, measurement, provenance record, chart, or
+evidence media that will be cited anywhere:
+
+- commit it in the same change as the work that produced it
+- do not leave it untracked pending review
+- if it is not worth committing, it is not worth citing
+
+Before a change that cites evidence is complete, confirm every cited path is
+tracked (`git ls-files --error-unmatch <path>`). Large inputs such as the
+Telecom Italia dataset stay out of git; commit their hashes, row counts,
+source DOI and license, and the exact command that consumed them.
+
+Claim boundary: sample-data metrics are pipeline validation, never forecast
+accuracy. Device numbers name the device, execution provider, inputs and
+onnxruntime session options. Advisory outputs only; no RAN control.
+
+---
+
 # Skill Selection
 
 - `production-architecture-reviewer`: changes to pipeline structure, service boundaries, or module responsibilities
