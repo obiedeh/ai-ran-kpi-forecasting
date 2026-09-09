@@ -169,6 +169,7 @@ def main() -> int:
     ap.add_argument("--lags", default="1,2,3,6,12,24")
     ap.add_argument("--cells", default="", help="comma list of square ids to force instead of the selection rule")
     ap.add_argument("--skip-dataset-json", action="store_true", help="reuse an existing dataset.json")
+    ap.add_argument("--until", default="", help="drop hours at or after this UTC timestamp, e.g. 2013-12-20, so the hold-out ends before it")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -204,6 +205,14 @@ def main() -> int:
     cell_ids = {v["cell_id"] for v in selected.values()}
     print(f"[benchmark] loading hourly series for {sorted(cell_ids)}", flush=True)
     hourly = load_telecom_italia_mi(args.data, aggregate="hourly", cell_ids=cell_ids)
+    window: dict = {"until": None, "hours_dropped": 0}
+    if args.until:
+        cutoff = pd.Timestamp(args.until, tz="UTC")
+        before = len(hourly)
+        hourly = hourly[hourly["timestamp"] < cutoff].reset_index(drop=True)
+        window = {"until": str(cutoff), "hours_dropped": int(before - len(hourly)),
+                  "reason": "series truncated so the time-ordered hold-out ends before the cutoff"}
+        print(f"[benchmark] window: hours before {cutoff} ({window['hours_dropped']} rows dropped)", flush=True)
 
     results: dict[str, dict] = {}
     for level, info in selected.items():
@@ -248,6 +257,7 @@ def main() -> int:
         "lags": lags,
         "horizon": args.horizon,
         "test_size": args.test_size,
+        "window": window,
         "models": MODELS,
         "cells": results,
         "provenance": {

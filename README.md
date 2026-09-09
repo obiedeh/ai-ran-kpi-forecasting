@@ -53,7 +53,7 @@ GitHub shows committed HTML files as source code. Use the GitHub Pages links abo
 | Sample forecast metrics | RMSE 0.8368, MAE 0.6954, MAPE 0.8204% | `reports/forecast_examples/latest/metrics.json` |
 | R1-style dataflow demo | KPM-style input to forecast to A1 candidate | `reports/r1_dataflow_demo/` |
 | Scenario evidence | congestion, backhaul saturation, cell outage | `reports/scenarios/latest/` |
-| Telecom Italia MI benchmark | Measured on the public Milan grid, 62 days, three squares, three models plus naive baselines; the naive baseline wins on two of three squares | `reports/forecast_examples/telecom_italia_mi/summary.json` |
+| Telecom Italia MI benchmark | Measured on the public Milan grid, 62 days, three squares, three models plus naive baselines, two hold-out windows: models win in ordinary weeks, the naive baseline wins over the holidays | `reports/forecast_examples/telecom_italia_mi/summary.json`, `..._preholiday/summary.json` |
 | Reproducibility | `make verify` regenerates committed evidence artifacts | `Makefile` |
 
 ## What makes this more than a forecasting notebook
@@ -102,7 +102,7 @@ The committed measured results use deterministic sample telemetry, not live oper
 | Gradient boosting RMSE | 2.8755 | weaker on current sample |
 | MLP RMSE | 22.5926 | underfits current sample |
 
-The small-data result is intentionally visible: Ridge wins here. The model is the least interesting part of the repo; the useful part is the engineering boundary around the model. The public Telecom Italia MI benchmark below tests whether that ranking survives a larger dataset; it does, and a naive baseline beats all three on two of three squares.
+The small-data result is intentionally visible: Ridge wins here. The model is the least interesting part of the repo; the useful part is the engineering boundary around the model. The public Telecom Italia MI benchmark below tests whether that ranking survives a larger dataset; it does in ordinary weeks, where gradient boosting leads; over the holiday window a naive baseline beats all three on two of three squares.
 
 ## Measured: Telecom Italia MI benchmark
 
@@ -141,14 +141,49 @@ MAPE, percent:
 | mid | 3168 | 17.3 | 18.5 | 126.7 | 9.6 | 20.8 |
 | low | 9408 | 16.1 | 12.3 | 161.7 | 11.6 | 18.3 |
 
-What this says. On the median and low-activity squares the naive last-value
-baseline beats all three models on every metric. On the busiest square Ridge
-has the lowest RMSE but the naive baseline has lower MAE and far lower MAPE.
-The MLP, unscaled and small by design, diverges on all three. The model ranking
-from the 48-row sample (Ridge first, MLP last) holds, and the larger finding is
-that none of the three earns its place over a one-line baseline on this hourly
-task with these features. That is the result the repo now carries; the
-engineering boundary around the model is unchanged.
+What the full window says. On the median and low-activity squares the
+naive last-value baseline beats all three models on every metric. On the
+busiest square Ridge has the lowest RMSE but the naive baseline has lower
+MAE and far lower MAPE. The MLP diverges on all three. The hold-out is the
+holiday period; the second window below tests whether that is the cause.
+
+### Second window: hold-out before the holidays
+
+The full-window hold-out starts 2013-12-20 and runs through Christmas and
+New Year, a period with its own traffic pattern. To separate that from the
+general case, the same three squares were rerun with the series cut at
+2013-12-20 00:00 UTC (933 hourly rows dropped), same split rule,
+same features: 922 training hours, 231 test hours starting
+2013-12-10 09:00 UTC, ordinary December weeks
+([`reports/forecast_examples/telecom_italia_mi_preholiday/summary.json`](reports/forecast_examples/telecom_italia_mi_preholiday/summary.json)).
+
+RMSE:
+
+| Cell | Square | Ridge | Gradient boosting | MLP | Naive last value | Seasonal naive 24 h |
+| --- | --- | --- | --- | --- | --- | --- |
+| high | 5161 | [1279.8](reports/forecast_examples/telecom_italia_mi_preholiday/5161/ridge_linear/metrics.json) | [1096.5](reports/forecast_examples/telecom_italia_mi_preholiday/5161/gradient_boosting/metrics.json) | [2085.7](reports/forecast_examples/telecom_italia_mi_preholiday/5161/mlp/metrics.json) | [2634.2](reports/forecast_examples/telecom_italia_mi_preholiday/5161/baselines.json) | 3336.0 |
+| mid | 3168 | [18.7](reports/forecast_examples/telecom_italia_mi_preholiday/3168/ridge_linear/metrics.json) | [15.9](reports/forecast_examples/telecom_italia_mi_preholiday/3168/gradient_boosting/metrics.json) | [18.6](reports/forecast_examples/telecom_italia_mi_preholiday/3168/mlp/metrics.json) | [27.9](reports/forecast_examples/telecom_italia_mi_preholiday/3168/baselines.json) | 43.5 |
+| low | 9408 | [3.4](reports/forecast_examples/telecom_italia_mi_preholiday/9408/ridge_linear/metrics.json) | [3.0](reports/forecast_examples/telecom_italia_mi_preholiday/9408/gradient_boosting/metrics.json) | [3.3](reports/forecast_examples/telecom_italia_mi_preholiday/9408/mlp/metrics.json) | [5.0](reports/forecast_examples/telecom_italia_mi_preholiday/9408/baselines.json) | 4.7 |
+
+MAPE, percent:
+
+| Cell | Square | Ridge | Gradient boosting | MLP | Naive last value | Seasonal naive 24 h |
+| --- | --- | --- | --- | --- | --- | --- |
+| high | 5161 | 17.5 | 9.6 | 33.1 | 25.4 | 19.1 |
+| mid | 3168 | 7.6 | 5.8 | 7.5 | 10.8 | 13.1 |
+| low | 9408 | 8.5 | 7.7 | 9.0 | 12.8 | 11.7 |
+
+What the two windows say together. In ordinary weeks all three models beat
+both naive baselines on all three squares, gradient boosting by the widest
+margin (MAPE 5.8 to 9.6 percent against 10.8 to 25.4 for the naive
+baseline). Over the holidays the ranking inverts: the naive baseline wins
+on two squares and every model's error grows several-fold, the MLP most.
+The models learned ordinary weeks and were scored on a period that does not
+look like them; the naive baseline has no such exposure. Neither window is
+the answer on its own. The record carries both, and a forecaster deployed
+on this kind of series needs either holiday-aware features or a monitor
+that detects the shift and falls back to the baseline, which is the
+operational point of the advisory-only boundary this repo keeps.
 
 ## ONNX exports for edge inference benchmarks
 
@@ -289,7 +324,7 @@ This project is designed around the operational shape of an AI-for-RAN workflow,
 - KPM-style input and A1 advisory output are defined as typed contracts, making the system boundaries inspectable.
 - Forecast outputs are connected to advisory policy candidates instead of being left as standalone charts.
 - Weak model results remain visible in the evidence pack, because hiding them would make the evaluation less credible.
-- The Telecom Italia MI benchmark is measured and the naive baseline's win on two of three squares is reported, not hidden.
+- The Telecom Italia MI benchmark is measured over two hold-out windows; the naive baseline's win over the holiday window is reported beside the models' win in ordinary weeks.
 - The HTML evidence pack is generated and GitHub Pages compatible, so results can be reviewed without cloning the repo.
 
 ## Next engineering steps
