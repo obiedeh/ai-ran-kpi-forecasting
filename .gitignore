@@ -35,3 +35,6 @@ reports/forecast_examples/**/shap_summary.svg
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Public benchmark inputs: obtain from Harvard Dataverse; hashes go in reports/
+data/telecom_italia_mi/
