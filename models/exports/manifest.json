@@ -1,0 +1,154 @@
+{
+  "generated_at": "2026-09-09T02:34:34.144250+00:00",
+  "git_sha": "3dd4f49",
+  "dataset": {
+    "path": "data/ran_kpi_sample.csv",
+    "sha256": "a280dca9846ca055e19cd174447bfcf3a89568c164a22a67c45e2ebd233100c2",
+    "rows": 48
+  },
+  "training": {
+    "cell_id": "CELL_001",
+    "kpi_col": "prb_dl_util",
+    "horizon": 24,
+    "lags": "1,2,3,6,12",
+    "split": "temporal, last 20% held out",
+    "seed": 42
+  },
+  "opset": 17,
+  "versions": {
+    "python": "3.12.3",
+    "scikit-learn": "1.8.0",
+    "skl2onnx": "1.20.0",
+    "onnxruntime": "1.26.0",
+    "numpy": "1.26.4"
+  },
+  "claim_boundary": "Sample-data exports for edge inference benchmarking. Metrics are on the 48-row synthetic sample; they are not forecast accuracy on public telecom data.",
+  "models": [
+    {
+      "model_name": "ridge_linear",
+      "file": "ridge_linear_prb_dl_util.onnx",
+      "sha256": "4b175dcb7ed638f3e2515ac2f203dbde4e563789961b6ab7327f19f9e26bf95f",
+      "bytes": 326,
+      "input_name": "X",
+      "input_shape": [
+        null,
+        16
+      ],
+      "feature_names": [
+        "throughput_mbps",
+        "rrc_users",
+        "latency_ms",
+        "hour",
+        "dayofweek",
+        "dayofmonth",
+        "weekofyear",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "prb_dl_util_lag_1",
+        "prb_dl_util_lag_2",
+        "prb_dl_util_lag_3",
+        "prb_dl_util_lag_6",
+        "prb_dl_util_lag_12"
+      ],
+      "target_col": "prb_dl_util",
+      "cell_id": "CELL_001",
+      "sample_metrics": {
+        "rmse": 0.836811,
+        "mae": 0.695411,
+        "mape": 0.820362
+      },
+      "onnx_vs_sklearn_parity": {
+        "n_rows": 8,
+        "max_abs_diff": 1.1729080547695503e-05,
+        "mean_abs_diff": 7.321767450996219e-06,
+        "max_rel_diff": 2.1776857698598764e-07
+      }
+    },
+    {
+      "model_name": "gradient_boosting",
+      "file": "gradient_boosting_prb_dl_util.onnx",
+      "sha256": "7f9a5e6ee9c6e826c814ff663e75151c433192e187a5ceef7d2c92e4ab393a34",
+      "bytes": 112245,
+      "input_name": "X",
+      "input_shape": [
+        null,
+        16
+      ],
+      "feature_names": [
+        "throughput_mbps",
+        "rrc_users",
+        "latency_ms",
+        "hour",
+        "dayofweek",
+        "dayofmonth",
+        "weekofyear",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "prb_dl_util_lag_1",
+        "prb_dl_util_lag_2",
+        "prb_dl_util_lag_3",
+        "prb_dl_util_lag_6",
+        "prb_dl_util_lag_12"
+      ],
+      "target_col": "prb_dl_util",
+      "cell_id": "CELL_001",
+      "sample_metrics": {
+        "rmse": 2.875489,
+        "mae": 2.62804,
+        "mape": 3.164132
+      },
+      "onnx_vs_sklearn_parity": {
+        "n_rows": 8,
+        "max_abs_diff": 1.0928420167033437e-05,
+        "mean_abs_diff": 2.5012786926126296e-06,
+        "max_rel_diff": 1.2348602149748637e-07
+      }
+    },
+    {
+      "model_name": "mlp",
+      "file": "mlp_prb_dl_util.onnx",
+      "sha256": "b1bbd2b30b0995a5c633bde989a92c49632d36ef80fb648802556596cb69c9cc",
+      "bytes": 5453,
+      "input_name": "X",
+      "input_shape": [
+        null,
+        16
+      ],
+      "feature_names": [
+        "throughput_mbps",
+        "rrc_users",
+        "latency_ms",
+        "hour",
+        "dayofweek",
+        "dayofmonth",
+        "weekofyear",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "prb_dl_util_lag_1",
+        "prb_dl_util_lag_2",
+        "prb_dl_util_lag_3",
+        "prb_dl_util_lag_6",
+        "prb_dl_util_lag_12"
+      ],
+      "target_col": "prb_dl_util",
+      "cell_id": "CELL_001",
+      "sample_metrics": {
+        "rmse": 22.592576,
+        "mae": 19.63991,
+        "mape": 26.961343
+      },
+      "onnx_vs_sklearn_parity": {
+        "n_rows": 8,
+        "max_abs_diff": 1.6279794166962347e-05,
+        "mean_abs_diff": 6.548483782342629e-06,
+        "max_rel_diff": 1.657458887224745e-07
+      }
+    }
+  ]
+}

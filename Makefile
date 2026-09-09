@@ -2,7 +2,7 @@ PYTHON ?= python
 REPORT_DIR ?= reports/forecast_examples/latest
 SCENARIO_DIR ?= reports/scenarios/latest
 
-.PHONY: install install-dev test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish model-comparison verify
+.PHONY: install install-dev export-onnx test lint run-sample run-generic run-telecom synthetic forecast-edge-ai report scenario-demo scenario-backhaul scenario-outage portal publish model-comparison verify
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -87,6 +87,9 @@ portal:
 publish:
 	$(PYTHON) ai-ran-kpi-forecasting.py publish \
 		--output-dir reports/publish/latest
+
+export-onnx:
+	$(PYTHON) scripts/export_onnx.py --data data/ran_kpi_sample.csv --output-dir models/exports
 
 model-comparison:
 	$(PYTHON) scripts/run_model_comparison.py \
