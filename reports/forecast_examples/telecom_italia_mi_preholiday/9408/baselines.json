@@ -1,0 +1,14 @@
+{
+  "naive_last_value": {
+    "rmse": 4.991427421741517,
+    "mae": 3.8553924873423537,
+    "mape": 12.794648326367966
+  },
+  "seasonal_naive_24h": {
+    "rmse": 4.700492299846558,
+    "mae": 3.5472359066555907,
+    "mape": 11.672951761236448
+  },
+  "n_test": 231,
+  "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+}

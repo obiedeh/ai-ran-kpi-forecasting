@@ -358,6 +358,24 @@ def write_portal_page(output_path: str | Path) -> Path:
                 f"<td>{base['seasonal_naive_24h']['rmse']:.1f}</td></tr>"
             )
         ds = telecom_summary["dataset"]
+        pre_path = root / "forecast_examples" / "telecom_italia_mi_preholiday" / "summary.json"
+        pre_note = ""
+        if pre_path.exists():
+            pre = json.loads(pre_path.read_text(encoding="utf-8"))
+            pre_cells = pre["cells"]
+            pre_rows = "".join(
+                f"<tr><td>{cid}</td>"
+                + "".join(f"<td>{c['models'][m]['rmse']:.1f}</td>" for m in model_names)
+                + f"<td>{c['baselines']['naive_last_value']['rmse']:.1f}</td>"
+                f"<td>{c['baselines']['seasonal_naive_24h']['rmse']:.1f}</td></tr>"
+                for cid, c in pre_cells.items()
+            )
+            pre_note = f"""
+      <p class="section-copy">Second window, series cut at {pre['window']['until'][:10]} so the hold-out falls in ordinary weeks (<a href="{rel(pre_path)}">summary.json</a>). In this window every model beats both baselines on every square; over the holiday window above the naive baseline wins on two of three. Both are reported.</p>
+      <table>
+        <thead><tr><th>Square</th>{header_cells}<th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
+        <tbody>{pre_rows}</tbody>
+      </table>"""
         html_benchmark_section = f"""
     <section class="wide-card">
       <div class="eyebrow">Measured: Telecom Italia MI benchmark</div>
@@ -365,7 +383,7 @@ def write_portal_page(output_path: str | Path) -> Path:
       <table>
         <thead><tr><th>Cell</th><th>Hours</th><th>Test rows</th>{header_cells}<th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
         <tbody>{''.join(rows)}</tbody>
-      </table>
+      </table>{pre_note}
     </section>
     """
     else:

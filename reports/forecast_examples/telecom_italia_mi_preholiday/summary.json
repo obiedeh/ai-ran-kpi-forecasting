@@ -1,0 +1,203 @@
+{
+  "schema": "telecom-italia-mi-benchmark-v1",
+  "generated_utc": "2026-09-09T22:27:38Z",
+  "dataset": {
+    "doi": "doi:10.7910/DVN/EGZHFV",
+    "license": "ODbL 1.0 (Open Database License), per the Dataverse terms of use",
+    "n_files": 62,
+    "total_rows": 319896289,
+    "first_day": "2013-11-01",
+    "last_day": "2014-01-01"
+  },
+  "kpi": "internet_traffic",
+  "aggregate": "hourly, summed over country codes and the six 10-minute intervals",
+  "features": "calendar/cyclic time features and lags of the target only",
+  "lags": [
+    1,
+    2,
+    3,
+    6,
+    12,
+    24
+  ],
+  "horizon": 24,
+  "test_size": 0.2,
+  "window": {
+    "until": "2013-12-20 00:00:00+00:00",
+    "hours_dropped": 933,
+    "reason": "series truncated so the time-ordered hold-out ends before the cutoff"
+  },
+  "models": [
+    "ridge_linear",
+    "gradient_boosting",
+    "mlp"
+  ],
+  "cells": {
+    "5161": {
+      "level": "cell_5161",
+      "cell_id": 5161,
+      "selection": {
+        "cell_id": 5161,
+        "total": 12740060.3472951,
+        "rule": "forced by --cells"
+      },
+      "hours": 1177,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2013-12-19 23:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 922,
+        "n_test": 231,
+        "first_test_hour": "2013-12-10 09:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 1279.8069003528396,
+          "mae": 915.6724870825427,
+          "mape": 17.45724729685364,
+          "fit_and_eval_s": 0.14
+        },
+        "gradient_boosting": {
+          "rmse": 1096.526352137778,
+          "mae": 737.2623235032243,
+          "mape": 9.625911965249289,
+          "fit_and_eval_s": 0.64
+        },
+        "mlp": {
+          "rmse": 2085.6761446307028,
+          "mae": 1607.534657193704,
+          "mape": 33.078505967060394,
+          "fit_and_eval_s": 0.52
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 2634.221211398608,
+          "mae": 1901.6318541751446,
+          "mape": 25.370651118802517
+        },
+        "seasonal_naive_24h": {
+          "rmse": 3335.9776588144764,
+          "mae": 1759.2106640085726,
+          "mape": 19.07007389088339
+        },
+        "n_test": 231,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    },
+    "3168": {
+      "level": "cell_3168",
+      "cell_id": 3168,
+      "selection": {
+        "cell_id": 3168,
+        "total": 277931.19392290426,
+        "rule": "forced by --cells"
+      },
+      "hours": 1177,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2013-12-19 23:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 922,
+        "n_test": 231,
+        "first_test_hour": "2013-12-10 09:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 18.65774476617427,
+          "mae": 14.86541885822267,
+          "mape": 7.647666619570061,
+          "fit_and_eval_s": 0.02
+        },
+        "gradient_boosting": {
+          "rmse": 15.88282205723907,
+          "mae": 11.897705255204375,
+          "mape": 5.752570351070531,
+          "fit_and_eval_s": 0.24
+        },
+        "mlp": {
+          "rmse": 18.582218071962735,
+          "mae": 14.310554328697362,
+          "mape": 7.5013332490635,
+          "fit_and_eval_s": 0.53
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 27.876389506214544,
+          "mae": 21.32919037071389,
+          "mape": 10.812131086617512
+        },
+        "seasonal_naive_24h": {
+          "rmse": 43.49979888041364,
+          "mae": 27.258286514635756,
+          "mape": 13.088151834670159
+        },
+        "n_test": 231,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    },
+    "9408": {
+      "level": "cell_9408",
+      "cell_id": 9408,
+      "selection": {
+        "cell_id": 9408,
+        "total": 51230.32474746043,
+        "rule": "forced by --cells"
+      },
+      "hours": 1177,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2013-12-19 23:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 922,
+        "n_test": 231,
+        "first_test_hour": "2013-12-10 09:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 3.3788119459014077,
+          "mae": 2.5942842106924187,
+          "mape": 8.467134819001226,
+          "fit_and_eval_s": 0.02
+        },
+        "gradient_boosting": {
+          "rmse": 2.9955780599256583,
+          "mae": 2.304114449735302,
+          "mape": 7.704151685917614,
+          "fit_and_eval_s": 0.24
+        },
+        "mlp": {
+          "rmse": 3.2959268383964244,
+          "mae": 2.659371954677472,
+          "mape": 8.987293539655616,
+          "fit_and_eval_s": 0.53
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 4.991427421741517,
+          "mae": 3.8553924873423537,
+          "mape": 12.794648326367966
+        },
+        "seasonal_naive_24h": {
+          "rmse": 4.700492299846558,
+          "mae": 3.5472359066555907,
+          "mape": 11.672951761236448
+        },
+        "n_test": 231,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    }
+  },
+  "provenance": {
+    "host": "aimlstation",
+    "python": "3.12.3",
+    "pandas": "3.0.3",
+    "numpy": "1.26.4",
+    "sklearn": "1.8.0",
+    "git_sha": "fb6371c",
+    "wall_clock_s": 163.4
+  },
+  "note": "Forecast accuracy on public telecom data; per-cell hold-out metrics with the naive baselines beside them. Not an operator deployment result."
+}
