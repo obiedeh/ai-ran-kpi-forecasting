@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import glob
-import os
 from pathlib import Path
 
 import numpy as np
@@ -49,7 +47,8 @@ def filter_cell(
         raise ValueError(f"cell_id_col '{cell_id_col}' not found in data.")
 
     if cell_id is not None:
-        df_cell = df[df[cell_id_col] == cell_id].copy()
+        # Square ids are integers in Telecom Italia files and strings on the CLI; compare as text.
+        df_cell = df[df[cell_id_col].astype(str) == str(cell_id)].copy()
         if df_cell.empty:
             raise ValueError(f"No rows found for cell_id='{cell_id}'.")
         return df_cell.reset_index(drop=True)
@@ -87,26 +86,85 @@ def _normalize_telecom_italia_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_telecom_italia_mi(data_path: str | Path, aggregate: str = "hourly") -> pd.DataFrame:
-    """Load Telecom Italia MI files into the generic telemetry schema."""
+RAW_TELECOM_ITALIA_COLUMNS = [
+    "cell_id", "time_interval", "country_code", "sms_in", "sms_out", "call_in", "call_out", "internet_traffic",
+]
+_TELECOM_ITALIA_ACTIVITY = ["sms_in", "sms_out", "call_in", "call_out", "internet_traffic"]
+
+
+def _read_telecom_italia_file(path: str | Path, cell_ids: set[int] | None = None) -> pd.DataFrame:
+    """Read one Telecom Italia MI file, summed over country code to (cell_id, time_interval).
+
+    Two layouts are accepted: the raw Dataverse ``.txt`` files (tab separated, no
+    header, eight columns, one row per square, 10-minute interval and country
+    code) and CSV files with a header row using either the original or the
+    normalised column names. Reading is chunked so a 300 MB daily file does not
+    need to be resident in full.
+    """
+    path = Path(path)
+    is_raw = path.suffix.lower() in {".txt", ".tsv"}
+    reader = pd.read_csv(
+        path,
+        sep="\t" if is_raw else ",",
+        header=None if is_raw else 0,
+        names=RAW_TELECOM_ITALIA_COLUMNS if is_raw else None,
+        chunksize=2_000_000,
+    )
+    parts: list[pd.DataFrame] = []
+    for chunk in reader:
+        if not is_raw:
+            chunk = _normalize_telecom_italia_columns(chunk)
+        if cell_ids is not None and "cell_id" in chunk.columns:
+            chunk = chunk[chunk["cell_id"].isin(cell_ids)]
+        if chunk.empty:
+            continue
+        agg_cols = [c for c in chunk.columns if c in _TELECOM_ITALIA_ACTIVITY]
+        if not agg_cols:
+            raise ValueError(f"No activity columns found in Telecom Italia file: {path}")
+        parts.append(chunk.groupby(["cell_id", "time_interval"], as_index=False)[agg_cols].sum())
+    if not parts:
+        return pd.DataFrame(columns=["cell_id", "time_interval", *_TELECOM_ITALIA_ACTIVITY])
+    df = pd.concat(parts, ignore_index=True)
+    agg_cols = [c for c in df.columns if c in _TELECOM_ITALIA_ACTIVITY]
+    return df.groupby(["cell_id", "time_interval"], as_index=False)[agg_cols].sum()
+
+
+def load_telecom_italia_mi(
+    data_path: str | Path,
+    aggregate: str = "hourly",
+    cell_ids: set[int] | None = None,
+) -> pd.DataFrame:
+    """Load Telecom Italia MI files into the generic telemetry schema.
+
+    ``data_path`` is a directory of daily files (``*.txt`` from Dataverse or
+    ``*.csv``) or a single file. ``cell_ids`` restricts the load to those
+    squares, which keeps memory flat when only a few cells are needed.
+    """
     data_path = Path(data_path)
     if data_path.is_dir():
-        files = sorted(glob.glob(os.path.join(data_path, "*.csv")))
+        files = sorted(
+            str(p) for p in data_path.iterdir()
+            if p.is_file() and p.suffix.lower() in {".txt", ".tsv", ".csv"}
+        )
         if not files:
-            raise FileNotFoundError(f"No CSV files found in directory: {data_path}")
+            raise FileNotFoundError(f"No .txt/.tsv/.csv files found in directory: {data_path}")
     else:
         if not data_path.exists():
             raise FileNotFoundError(f"Data file not found: {data_path}")
         files = [str(data_path)]
 
-    dfs = [_normalize_telecom_italia_columns(pd.read_csv(path)) for path in files]
+    dfs = [_read_telecom_italia_file(path, cell_ids=cell_ids) for path in files]
     df = pd.concat(dfs, ignore_index=True)
+    if "time_interval" not in df.columns:
+        raise ValueError("No time_interval column found in Telecom Italia data.")
     df["timestamp"] = pd.to_datetime(df["time_interval"], unit="ms", utc=True, errors="coerce")
     df = df.dropna(subset=["timestamp", "cell_id"])
 
-    agg_cols = [c for c in df.columns if c in {"sms_in", "sms_out", "call_in", "call_out", "internet_traffic"}]
+    agg_cols = [c for c in df.columns if c in _TELECOM_ITALIA_ACTIVITY]
     if not agg_cols:
         raise ValueError("No activity columns found in Telecom Italia data.")
+    if df.empty:
+        return pd.DataFrame(columns=["cell_id", "timestamp", *agg_cols])
 
     df = df.groupby(["cell_id", "timestamp"], as_index=False)[agg_cols].sum()
     if aggregate == "10min":

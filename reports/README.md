@@ -18,3 +18,14 @@ Expected files in `reports/forecast_examples/latest/`:
 - `feature_importance.csv`: model coefficient importance.
 
 The reports are offline artifacts. They are suitable for engineering review, CI smoke checks, and static publication, but they are not live RAN integrations.
+
+## Evidence directories
+
+| Directory | What it holds | Data | Hardware |
+| --- | --- | --- | --- |
+| `forecast_examples/latest/`, `model_comparison/` | Sample-data pipeline validation, three models on the 48-row sample | synthetic sample | none |
+| `scenarios/latest/`, `r1_dataflow_demo/` | Scenario evidence and the R1-style dataflow demo | synthetic | none |
+| `thor_benchmark/` | ONNX inference cost of the three forecasters: `thor_benchmark.json` (one thread, no spin), `default_threads.json`, `thread_comparison.json`, run logs and tegrastats sidecars | synthetic Gaussian inputs of the model shape | Jetson AGX Thor, CPU execution provider, 2026-09-09 |
+| `forecast_examples/telecom_italia_mi/` | Forecast accuracy on the public Telecom Italia Milan grid: `summary.json` (per-cell, per-model RMSE/MAE/MAPE with naive baselines), `dataset.json` (files, hashes, DOI, licence), `cell_activity.csv`, one report bundle per cell and model | public dataset doi:10.7910/DVN/EGZHFV, ODbL 1.0, not committed | host CPU; a forecast-accuracy record, not an inference-cost one |
+
+The Telecom Italia directory only exists once `make benchmark-telecom` has run against the downloaded files (`make fetch-telecom EMAIL=you@example.com`).

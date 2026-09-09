@@ -1,0 +1,198 @@
+{
+  "schema": "telecom-italia-mi-benchmark-v1",
+  "generated_utc": "2026-09-09T21:26:47Z",
+  "dataset": {
+    "doi": "doi:10.7910/DVN/EGZHFV",
+    "license": "ODbL 1.0 (Open Database License), per the Dataverse terms of use",
+    "n_files": 62,
+    "total_rows": 319896289,
+    "first_day": "2013-11-01",
+    "last_day": "2014-01-01"
+  },
+  "kpi": "internet_traffic",
+  "aggregate": "hourly, summed over country codes and the six 10-minute intervals",
+  "features": "calendar/cyclic time features and lags of the target only",
+  "lags": [
+    1,
+    2,
+    3,
+    6,
+    12,
+    24
+  ],
+  "horizon": 24,
+  "test_size": 0.2,
+  "models": [
+    "ridge_linear",
+    "gradient_boosting",
+    "mlp"
+  ],
+  "cells": {
+    "5161": {
+      "level": "high",
+      "cell_id": 5161,
+      "selection": {
+        "cell_id": 5161,
+        "total": 12740060.3472951,
+        "rule": "largest total internet_traffic"
+      },
+      "hours": 1488,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2014-01-01 22:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 1171,
+        "n_test": 293,
+        "first_test_hour": "2013-12-20 18:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 1697.5042124621202,
+          "mae": 1361.4689204707308,
+          "mape": 82.56058831457032,
+          "fit_and_eval_s": 0.14
+        },
+        "gradient_boosting": {
+          "rmse": 2793.534288578107,
+          "mae": 1996.4735019144832,
+          "mape": 108.83798119287394,
+          "fit_and_eval_s": 0.65
+        },
+        "mlp": {
+          "rmse": 7653.086555595464,
+          "mae": 5258.9303047430285,
+          "mape": 349.74984117309594,
+          "fit_and_eval_s": 0.63
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 2407.7013445613225,
+          "mae": 1521.2766024355008,
+          "mape": 30.175189332260942
+        },
+        "seasonal_naive_24h": {
+          "rmse": 4163.094151352722,
+          "mae": 2457.0991140232168,
+          "mape": 67.17030163314803
+        },
+        "n_test": 293,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    },
+    "3168": {
+      "level": "mid",
+      "cell_id": 3168,
+      "selection": {
+        "cell_id": 3168,
+        "total": 277931.19392290426,
+        "rule": "total nearest the median (277871.1)"
+      },
+      "hours": 1488,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2014-01-01 22:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 1171,
+        "n_test": 293,
+        "first_test_hour": "2013-12-20 18:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 24.25319779431583,
+          "mae": 20.0543897094986,
+          "mape": 17.327855702190277,
+          "fit_and_eval_s": 0.02
+        },
+        "gradient_boosting": {
+          "rmse": 26.87433750926734,
+          "mae": 21.15849863883614,
+          "mape": 18.494746121598453,
+          "fit_and_eval_s": 0.29
+        },
+        "mlp": {
+          "rmse": 245.8020253360201,
+          "mae": 140.05828711414097,
+          "mape": 126.74954121058153,
+          "fit_and_eval_s": 0.64
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 15.897839622988672,
+          "mae": 12.192728617139597,
+          "mape": 9.608586611015793
+        },
+        "seasonal_naive_24h": {
+          "rmse": 43.81992727022976,
+          "mae": 28.6145967801771,
+          "mape": 20.789686063204247
+        },
+        "n_test": 293,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    },
+    "9408": {
+      "level": "low",
+      "cell_id": 9408,
+      "selection": {
+        "cell_id": 9408,
+        "total": 51230.32474746043,
+        "rule": "total nearest the 10th percentile (51224.7)"
+      },
+      "hours": 1488,
+      "first_hour": "2013-10-31 23:00:00+00:00",
+      "last_hour": "2014-01-01 22:00:00+00:00",
+      "split": {
+        "rule": "time ordered, first 80% train, last 20% test, after lag features",
+        "n_train": 1171,
+        "n_test": 293,
+        "first_test_hour": "2013-12-20 18:00:00+00:00"
+      },
+      "models": {
+        "ridge_linear": {
+          "rmse": 5.981668811746116,
+          "mae": 4.593342909554738,
+          "mape": 16.081119023819237,
+          "fit_and_eval_s": 0.02
+        },
+        "gradient_boosting": {
+          "rmse": 5.11784887251231,
+          "mae": 3.7916675461041436,
+          "mape": 12.275535126064039,
+          "fit_and_eval_s": 0.3
+        },
+        "mlp": {
+          "rmse": 79.8236375040409,
+          "mae": 41.78492517103062,
+          "mape": 161.6701451615756,
+          "fit_and_eval_s": 0.65
+        }
+      },
+      "baselines": {
+        "naive_last_value": {
+          "rmse": 4.413518949717169,
+          "mae": 3.5077397275671225,
+          "mape": 11.626525276058205
+        },
+        "seasonal_naive_24h": {
+          "rmse": 7.810390042656788,
+          "mae": 5.6692384067467065,
+          "mape": 18.28721746437268
+        },
+        "n_test": 293,
+        "note": "Same hold-out rows as the models, after the 24 h seasonal lag is available."
+      }
+    }
+  },
+  "provenance": {
+    "host": "aimlstation",
+    "python": "3.12.3",
+    "pandas": "3.0.3",
+    "numpy": "1.26.4",
+    "sklearn": "1.8.0",
+    "git_sha": "25b666a",
+    "wall_clock_s": 193.9
+  },
+  "note": "Forecast accuracy on public telecom data; per-cell hold-out metrics with the naive baselines beside them. Not an operator deployment result."
+}

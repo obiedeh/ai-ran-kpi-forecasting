@@ -183,3 +183,30 @@ def test_forecast_autoregressive_produces_finite_sequential_steps():
     assert list(fc["forecast_step"]) == [1, 2, 3, 4, 5]
     assert np.all(np.isfinite(fc["y_hat"].to_numpy()))
     assert (fc["timestamp"].diff().dropna() > pd.Timedelta(0)).all()
+
+
+def test_load_telecom_italia_mi_reads_raw_dataverse_txt(tmp_path):
+    """Three real lines from sms-call-internet-mi-2013-11-01.txt (doi:10.7910/DVN/EGZHFV):
+    tab separated, no header, empty fields for absent activity, one row per country code."""
+    raw = (
+        "1\t1383260400000\t0\t0.08136262351125882\t\t\t\t\n"
+        "1\t1383260400000\t39\t0.14186425470242922\t0.1567870050390246\t0.16093793691701822"
+        "\t0.052274848528573205\t11.028366381681026\n"
+        "1\t1383261000000\t0\t0.13658782275823106\t\t\t0.02730046487718618\t\n"
+    )
+    path = tmp_path / "sms-call-internet-mi-2013-11-01.txt"
+    path.write_text(raw)
+
+    ten_min = load_telecom_italia_mi(path, aggregate="10min")
+    assert list(ten_min["cell_id"]) == [1, 1]
+    assert ten_min["sms_in"].iloc[0] == pytest.approx(0.08136262351125882 + 0.14186425470242922)
+    assert ten_min["internet_traffic"].iloc[0] == pytest.approx(11.028366381681026)
+    assert ten_min["internet_traffic"].iloc[1] == pytest.approx(0.0)
+    assert str(ten_min["timestamp"].iloc[0]) == "2013-10-31 23:00:00+00:00"
+
+    hourly = load_telecom_italia_mi(tmp_path, aggregate="hourly")
+    assert len(hourly) == 1
+    assert hourly["sms_in"].iloc[0] == pytest.approx(ten_min["sms_in"].sum())
+
+    filtered = load_telecom_italia_mi(tmp_path, aggregate="hourly", cell_ids={2})
+    assert filtered.empty
