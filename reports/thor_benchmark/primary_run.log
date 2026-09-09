@@ -1,0 +1,30 @@
+ERROR: invalid models spec: [Errno 2] No such file or directory: '/home/oedeh/github/ai-ran-kpi-forecasting/deploy/thor/models_spec.json'
+Hardware: {
+  "host": "jetsonthor",
+  "machine": "aarch64",
+  "kernel": "6.8.12-tegra",
+  "soc": "tegra264",
+  "devicetree_compatible": [
+    "nvidia,p4071-0000+p3834-0008",
+    "nvidia,p3834-0008",
+    "nvidia,tegra264"
+  ],
+  "is_jetson": true,
+  "l4t_release": "# R38 (release), REVISION: 4.0, GCID: 43443517, BOARD: generic, EABI: aarch64, DATE: Wed Dec 31 00:15:19 UTC 2025",
+  "nvpmodel": "NV Power Mode: 120W 1",
+  "cpu_count": 14,
+  "mem_total_gb": 122.82,
+  "loadavg_1m_at_start": 1.998046875,
+  "loadavg_5m_at_start": 1.8984375,
+  "python": "3.12.3",
+  "onnxruntime": "1.29.0",
+  "numpy": "2.5.3",
+  "available_providers": [
+    "CUDAExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "git_sha": null,
+  "benchmark_started_at": "2026-09-09T02:50:46.994884+00:00"
+}
+
+Idle baseline: sampling 60s before load
