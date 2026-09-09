@@ -5,6 +5,6 @@
   "device": "Jetson AGX Thor (tegra264)",
   "provider": "CPUExecutionProvider",
   "log": "primary_run.log",
-  "resolution": "Reviewed 2026-09-09: the harness block-buffered stdout when redirected, so the log stopped at the idle-baseline line while the process was still running (60 s idle plus three 300 s tiers is 16 min for the first model alone). The run was terminated at 17m10s, not hung. The harness now line-buffers output and prints a heartbeat; the run is to be repeated. No performance numbers from this attempt exist or are claimed.",
-  "superseded_by": null
+  "resolution": "Reviewed 2026-09-09: the harness block-buffered stdout when redirected, so the log stopped at the idle-baseline line while the process was still running (60 s idle plus three 300 s tiers is 16 min for the first model alone). The run was terminated at 17m10s, not hung. The harness now line-buffers output and prints a heartbeat; the run was repeated on 2026-09-09 and completed. No performance numbers from this attempt exist or are claimed.",
+  "superseded_by": "thor_benchmark.json (run 3e55b967a7ea, completed 2026-09-09)"
 }
