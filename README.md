@@ -124,6 +124,23 @@ cat reports/forecast_examples/telecom_italia_mi/metrics.json
 
 Until that artifact exists, this repo does not claim Telecom Italia MI benchmark accuracy.
 
+## ONNX exports for edge inference benchmarks
+
+The three sample-trained forecasters are exported to ONNX (opset 17) under
+[`models/exports/`](models/exports/) by [`scripts/export_onnx.py`](scripts/export_onnx.py)
+(`make export-onnx`, needs `pip install -r requirements-onnx.txt`). The
+[manifest](models/exports/manifest.json) records the dataset hash, feature
+names, input shape `(None, 16)`, per-file SHA-256, tool versions, and the
+ONNX-versus-scikit-learn parity on the hold-out sample. Tests in
+`tests/test_onnx_export.py` reproduce the export and check that the sample
+metrics match `reports/model_comparison/`.
+
+Purpose: run these models through the same edge inference harness used in
+[jetson-edge-ai-security](https://github.com/obiedeh/jetson-edge-ai-security)
+on Jetson AGX Thor. No device measurement for this repo is committed yet;
+when one exists it will be an inference-cost figure, not a forecast-accuracy
+claim.
+
 ## GitHub repo description
 
 Recommended description:

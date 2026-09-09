@@ -13,6 +13,9 @@ dependencies = [
   "pandas>=2.0.0",
 ]
 
+[project.optional-dependencies]
+onnx = ["scikit-learn>=1.3.0", "skl2onnx>=1.16", "onnx>=1.15", "onnxruntime>=1.17"]
+
 [project.scripts]
 ai-ran-kpi-forecasting = "ai_ran_kpi_forecasting.cli:main"
 
