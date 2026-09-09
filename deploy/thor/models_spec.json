@@ -1,0 +1,5 @@
+[
+  {"name": "ridge_linear", "file": "ridge_linear_prb_dl_util.onnx", "input_name": "X", "shape": [1, 16]},
+  {"name": "gradient_boosting", "file": "gradient_boosting_prb_dl_util.onnx", "input_name": "X", "shape": [1, 16]},
+  {"name": "mlp", "file": "mlp_prb_dl_util.onnx", "input_name": "X", "shape": [1, 16]}
+]
