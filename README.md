@@ -137,9 +137,59 @@ metrics match `reports/model_comparison/`.
 
 Purpose: run these models through the same edge inference harness used in
 [jetson-edge-ai-security](https://github.com/obiedeh/jetson-edge-ai-security)
-on Jetson AGX Thor. No device measurement for this repo is committed yet;
-when one exists it will be an inference-cost figure, not a forecast-accuracy
-claim.
+on Jetson AGX Thor. The measurement below is an inference-cost figure, not a
+forecast-accuracy claim.
+
+### Measured on Jetson AGX Thor
+
+Run `3e55b967a7ea`, finished 2026-09-09T18:00:17Z, on Jetson AGX Thor
+(tegra264, L4T R38.4.0, 120 W power mode, 122 GB), onnxruntime
+`CPUExecutionProvider` (the CUDA provider has no kernels for this GPU in the
+PyPI wheel), one intra-op and one inter-op thread, spinning disabled, batch 1,
+synthetic Gaussian inputs of shape `(1, 16)`, paced open-loop load for 300 s
+per tier at 10, 100 and 1000 events/s, tegrastats sampled at 1 Hz.
+Artifact: [`reports/thor_benchmark/thor_benchmark.json`](reports/thor_benchmark/thor_benchmark.json)
+([run log](reports/thor_benchmark/thor_benchmark_run.log),
+[tegrastats samples](reports/thor_benchmark/thor_benchmark_tegrastats.jsonl)).
+Idle board input power before load: 25,798 mW p50 over 60 s.
+
+At 1000 events/s:
+
+| Model | p50 ms | p95 ms | p99 ms | Achieved events/s | Deadline misses | Process RSS GB | VIN p50 mW | Tj peak C |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `ridge_linear` | 0.0112 | 0.0115 | 0.0118 | 1000.0 | 0 | 0.0694 | 24,170 | 41.562 |
+| `gradient_boosting` | 0.015 | 0.0153 | 0.0155 | 1000.0 | 0 | 0.0729 | 24,112 | 40.25 |
+| `mlp` | 0.0202 | 0.0206 | 0.0208 | 1000.0 | 2 | 0.0748 | 24,110 | 39.937 |
+
+The harness's latency and throughput gates are defined for the security
+repo's detector and forecaster and report `not measured` here; only the
+memory gate (4 GB) evaluates, at 0.0802 GB peak RSS. No pass or fail
+is claimed for the other three.
+
+Thread-pool comparison. A second run with onnxruntime's default thread pool
+and spinning enabled, 120 s per tier at 100 and 1000 events/s
+([`default_threads.json`](reports/thor_benchmark/default_threads.json),
+[log](reports/thor_benchmark/default_threads_run.log),
+[tegrastats](reports/thor_benchmark/default_threads_tegrastats.jsonl)), compared
+by the security repo's `compare_thread_runs.py` into
+[`thread_comparison.json`](reports/thor_benchmark/thread_comparison.json). At
+1000 events/s:
+
+| Model | p95 ms, default pool | p95 ms, one thread no spin | Misses, default | Misses, one thread | VIN p50 mW, default | VIN p50 mW, one thread |
+| --- | --- | --- | --- | --- | --- | --- |
+| `ridge_linear` | 0.0115 | 0.0115 | 4 | 0 | 24,184 | 24,170 |
+| `gradient_boosting` | 0.0222 | 0.0153 | 18,342 | 0 | 54,114 | 24,112 |
+| `mlp` | 0.0083 | 0.0206 | 201 | 2 | 24,574 | 24,110 |
+
+The gradient-boosting graph is the one that engages the default thread pool:
+about 30 W of extra board power and 18,342 pacing misses, both removed by the
+single-thread setting, reproducing the security repo's finding on a different
+model. The linear model is unaffected. The MLP is faster under the default
+pool but misses 201 deadlines there and 2 with one thread. Board power
+includes unrelated host activity; each run's idle baseline is in its file.
+
+An earlier attempt on 2026-09-08 was terminated before producing numbers;
+its record is [`primary_failure.json`](reports/thor_benchmark/primary_failure.json).
 
 ## GitHub repo description
 
