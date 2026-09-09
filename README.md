@@ -53,7 +53,7 @@ GitHub shows committed HTML files as source code. Use the GitHub Pages links abo
 | Sample forecast metrics | RMSE 0.8368, MAE 0.6954, MAPE 0.8204% | `reports/forecast_examples/latest/metrics.json` |
 | R1-style dataflow demo | KPM-style input to forecast to A1 candidate | `reports/r1_dataflow_demo/` |
 | Scenario evidence | congestion, backhaul saturation, cell outage | `reports/scenarios/latest/` |
-| Telecom Italia MI benchmark | Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet. | `reports/forecast_examples/telecom_italia_mi/` |
+| Telecom Italia MI benchmark | Measured on the public Milan grid, 62 days, three squares, three models plus naive baselines; the naive baseline wins on two of three squares | `reports/forecast_examples/telecom_italia_mi/summary.json` |
 | Reproducibility | `make verify` regenerates committed evidence artifacts | `Makefile` |
 
 ## What makes this more than a forecasting notebook
@@ -102,27 +102,53 @@ The committed measured results use deterministic sample telemetry, not live oper
 | Gradient boosting RMSE | 2.8755 | weaker on current sample |
 | MLP RMSE | 22.5926 | underfits current sample |
 
-The small-data result is intentionally visible: Ridge wins here. The model is the least interesting part of the repo; the useful part is the engineering boundary around the model. The public Telecom Italia MI path exists to test whether model ranking changes on a larger dataset.
+The small-data result is intentionally visible: Ridge wins here. The model is the least interesting part of the repo; the useful part is the engineering boundary around the model. The public Telecom Italia MI benchmark below tests whether that ranking survives a larger dataset; it does, and a naive baseline beats all three on two of three squares.
 
-## Benchmark readiness: Telecom Italia MI
+## Measured: Telecom Italia MI benchmark
 
-The repo includes a public benchmark path for the Telecom Italia Milan dataset, but the dataset is not committed because of size and licensing/distribution constraints.
+Public dataset: Telecommunications - SMS, Call, Internet - MI,
+[doi:10.7910/DVN/EGZHFV](https://doi.org/10.7910/DVN/EGZHFV), Harvard Dataverse,
+ODbL 1.0. 62 daily files, 2013-11-01 to 2014-01-01, 319,896,289 raw
+rows, 20.8 GB, every file's MD5 verified against the Dataverse record
+([`dataset.json`](reports/forecast_examples/telecom_italia_mi/dataset.json)). The files
+are not committed; `make fetch-telecom EMAIL=<you>` downloads them (the
+publisher's guestbook asks for an email) and `make benchmark-telecom` reproduces
+everything below ([`summary.json`](reports/forecast_examples/telecom_italia_mi/summary.json),
+generated 2026-09-09, host CPU).
 
-Current status:
+Setup: hourly `internet_traffic` per square, summed over country codes. Three
+squares chosen by a stated rule over the 62-day totals
+([`cell_activity.csv`](reports/forecast_examples/telecom_italia_mi/cell_activity.csv)):
+largest total, nearest the median, nearest the 10th percentile. Features are
+calendar terms and lags 1, 2, 3, 6, 12, 24 of the target only. One time-ordered
+split per cell: 1171 training hours, 293 test hours, test starting
+2013-12-20 18:00 UTC, so the hold-out covers Christmas and New Year. One-step-ahead
+hold-out error, with two naive baselines scored on the same rows.
 
-- Loader path: `ai_ran_kpi_forecasting.data.load_telecom_italia_mi`
-- Make target: `make run-telecom`
-- Output target: `reports/forecast_examples/telecom_italia_mi/`
-- Published result: Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.
+RMSE, in the dataset's activity units:
 
-To run when data is available:
+| Cell | Square | 62-day total | Ridge | Gradient boosting | MLP | Naive last value | Seasonal naive 24 h |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| high | 5161 | 12,740,060 | [1697.5](reports/forecast_examples/telecom_italia_mi/5161/ridge_linear/metrics.json) | [2793.5](reports/forecast_examples/telecom_italia_mi/5161/gradient_boosting/metrics.json) | [7653.1](reports/forecast_examples/telecom_italia_mi/5161/mlp/metrics.json) | [2407.7](reports/forecast_examples/telecom_italia_mi/5161/baselines.json) | 4163.1 |
+| mid | 3168 | 277,931 | [24.3](reports/forecast_examples/telecom_italia_mi/3168/ridge_linear/metrics.json) | [26.9](reports/forecast_examples/telecom_italia_mi/3168/gradient_boosting/metrics.json) | [245.8](reports/forecast_examples/telecom_italia_mi/3168/mlp/metrics.json) | [15.9](reports/forecast_examples/telecom_italia_mi/3168/baselines.json) | 43.8 |
+| low | 9408 | 51,230 | [6.0](reports/forecast_examples/telecom_italia_mi/9408/ridge_linear/metrics.json) | [5.1](reports/forecast_examples/telecom_italia_mi/9408/gradient_boosting/metrics.json) | [79.8](reports/forecast_examples/telecom_italia_mi/9408/mlp/metrics.json) | [4.4](reports/forecast_examples/telecom_italia_mi/9408/baselines.json) | 7.8 |
 
-```bash
-make run-telecom REPORT_DIR=reports/forecast_examples/telecom_italia_mi
-cat reports/forecast_examples/telecom_italia_mi/metrics.json
-```
+MAPE, percent:
 
-Until that artifact exists, this repo does not claim Telecom Italia MI benchmark accuracy.
+| Cell | Square | Ridge | Gradient boosting | MLP | Naive last value | Seasonal naive 24 h |
+| --- | --- | --- | --- | --- | --- | --- |
+| high | 5161 | 82.6 | 108.8 | 349.7 | 30.2 | 67.2 |
+| mid | 3168 | 17.3 | 18.5 | 126.7 | 9.6 | 20.8 |
+| low | 9408 | 16.1 | 12.3 | 161.7 | 11.6 | 18.3 |
+
+What this says. On the median and low-activity squares the naive last-value
+baseline beats all three models on every metric. On the busiest square Ridge
+has the lowest RMSE but the naive baseline has lower MAE and far lower MAPE.
+The MLP, unscaled and small by design, diverges on all three. The model ranking
+from the 48-row sample (Ridge first, MLP last) holds, and the larger finding is
+that none of the three earns its place over a one-line baseline on this hourly
+task with these features. That is the result the repo now carries; the
+engineering boundary around the model is unchanged.
 
 ## ONNX exports for edge inference benchmarks
 
@@ -263,7 +289,7 @@ This project is designed around the operational shape of an AI-for-RAN workflow,
 - KPM-style input and A1 advisory output are defined as typed contracts, making the system boundaries inspectable.
 - Forecast outputs are connected to advisory policy candidates instead of being left as standalone charts.
 - Weak model results remain visible in the evidence pack, because hiding them would make the evaluation less credible.
-- The Telecom Italia MI benchmark path is prepared, but no benchmark result is claimed until the dataset is run locally.
+- The Telecom Italia MI benchmark is measured and the naive baseline's win on two of three squares is reported, not hidden.
 - The HTML evidence pack is generated and GitHub Pages compatible, so results can be reviewed without cloning the repo.
 
 ## Next engineering steps
