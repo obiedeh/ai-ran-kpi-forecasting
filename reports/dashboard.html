@@ -85,6 +85,10 @@
       margin-top: 16px;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
+    .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
+    figure.chart { margin: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; overflow-x: auto; }
+    figure.chart img { width: 100%; height: auto; display: block; background: #fff0; }
+    figure.chart figcaption { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
     .wide-card h2 { margin: 8px 0; font-size: 20px; }
     .wide-card p { color: var(--muted); line-height: 1.55; }
     .section-copy { max-width: 980px; }
@@ -147,6 +151,11 @@
           <span class="status-good">A1 policy status</span>
           <strong>no_action</strong>
           <small>Candidate only; no network control is executed</small>
+        </article>
+<article class="summary-card">
+          <span class="status-good">Thor inference</span>
+          <strong>0.0206 ms p95</strong>
+          <small>Slowest of the three ONNX forecasters at 1000 events/s on Jetson AGX Thor, CPU provider, one thread</small>
         </article>
 <article class="summary-card">
           <span class="status-good">Benchmark status</span>
@@ -214,6 +223,18 @@
     
     
     <section class="wide-card">
+      <div class="eyebrow">Measured: inference cost on Jetson AGX Thor</div>
+      <p class="section-copy">The three ONNX exports run through the edge inference harness shared with <a href="https://github.com/obiedeh/jetson-edge-ai-security">jetson-edge-ai-security</a> on jetsonthor (tegra264, 120W 1 power mode), onnxruntime CPU execution provider, synthetic inputs of the model shape, batch 1, paced load, 300.0 s per tier. Primary run <a href="thor_benchmark/thor_benchmark.json">thor_benchmark.json</a> uses one intra-op and one inter-op thread with spinning disabled; the comparison run <a href="thor_benchmark/default_threads.json">default_threads.json</a> uses runtime defaults. Inference cost only, not forecast accuracy. At 1000 events/s:</p>
+      <table>
+        <thead><tr><th>Model</th><th>p95 ms, one thread</th><th>p95 ms, default pool</th><th>Misses, one thread</th><th>Misses, default</th><th>VIN p50 mW, one thread</th><th>VIN p50 mW, default</th></tr></thead>
+        <tbody><tr><td><a href="thor_benchmark/thor_benchmark.json">ridge_linear</a></td><td>0.0115</td><td>0.0115</td><td>0</td><td>4</td><td>24,170</td><td>24,184</td></tr><tr><td><a href="thor_benchmark/thor_benchmark.json">gradient_boosting</a></td><td>0.0153</td><td>0.0222</td><td>0</td><td>18,342</td><td>24,112</td><td>54,114</td></tr><tr><td><a href="thor_benchmark/thor_benchmark.json">mlp</a></td><td>0.0206</td><td>0.0083</td><td>2</td><td>201</td><td>24,110</td><td>24,574</td></tr></tbody>
+      </table>
+      <p class="section-copy">The gradient-boosting graph engages the default thread pool: about 30 W of extra board power and 18,342 pacing misses, both removed by the single-thread setting. The linear model is unaffected; the MLP is faster under the default pool but misses more deadlines.</p>
+      <figure class="chart"><img src="thor_benchmark/latency_power.svg" alt="Thor p95 latency and board power per model, default thread pool against one thread" loading="lazy"><figcaption>Read from <a href="thor_benchmark/thread_comparison.json">thread_comparison.json</a>.</figcaption></figure>
+    </section>
+    
+    
+    <section class="wide-card">
       <div class="eyebrow">Measured: Telecom Italia MI benchmark</div>
       <p class="section-copy">Public Milan grid dataset (<a href="https://doi.org/10.7910/DVN/EGZHFV">doi:10.7910/DVN/EGZHFV</a>, ODbL 1.0 (Open Database License), per the Dataverse terms of use), 62 daily files from 2013-11-01 to 2014-01-01, 319,896,289 raw rows. Hourly <code>internet_traffic</code> per square, three squares chosen by activity level (largest total, nearest the median, nearest the 10th percentile), time-ordered split with the last 20% held out, features are calendar terms and lags of the target only. RMSE in the dataset's activity units; every figure links to its file. Generated 2026-09-09T21:26:47Z. Full record: <a href="forecast_examples/telecom_italia_mi/summary.json">summary.json</a>, <a href="forecast_examples/telecom_italia_mi/dataset.json">dataset.json</a>.</p>
       <table>
@@ -225,6 +246,7 @@
         <thead><tr><th>Square</th><th>ridge_linear RMSE</th><th>gradient_boosting RMSE</th><th>mlp RMSE</th><th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
         <tbody><tr><td>5161</td><td>1279.8</td><td>1096.5</td><td>2085.7</td><td>2634.2</td><td>3336.0</td></tr><tr><td>3168</td><td>18.7</td><td>15.9</td><td>18.6</td><td>27.9</td><td>43.5</td></tr><tr><td>9408</td><td>3.4</td><td>3.0</td><td>3.3</td><td>5.0</td><td>4.7</td></tr></tbody>
       </table>
+      <div class="chart-grid"><figure class="chart"><img src="forecast_examples/telecom_italia_mi/rmse_two_windows.svg" alt="Hold-out RMSE per square, three models and the naive baseline, holiday window beside ordinary weeks" loading="lazy"><figcaption>Both windows, read from the two summary.json files. Each square has its own axis.</figcaption></figure><figure class="chart"><img src="forecast_examples/telecom_italia_mi_preholiday/5161/gradient_boosting/internet_traffic_forecast.svg" alt="Gradient boosting hold-out and forecast for square 5161, ordinary-weeks window" loading="lazy"><figcaption>Square 5161: gradient boosting hold-out actuals against predictions and the 24 h forward forecast, ordinary-weeks window (<a href="forecast_examples/telecom_italia_mi_preholiday/5161/gradient_boosting/metrics.json">metrics.json</a>).</figcaption></figure><figure class="chart"><img src="forecast_examples/telecom_italia_mi_preholiday/3168/gradient_boosting/internet_traffic_forecast.svg" alt="Gradient boosting hold-out and forecast for square 3168, ordinary-weeks window" loading="lazy"><figcaption>Square 3168: gradient boosting hold-out actuals against predictions and the 24 h forward forecast, ordinary-weeks window (<a href="forecast_examples/telecom_italia_mi_preholiday/3168/gradient_boosting/metrics.json">metrics.json</a>).</figcaption></figure><figure class="chart"><img src="forecast_examples/telecom_italia_mi_preholiday/9408/gradient_boosting/internet_traffic_forecast.svg" alt="Gradient boosting hold-out and forecast for square 9408, ordinary-weeks window" loading="lazy"><figcaption>Square 9408: gradient boosting hold-out actuals against predictions and the 24 h forward forecast, ordinary-weeks window (<a href="forecast_examples/telecom_italia_mi_preholiday/9408/gradient_boosting/metrics.json">metrics.json</a>).</figcaption></figure></div>
     </section>
     
     <div class="grid">
@@ -240,7 +262,7 @@
         </section>
 <section class="card">
           <div class="eyebrow">Three-model comparison</div>
-          <p>Ridge / GradientBoosting / MLP head-to-head on the same KPI and time split. Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.</p>
+          <p>Ridge / GradientBoosting / MLP head-to-head on the same KPI and time split, on the 48-row sample. Public-data accuracy is in the Telecom Italia section above.</p>
           <ul><li><a href="model_comparison/comparison_metrics.md">Comparison table (MD)</a></li><li><a href="model_comparison/comparison_metrics.csv">Comparison table (CSV)</a></li><li><a href="model_comparison/comparison_overlay.svg">Comparison overlay SVG</a></li></ul>
         </section>
 <section class="card">
