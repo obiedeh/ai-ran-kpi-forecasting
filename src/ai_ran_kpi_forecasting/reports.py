@@ -88,6 +88,15 @@ def write_portal_page(output_path: str | Path) -> Path:
     repo_root = root.parent
     forecast_root = root / "forecast_examples" / "latest"
     scenarios_root = root / "scenarios" / "latest"
+    thor_root = root / "thor_benchmark"
+    thor_comp_path = thor_root / "thread_comparison.json"
+    thor_bench_path = thor_root / "thor_benchmark.json"
+    thor_comp: dict | None = (
+        json.loads(thor_comp_path.read_text(encoding="utf-8")) if thor_comp_path.exists() else None
+    )
+    thor_bench: dict | None = (
+        json.loads(thor_bench_path.read_text(encoding="utf-8")) if thor_bench_path.exists() else None
+    )
     telecom_root = root / "forecast_examples" / "telecom_italia_mi"
     telecom_summary_path = telecom_root / "summary.json"
     telecom_summary: dict | None = (
@@ -184,6 +193,12 @@ def write_portal_page(output_path: str | Path) -> Path:
         ("Scenario count", f"{len(measured_scenarios)} measured", "Congestion, backhaul saturation, and outage evidence", "status-good"),
         ("A1 policy status", policy_action, "Candidate only; no network control is executed", "status-good" if policy_action == "no_action" else "status-warn"),
         (
+            ("Thor inference", f"{max(r['variant']['p95_ms'] for r in thor_comp['rows'] if r['target_rps'] == 1000.0):.4f} ms p95",
+             "Slowest of the three ONNX forecasters at 1000 events/s on Jetson AGX Thor, CPU provider, one thread", "status-good")
+            if thor_comp and thor_comp.get("rows")
+            else ("Thor inference", "not measured", "No device benchmark artifact committed", "status-warn")
+        ),
+        (
             ("Benchmark status", f"{len(telecom_summary['cells'])} cells measured",
              f"Telecom Italia MI, hourly internet_traffic, {telecom_summary['dataset']['first_day']} to "
              f"{telecom_summary['dataset']['last_day']}; per-cell hold-out with naive baselines", "status-good")
@@ -215,7 +230,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         },
         {
             "title": "Three-model comparison",
-            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI and time split. Benchmark-ready: pending local public dataset files. No benchmark metric claimed yet.",
+            "desc": "Ridge / GradientBoosting / MLP head-to-head on the same KPI and time split, on the 48-row sample. Public-data accuracy is in the Telecom Italia section above." + ("" if telecom_summary else " No public-data benchmark metric claimed yet."),
             "links": [
                 ("Comparison table (MD)", rel(root / "model_comparison" / "comparison_metrics.md")),
                 ("Comparison table (CSV)", rel(root / "model_comparison" / "comparison_metrics.csv")),
@@ -340,6 +355,36 @@ def write_portal_page(output_path: str | Path) -> Path:
       </table>
     </section>
     """
+    if thor_comp and thor_comp.get("rows") and thor_bench:
+        hw = thor_bench.get("hardware", {})
+        thor_rows = "".join(
+            f"<tr><td><a href=\"{rel(thor_bench_path)}\">{r['model']}</a></td>"
+            f"<td>{r['variant']['p95_ms']:.4f}</td><td>{r['baseline']['p95_ms']:.4f}</td>"
+            f"<td>{r['variant']['deadline_misses']:,}</td><td>{r['baseline']['deadline_misses']:,}</td>"
+            f"<td>{r['variant']['vin_p50_mw']:,.0f}</td><td>{r['baseline']['vin_p50_mw']:,.0f}</td></tr>"
+            for r in thor_comp["rows"] if r["target_rps"] == 1000.0
+        )
+        thor_chart = thor_root / "latency_power.svg"
+        thor_img = (
+            f'<figure class="chart"><img src="{rel(thor_chart)}" alt="Thor p95 latency and board power per model, default thread pool against one thread" loading="lazy">'
+            f'<figcaption>Read from <a href="{rel(thor_comp_path)}">thread_comparison.json</a>.</figcaption></figure>'
+            if thor_chart.exists() else ""
+        )
+        html_thor_section = f"""
+    <section class="wide-card">
+      <div class="eyebrow">Measured: inference cost on Jetson AGX Thor</div>
+      <p class="section-copy">The three ONNX exports run through the edge inference harness shared with <a href="https://github.com/obiedeh/jetson-edge-ai-security">jetson-edge-ai-security</a> on {hw.get('host', 'Jetson AGX Thor')} ({hw.get('soc', 'tegra264')}, {str(hw.get('nvpmodel', '')).replace('NV Power Mode: ', '')} power mode), onnxruntime CPU execution provider, synthetic inputs of the model shape, batch 1, paced load, {thor_bench.get('duration_per_tier_s')} s per tier. Primary run <a href="{rel(thor_bench_path)}">thor_benchmark.json</a> uses one intra-op and one inter-op thread with spinning disabled; the comparison run <a href="{rel(thor_root / 'default_threads.json')}">default_threads.json</a> uses runtime defaults. Inference cost only, not forecast accuracy. At 1000 events/s:</p>
+      <table>
+        <thead><tr><th>Model</th><th>p95 ms, one thread</th><th>p95 ms, default pool</th><th>Misses, one thread</th><th>Misses, default</th><th>VIN p50 mW, one thread</th><th>VIN p50 mW, default</th></tr></thead>
+        <tbody>{thor_rows}</tbody>
+      </table>
+      <p class="section-copy">The gradient-boosting graph engages the default thread pool: about 30 W of extra board power and 18,342 pacing misses, both removed by the single-thread setting. The linear model is unaffected; the MLP is faster under the default pool but misses more deadlines.</p>
+      {thor_img}
+    </section>
+    """
+    else:
+        html_thor_section = ""
+
     if telecom_summary:
         cells = telecom_summary["cells"]
         model_names = telecom_summary["models"]
@@ -376,6 +421,17 @@ def write_portal_page(output_path: str | Path) -> Path:
         <thead><tr><th>Square</th>{header_cells}<th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
         <tbody>{pre_rows}</tbody>
       </table>"""
+        ti_chart = telecom_root / "rmse_two_windows.svg"
+        ti_figs = ""
+        if ti_chart.exists():
+            ti_figs += (f'<figure class="chart"><img src="{rel(ti_chart)}" alt="Hold-out RMSE per square, three models and the naive baseline, holiday window beside ordinary weeks" loading="lazy">'
+                        f'<figcaption>Both windows, read from the two summary.json files. Each square has its own axis.</figcaption></figure>')
+        if pre_path.exists():
+            for cid in cells:
+                svg = pre_path.parent / cid / "gradient_boosting" / "internet_traffic_forecast.svg"
+                if svg.exists():
+                    ti_figs += (f'<figure class="chart"><img src="{rel(svg)}" alt="Gradient boosting hold-out and forecast for square {cid}, ordinary-weeks window" loading="lazy">'
+                                f'<figcaption>Square {cid}: gradient boosting hold-out actuals against predictions and the 24 h forward forecast, ordinary-weeks window (<a href="{rel(svg.parent / "metrics.json")}">metrics.json</a>).</figcaption></figure>')
         html_benchmark_section = f"""
     <section class="wide-card">
       <div class="eyebrow">Measured: Telecom Italia MI benchmark</div>
@@ -384,6 +440,7 @@ def write_portal_page(output_path: str | Path) -> Path:
         <thead><tr><th>Cell</th><th>Hours</th><th>Test rows</th>{header_cells}<th>Naive last value RMSE</th><th>Seasonal naive 24 h RMSE</th></tr></thead>
         <tbody>{''.join(rows)}</tbody>
       </table>{pre_note}
+      <div class="chart-grid">{ti_figs}</div>
     </section>
     """
     else:
@@ -496,6 +553,10 @@ def write_portal_page(output_path: str | Path) -> Path:
       margin-top: 16px;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }}
+    .chart-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }}
+    figure.chart {{ margin: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; overflow-x: auto; }}
+    figure.chart img {{ width: 100%; height: auto; display: block; background: #fff0; }}
+    figure.chart figcaption {{ color: var(--muted); font-size: 0.8rem; margin-top: 6px; }}
     .wide-card h2 {{ margin: 8px 0; font-size: 20px; }}
     .wide-card p {{ color: var(--muted); line-height: 1.55; }}
     .section-copy {{ max-width: 980px; }}
@@ -535,6 +596,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     {html_risk_section}
     {html_model_section}
     {html_scenario_section}
+    {html_thor_section}
     {html_benchmark_section}
     <div class="grid">
       {html_cards}
