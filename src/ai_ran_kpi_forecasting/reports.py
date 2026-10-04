@@ -8,6 +8,7 @@ from typing import cast
 
 import pandas as pd
 
+from ai_ran_kpi_forecasting.ee_theme import apply_theme
 from ai_ran_kpi_forecasting.explainability import write_shap_summary
 from ai_ran_kpi_forecasting.forecast import ForecastRunResult
 from ai_ran_kpi_forecasting.visualization import plot_feature_importance, plot_forecast, plot_pre_post_impact
@@ -474,23 +475,23 @@ def write_portal_page(output_path: str | Path) -> Path:
   <title>AI-RAN KPI Forecasting Portal</title>
   <style>
     :root {{
-      --bg: #f8fafc;
+      --bg: #f6f7f3;
       --panel: #ffffff;
-      --line: #dbe4ee;
-      --text: #0f172a;
-      --muted: #64748b;
-      --blue: #2563eb;
-      --green: #0f766e;
-      --gold: #a16207;
-      --orange: #c2410c;
-      --red: #b91c1c;
+      --line: #d8dbd2;
+      --text: #1a1c1e;
+      --muted: #5d6459;
+      --blue: #1f6fd1;
+      --green: #4d7c0f;
+      --gold: #c2560c;
+      --orange: #c2560c;
+      --red: #c62828;
     }}
     body {{
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--text);
       background:
-        linear-gradient(180deg, rgba(37, 99, 235, 0.10), rgba(248, 250, 252, 0.0) 240px),
+        linear-gradient(180deg, rgba(31, 111, 209, 0.10), rgba(248, 250, 252, 0.0) 240px),
         var(--bg);
     }}
     .wrap {{ max-width: 1400px; margin: 0 auto; padding: 28px; }}
@@ -499,7 +500,7 @@ def write_portal_page(output_path: str | Path) -> Path:
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 24px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.05);
     }}
     h1 {{ margin: 0 0 8px; font-size: 34px; }}
     .sub {{ color: var(--muted); max-width: 900px; line-height: 1.5; }}
@@ -508,7 +509,7 @@ def write_portal_page(output_path: str | Path) -> Path:
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 7px 11px;
-      background: #f8fafc;
+      background: #f6f7f3;
       font-size: 13px;
     }}
     .section-title {{ margin: 24px 0 10px; font-size: 20px; }}
@@ -530,10 +531,10 @@ def write_portal_page(output_path: str | Path) -> Path:
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }}
-    .status-good {{ background: #e2f1ec; color: var(--green); }}
-    .status-warn {{ background: #fdf3df; color: var(--gold); }}
-    .status-risk {{ background: #fee2e2; color: var(--red); }}
-    .status-neutral {{ background: #edf1f6; color: #475569; }}
+    .status-good {{ background: #ecf5dc; color: var(--green); }}
+    .status-warn {{ background: #fcecdf; color: var(--gold); }}
+    .status-risk {{ background: #fbe4e1; color: var(--red); }}
+    .status-neutral {{ background: #eceee7; color: #3d4239; }}
     .grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }}
     .ops-grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }}
     .card {{
@@ -541,7 +542,7 @@ def write_portal_page(output_path: str | Path) -> Path:
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 18px 20px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
     }}
     .eyebrow {{ color: var(--blue); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }}
     .card p {{ color: var(--muted); line-height: 1.5; }}
@@ -551,7 +552,7 @@ def write_portal_page(output_path: str | Path) -> Path:
       border-radius: 12px;
       padding: 18px 20px;
       margin-top: 16px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
     }}
     .chart-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }}
     figure.chart {{ margin: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; overflow-x: auto; }}
@@ -560,7 +561,7 @@ def write_portal_page(output_path: str | Path) -> Path:
     .wide-card h2 {{ margin: 8px 0; font-size: 20px; }}
     .wide-card p {{ color: var(--muted); line-height: 1.55; }}
     .section-copy {{ max-width: 980px; }}
-    .boundary {{ color: #475569; font-size: 13px; }}
+    .boundary {{ color: #3d4239; font-size: 13px; }}
     table {{ width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }}
     th, td {{ text-align: left; border-bottom: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }}
     th {{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }}
@@ -609,6 +610,7 @@ def write_portal_page(output_path: str | Path) -> Path:
 </body>
 </html>
 """
+    html = apply_theme(html, repo_url="https://github.com/obiedeh/ai-ran-kpi-forecasting", dark={}, root_selectors=":root", force_dark=False, scheme="light")
     output_path.write_text(html, encoding="utf-8")
     if output_path.name == "index.html":
         dashboard_html = html.replace(
@@ -644,16 +646,16 @@ def write_publish_page(output_dir: str | Path) -> Path:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI-RAN KPI Forecasting Release Bundle</title>
   <style>
-    body {{ font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f8fafc; color: #0f172a; }}
+    body {{ font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; background: #f6f7f3; color: #1a1c1e; }}
     .wrap {{ max-width: 1120px; margin: 0 auto; padding: 28px; }}
     h1 {{ margin: 0 0 8px; font-size: 32px; }}
-    p {{ color: #475569; line-height: 1.55; }}
-    .panel {{ background: #fff; border: 1px solid #dbe4ee; border-radius: 12px; padding: 18px 20px; margin-top: 18px; }}
+    p {{ color: #3d4239; line-height: 1.55; }}
+    .panel {{ background: #fff; border: 1px solid #d8dbd2; border-radius: 12px; padding: 18px 20px; margin-top: 18px; }}
     ul {{ margin: 0; padding-left: 18px; }}
     li {{ margin: 8px 0; }}
-    a {{ color: #2563eb; text-decoration: none; }}
+    a {{ color: #1f6fd1; text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
-    code {{ background: #eef2ff; padding: 2px 6px; border-radius: 6px; }}
+    code {{ background: #eceee7; padding: 2px 6px; border-radius: 6px; }}
   </style>
 </head>
 <body>
@@ -678,6 +680,7 @@ def write_publish_page(output_dir: str | Path) -> Path:
 </body>
 </html>
 """
+    html = apply_theme(html, repo_url="https://github.com/obiedeh/ai-ran-kpi-forecasting", dark={}, root_selectors=":root", force_dark=False, scheme="light")
     index_path = output_dir / "index.html"
     index_path.write_text(html, encoding="utf-8")
     return index_path
@@ -759,21 +762,21 @@ def write_scenario_dashboard(
   <title>{scenario_name}</title>
   <style>
     :root {{
-      --bg: #f8fafc;
+      --bg: #f6f7f3;
       --panel: #ffffff;
-      --line: #dbe4ee;
-      --text: #0f172a;
-      --muted: #64748b;
-      --blue: #2563eb;
-      --red: #dc2626;
-      --green: #0f766e;
-      --gold: #a16207;
+      --line: #d8dbd2;
+      --text: #1a1c1e;
+      --muted: #5d6459;
+      --blue: #1f6fd1;
+      --red: #c62828;
+      --green: #4d7c0f;
+      --gold: #c2560c;
     }}
     body {{
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }}
     .wrap {{
       max-width: 1440px;
@@ -793,7 +796,7 @@ def write_scenario_dashboard(
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 14px 16px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
     }}
     .label {{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }}
     .value {{ font-size: 26px; font-weight: 700; margin-top: 8px; }}
@@ -835,8 +838,8 @@ def write_scenario_dashboard(
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
-      background: #e0f2fe;
-      color: #0c4a6e;
+      background: #e3eefb;
+      color: #164a85;
     }}
     .status-good, .status-warn, .status-risk {{
       display: inline-block;
@@ -845,12 +848,12 @@ def write_scenario_dashboard(
       font-size: 12px;
       font-weight: 700;
     }}
-    .status-good {{ background: #e2f1ec; color: var(--green); }}
-    .status-warn {{ background: #fdf3df; color: var(--gold); }}
-    .status-risk {{ background: #fee2e2; color: var(--red); }}
+    .status-good {{ background: #ecf5dc; color: var(--green); }}
+    .status-warn {{ background: #fcecdf; color: var(--gold); }}
+    .status-risk {{ background: #fbe4e1; color: var(--red); }}
     .readout {{
       border-left: 4px solid var(--blue);
-      background: #f7fafd;
+      background: #fbfbf8;
       padding: 12px 14px;
       color: var(--muted);
       line-height: 1.5;
@@ -917,6 +920,7 @@ def write_scenario_dashboard(
 </body>
 </html>
 """
+    html = apply_theme(html, repo_url="https://github.com/obiedeh/ai-ran-kpi-forecasting", dark={}, root_selectors=":root", force_dark=False, scheme="light")
     dashboard_html.write_text(html, encoding="utf-8")
 
     summary_md.write_text(
