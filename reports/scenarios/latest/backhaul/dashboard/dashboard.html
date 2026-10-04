@@ -6,15 +6,15 @@
   <title>AI-RAN backhaul saturation scenario</title>
   <style>
     :root {
-      --bg: #f6f7f3;
-      --panel: #ffffff;
-      --line: #d8dbd2;
-      --text: #1a1c1e;
-      --muted: #5d6459;
-      --blue: #1f6fd1;
-      --red: #c62828;
-      --green: #4d7c0f;
-      --gold: #c2560c;
+      --bg: #202224;
+      --panel: #181b1d;
+      --line: #393d3f;
+      --text: #eef1e8;
+      --muted: #a3aa9c;
+      --blue: #68b7ff;
+      --red: #ff7a6b;
+      --green: #b7f34a;
+      --gold: #ff9c59;
     }
     body {
       margin: 0;
@@ -40,7 +40,7 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 14px 16px;
-      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
     .value { font-size: 26px; font-weight: 700; margin-top: 8px; }
@@ -82,8 +82,8 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
-      background: #e3eefb;
-      color: #164a85;
+      background: #18283a;
+      color: #9fd0ff;
     }
     .status-good, .status-warn, .status-risk {
       display: inline-block;
@@ -92,12 +92,12 @@
       font-size: 12px;
       font-weight: 700;
     }
-    .status-good { background: #ecf5dc; color: var(--green); }
-    .status-warn { background: #fcecdf; color: var(--gold); }
-    .status-risk { background: #fbe4e1; color: var(--red); }
+    .status-good { background: #27321a; color: var(--green); }
+    .status-warn { background: #33251b; color: var(--gold); }
+    .status-risk { background: #3a1f1d; color: var(--red); }
     .readout {
       border-left: 4px solid var(--blue);
-      background: #fbfbf8;
+      background: #1c1f21;
       padding: 12px 14px;
       color: var(--muted);
       line-height: 1.5;
@@ -111,7 +111,7 @@
       .grid, .two { grid-template-columns: 1fr; }
     }
   </style>
-<style id="ee-theme">:root{color-scheme:light}h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:-.02em}h1{letter-spacing:-.035em}
+<style id="ee-theme">:root{color-scheme:dark}h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:-.02em}h1{letter-spacing:-.035em}body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}h1{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:clamp(44px,4.6vw,66px)!important;font-weight:500!important;line-height:1!important;letter-spacing:-.06em!important;text-transform:none!important;font-stretch:normal!important}h1 em,h1 .ee-g{font-style:normal;color:#b7f34a!important;-webkit-text-fill-color:#b7f34a}h1 em.b,h1 .ee-b{font-style:normal;color:#68b7ff!important;-webkit-text-fill-color:#68b7ff}h2{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:clamp(28px,3.2vw,42px)!important;font-weight:500!important;line-height:1.08!important;letter-spacing:-.04em!important;text-transform:none!important;font-stretch:normal!important;color:inherit}h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:19px!important;font-weight:600!important;line-height:1.25!important;letter-spacing:-.02em!important;text-transform:none!important;font-stretch:normal!important}.ee-eyebrow{font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace!important;font-size:12px!important;font-weight:600!important;letter-spacing:.08em!important;text-transform:uppercase!important;line-height:1.4!important;color:#b7f34a!important}
 body{margin:0}
 .ee-band{background:#181b1d;border-bottom:1px solid #393d3f;color:#eef1e8;font:14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;position:relative;z-index:50}
 .ee-band .ee-in{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
@@ -125,7 +125,7 @@ body{margin:0}
 </style></head>
 <body><div class="ee-band"><div class="ee-in"><a class="ee-mark" href="https://embodiededge.ai"><i></i>EmbodiedEdge <span>Labs · Evidence</span></a><nav><a href="https://github.com/obiedeh/ai-ran-kpi-forecasting">Repository</a><a href="https://embodiededge.ai">Lab</a><a href="https://github.com/obiedeh">Obinna Edeh</a></nav></div></div>
   <div class="wrap">
-    <h1>AI-RAN backhaul saturation scenario</h1>
+    <div class="ee-eyebrow">KPI forecasting · Simulation and public-data evidence</div><h1>AI-RAN <span class="ee-g">backhaul saturation</span> scenario</h1>
     <div class="sub">Wireless KPI observability pack comparing a baseline cell with a pre/post scenario event on CELL_001.</div>
     <div class="grid">
       <div class="card"><div class="label">Baseline RMSE</div><div class="value">4.39</div><div class="small">prb_dl_util</div></div>
