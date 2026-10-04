@@ -6,21 +6,21 @@
   <title>AI-RAN cell outage recovery scenario</title>
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #f6f7f3;
       --panel: #ffffff;
-      --line: #dbe4ee;
-      --text: #0f172a;
-      --muted: #64748b;
-      --blue: #2563eb;
-      --red: #dc2626;
-      --green: #0f766e;
-      --gold: #a16207;
+      --line: #d8dbd2;
+      --text: #1a1c1e;
+      --muted: #5d6459;
+      --blue: #1f6fd1;
+      --red: #c62828;
+      --green: #4d7c0f;
+      --gold: #c2560c;
     }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
     .wrap {
       max-width: 1440px;
@@ -40,7 +40,7 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 14px 16px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
     }
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
     .value { font-size: 26px; font-weight: 700; margin-top: 8px; }
@@ -82,8 +82,8 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
-      background: #e0f2fe;
-      color: #0c4a6e;
+      background: #e3eefb;
+      color: #164a85;
     }
     .status-good, .status-warn, .status-risk {
       display: inline-block;
@@ -92,12 +92,12 @@
       font-size: 12px;
       font-weight: 700;
     }
-    .status-good { background: #e2f1ec; color: var(--green); }
-    .status-warn { background: #fdf3df; color: var(--gold); }
-    .status-risk { background: #fee2e2; color: var(--red); }
+    .status-good { background: #ecf5dc; color: var(--green); }
+    .status-warn { background: #fcecdf; color: var(--gold); }
+    .status-risk { background: #fbe4e1; color: var(--red); }
     .readout {
       border-left: 4px solid var(--blue);
-      background: #f7fafd;
+      background: #fbfbf8;
       padding: 12px 14px;
       color: var(--muted);
       line-height: 1.5;
@@ -111,8 +111,19 @@
       .grid, .two { grid-template-columns: 1fr; }
     }
   </style>
-</head>
-<body>
+<style id="ee-theme">:root{color-scheme:light}h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:-.02em}h1{letter-spacing:-.035em}
+body{margin:0}
+.ee-band{background:#181b1d;border-bottom:1px solid #393d3f;color:#eef1e8;font:14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;position:relative;z-index:50}
+.ee-band .ee-in{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
+.ee-band a{color:#a3aa9c;text-decoration:none}.ee-band a:hover{color:#eef1e8}
+.ee-band .ee-mark{display:inline-flex;align-items:center;gap:8px;color:#eef1e8;font-weight:600;letter-spacing:-.01em}
+.ee-band .ee-mark i{display:inline-block;width:14px;height:14px;border-radius:2px;background:linear-gradient(135deg,#b7f34a 0 50%,#68b7ff 50% 100%)}
+.ee-band .ee-mark span{color:#a3aa9c;font-weight:400}.ee-band nav{display:flex;gap:16px}
+.ee-foot{border-top:1px solid #393d3f;background:#181b1d;color:#7c8378;font:13px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif}
+.ee-foot .ee-in{max-width:1120px;margin:0 auto;padding:14px 20px}.ee-foot a{color:#a3aa9c}
+@media print{.ee-band,.ee-foot{background:#fff;color:#5d6459;border-color:#d8dbd2}.ee-band .ee-mark{color:#1a1c1e}}
+</style></head>
+<body><div class="ee-band"><div class="ee-in"><a class="ee-mark" href="https://embodiededge.ai"><i></i>EmbodiedEdge <span>Labs · Evidence</span></a><nav><a href="https://github.com/obiedeh/ai-ran-kpi-forecasting">Repository</a><a href="https://embodiededge.ai">Lab</a><a href="https://github.com/obiedeh">Obinna Edeh</a></nav></div></div>
   <div class="wrap">
     <h1>AI-RAN cell outage recovery scenario</h1>
     <div class="sub">Wireless KPI observability pack comparing a baseline cell with a pre/post scenario event on CELL_001.</div>
@@ -255,5 +266,5 @@
       </div>
     </div>
   </div>
-</body>
+<div class="ee-foot"><div class="ee-in">An <a href="https://embodiededge.ai">EmbodiedEdge Labs</a> project. Measured on real hardware, published as found.</div></div></body>
 </html>
