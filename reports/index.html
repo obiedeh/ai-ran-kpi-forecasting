@@ -6,23 +6,23 @@
   <title>AI-RAN KPI Forecasting Portal</title>
   <style>
     :root {
-      --bg: #f6f7f3;
-      --panel: #ffffff;
-      --line: #d8dbd2;
-      --text: #1a1c1e;
-      --muted: #5d6459;
-      --blue: #1f6fd1;
-      --green: #4d7c0f;
-      --gold: #c2560c;
-      --orange: #c2560c;
-      --red: #c62828;
+      --bg: #202224;
+      --panel: #181b1d;
+      --line: #393d3f;
+      --text: #eef1e8;
+      --muted: #a3aa9c;
+      --blue: #68b7ff;
+      --green: #b7f34a;
+      --gold: #ff9c59;
+      --orange: #ff9c59;
+      --red: #ff7a6b;
     }
     body {
       margin: 0;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--text);
       background:
-        linear-gradient(180deg, rgba(31, 111, 209, 0.10), rgba(248, 250, 252, 0.0) 240px),
+        linear-gradient(180deg, rgba(104, 183, 255, 0.07), rgba(32, 34, 36, 0.0) 240px),
         var(--bg);
     }
     .wrap { max-width: 1400px; margin: 0 auto; padding: 28px; }
@@ -31,7 +31,7 @@
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 24px;
-      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
     h1 { margin: 0 0 8px; font-size: 34px; }
     .sub { color: var(--muted); max-width: 900px; line-height: 1.5; }
@@ -40,7 +40,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 7px 11px;
-      background: #f6f7f3;
+      background: #202224;
       font-size: 13px;
     }
     .section-title { margin: 24px 0 10px; font-size: 20px; }
@@ -62,10 +62,10 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .status-good { background: #ecf5dc; color: var(--green); }
-    .status-warn { background: #fcecdf; color: var(--gold); }
-    .status-risk { background: #fbe4e1; color: var(--red); }
-    .status-neutral { background: #eceee7; color: #3d4239; }
+    .status-good { background: #27321a; color: var(--green); }
+    .status-warn { background: #33251b; color: var(--gold); }
+    .status-risk { background: #3a1f1d; color: var(--red); }
+    .status-neutral { background: #26292b; color: #c9cfc2; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
     .ops-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
     .card {
@@ -73,7 +73,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 18px 20px;
-      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
     .eyebrow { color: var(--blue); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
     .card p { color: var(--muted); line-height: 1.5; }
@@ -83,16 +83,16 @@
       border-radius: 12px;
       padding: 18px 20px;
       margin-top: 16px;
-      box-shadow: 0 1px 2px rgba(26, 28, 30, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
     .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
     figure.chart { margin: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; overflow-x: auto; }
-    figure.chart img { width: 100%; height: auto; display: block; background: #fff0; }
+    figure.chart img { width: 100%; height: auto; display: block; background: #fff; border-radius: 6px; }
     figure.chart figcaption { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
     .wide-card h2 { margin: 8px 0; font-size: 20px; }
     .wide-card p { color: var(--muted); line-height: 1.55; }
     .section-copy { max-width: 980px; }
-    .boundary { color: #3d4239; font-size: 13px; }
+    .boundary { color: #c9cfc2; font-size: 13px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
     th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
     th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -105,7 +105,7 @@
       .grid, .summary, .ops-grid { grid-template-columns: 1fr; }
     }
   </style>
-<style id="ee-theme">:root{color-scheme:light}h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:-.02em}h1{letter-spacing:-.035em}
+<style id="ee-theme">:root{color-scheme:dark}h1,h2,h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;letter-spacing:-.02em}h1{letter-spacing:-.035em}body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}h1{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:clamp(44px,4.6vw,66px)!important;font-weight:500!important;line-height:1!important;letter-spacing:-.06em!important;text-transform:none!important;font-stretch:normal!important}h1 em,h1 .ee-g{font-style:normal;color:#b7f34a!important;-webkit-text-fill-color:#b7f34a}h1 em.b,h1 .ee-b{font-style:normal;color:#68b7ff!important;-webkit-text-fill-color:#68b7ff}h2{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:clamp(28px,3.2vw,42px)!important;font-weight:500!important;line-height:1.08!important;letter-spacing:-.04em!important;text-transform:none!important;font-stretch:normal!important;color:inherit}h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important;font-size:19px!important;font-weight:600!important;line-height:1.25!important;letter-spacing:-.02em!important;text-transform:none!important;font-stretch:normal!important}.ee-eyebrow{font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace!important;font-size:12px!important;font-weight:600!important;letter-spacing:.08em!important;text-transform:uppercase!important;line-height:1.4!important;color:#b7f34a!important}
 body{margin:0}
 .ee-band{background:#181b1d;border-bottom:1px solid #393d3f;color:#eef1e8;font:14px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;position:relative;z-index:50}
 .ee-band .ee-in{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
@@ -120,7 +120,7 @@ body{margin:0}
 <body><div class="ee-band"><div class="ee-in"><a class="ee-mark" href="https://embodiededge.ai"><i></i>EmbodiedEdge <span>Labs · Evidence</span></a><nav><a href="https://github.com/obiedeh/ai-ran-kpi-forecasting">Repository</a><a href="https://embodiededge.ai">Lab</a><a href="https://github.com/obiedeh">Obinna Edeh</a></nav></div></div>
   <div class="wrap">
     <header>
-      <h1>AI-RAN KPI Forecasting Portal</h1>
+      <div class="ee-eyebrow">KPI forecasting · Simulation and public-data evidence</div><h1>AI-RAN <span class="ee-b">KPI Forecasting</span> Portal</h1>
       <div class="sub">
         I built this because RAN operations cannot rely only on after-the-fact dashboards. The page shows a Non-RT RIC / rApp pattern: schema-typed KPM telemetry in, time-ordered forecasts out, advisory A1 policy candidates generated, and evidence artifacts kept visible for review. Pattern, not deployment.
       </div>
