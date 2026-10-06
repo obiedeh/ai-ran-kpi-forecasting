@@ -338,4 +338,6 @@ The next steps are intentionally narrow: improve evidence quality before adding 
 
 ## License
 
-MIT.
+Code and documentation: MIT. See [LICENSE](LICENSE).
+
+The files under `reports/forecast_examples/telecom_italia_mi/` and `reports/forecast_examples/telecom_italia_mi_preholiday/` are derived from the Telecom Italia "Telecommunications - SMS, Call, Internet - MI" dataset ([doi:10.7910/DVN/EGZHFV](https://doi.org/10.7910/DVN/EGZHFV), Harvard Dataverse). That dataset is licensed under the [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/), so these derived files are made available under ODbL 1.0, not MIT. The raw dataset is not stored in this repository.
