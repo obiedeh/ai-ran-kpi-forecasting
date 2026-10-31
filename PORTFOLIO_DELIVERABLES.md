@@ -1,6 +1,6 @@
-# Portfolio Deliverables — AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
+# Portfolio Deliverables, AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
 
-Reviewer-facing evidence map. This repo implements the **AI-for-RAN at the operational layer** rApp pattern — schema-typed KPM input, multi-model forecasting, A1-policy output, scenario evidence packs. Companion to the L1 PHY repo [`wireless-link-intelligence-system`](https://github.com/obiedeh/wireless-link-intelligence-system). Pattern, not deployment — see [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the boundary.
+Reviewer-facing evidence map. This repo implements the **AI-for-RAN at the operational layer** rApp pattern, schema-typed KPM input, multi-model forecasting, A1-policy output, scenario evidence packs. Companion to the L1 PHY repo [`wireless-link-intelligence-system`](https://github.com/obiedeh/wireless-link-intelligence-system). Pattern, not deployment, see [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the boundary.
 
 ## One-Command Checks
 
@@ -78,4 +78,4 @@ This repo demonstrates the **Non-RT RIC rApp pattern** for AI-for-RAN KPI foreca
 - autonomous network control or closed-loop policy enforcement
 - production-grade rApp lifecycle (Helm packaging, R1 service registration over real ORAN endpoints)
 
-The deliverable is the **pattern + schemas + measured forecasting evidence** — enough that a senior AI-RAN engineer reading the repo can confirm this person understands how AI-for-RAN deploys, not enough to drop into a live RIC. See [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the integration recipe with FlexRIC / OSC RIC.
+The deliverable is the **pattern + schemas + measured forecasting evidence**, enough that a senior AI-RAN engineer reading the repo can confirm this person understands how AI-for-RAN deploys, not enough to drop into a live RIC. See [docs/AI_RAN_INTEGRATION.md](docs/AI_RAN_INTEGRATION.md) for the integration recipe with FlexRIC / OSC RIC.

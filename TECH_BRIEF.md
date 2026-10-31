@@ -1,4 +1,4 @@
-# Tech brief — AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
+# Tech brief, AI-RAN KPI Forecasting (Non-RT RIC rApp pattern)
 
 A one-page brief for a senior tech-leader or hiring-manager review. Read this if you want to see whether the repo is more than a KPI forecasting script: schema-typed input, time-ordered evaluation, advisory A1 policy output, evidence-led reporting, and a clear boundary before live RIC integration.
 
@@ -49,7 +49,7 @@ This repo targets **AI-for-RAN at the operational layer**: the Non-RT RIC rApp p
                     │
                     ▼
         ┌────────────────────────────────────────┐
-        │  models.py — three-model registry      │
+        │  models.py, three-model registry      │
         │   Ridge / GradientBoosting / MLP       │
         │   same train/test split per model      │
         └────────────────────┬───────────────────┘
@@ -68,16 +68,16 @@ This repo targets **AI-for-RAN at the operational layer**: the Non-RT RIC rApp p
                 A1 traffic-steering policy candidate (JSON)
                              │
                              ▼
-              [Near-RT RIC would consume here — out of scope]
+              [Near-RT RIC would consume here, out of scope]
 ```
 
-The pipeline is exercised end-to-end by `scripts/simulate_r1_dataflow.py` on the sample CSV. The wire-protocol layer (R1 service registration, A1-P transport, KPM ASN.1 encoding) is intentionally not part of the deliverable — that's vendor-RIC-specific integration work documented in [`docs/AI_RAN_INTEGRATION.md`](docs/AI_RAN_INTEGRATION.md).
+The pipeline is exercised end-to-end by `scripts/simulate_r1_dataflow.py` on the sample CSV. The wire-protocol layer (R1 service registration, A1-P transport, KPM ASN.1 encoding) is intentionally not part of the deliverable, that's vendor-RIC-specific integration work documented in [`docs/AI_RAN_INTEGRATION.md`](docs/AI_RAN_INTEGRATION.md).
 
 ---
 
 ## Why three models, sklearn-only?
 
-Three models — **Ridge**, **GradientBoostingRegressor**, **MLPRegressor** — all from scikit-learn. Zero new dependencies on top of the existing stack. The point is not to win a leaderboard; the point is to surface "which family of model wins on which KPI on which dataset" honestly rather than cherry-picking.
+Three models, **Ridge**, **GradientBoostingRegressor**, **MLPRegressor**, all from scikit-learn. Zero new dependencies on top of the existing stack. The point is not to win a leaderboard; the point is to surface "which family of model wins on which KPI on which dataset" honestly rather than cherry-picking.
 
 On the seeded 49-row sample:
 
@@ -97,12 +97,12 @@ The Telecom Italia MI public benchmark is the next step where GBR and MLP may ca
 
 | Practice | Evidence |
 |---|---|
-| **Schema-typed input / output** | `schemas/kpm_input_v1.json` + `schemas/a1_policy_v1.json` — the boundaries around the model, codified in JSON Schema |
-| **rApp manifest with explicit boundary block** | `rapp_manifest.yaml` lists what's exercised vs not (live R1 wire protocol, live A1-P, OSC SMO integration — all honestly "not exercised") |
+| **Schema-typed input / output** | `schemas/kpm_input_v1.json` + `schemas/a1_policy_v1.json`, the boundaries around the model, codified in JSON Schema |
+| **rApp manifest with explicit boundary block** | `rapp_manifest.yaml` lists what's exercised vs not (live R1 wire protocol, live A1-P, OSC SMO integration, all honestly "not exercised") |
 | **Forecast carries audit trail into the policy** | `forecast_basis` block in every A1 policy candidate records the model name, predicted peak, threshold crossed, and metrics-ref so operators can audit the policy back to its training run |
-| **No-shuffle temporal split** | All three models trained on the same forward-only split — no leakage |
+| **No-shuffle temporal split** | All three models trained on the same forward-only split, no leakage |
 | **No oracle features** | Lag features use past values only; time features come from the timestamp column |
-| **Honest no-action policy** | When the forecast doesn't cross the threshold, the policy candidate is still emitted with `action: no_action` and a rationale — the policy plane has an audit trail of "we looked, nothing to do" |
+| **Honest no-action policy** | When the forecast doesn't cross the threshold, the policy candidate is still emitted with `action: no_action` and a rationale, the policy plane has an audit trail of "we looked, nothing to do" |
 | **Integration boundary documented** | The repo explains what a real Non-RT RIC integration would require without claiming any live RIC, vendor RIC, or wire-protocol deployment. |
 
 ---
@@ -138,21 +138,21 @@ make verify
 
 Inspect:
 
-- [`reports/index.html`](reports/index.html) — evidence portal
-- [`reports/model_comparison/comparison_metrics.md`](reports/model_comparison/comparison_metrics.md) — three-model head-to-head
-- [`reports/r1_dataflow_demo/dataflow_summary.md`](reports/r1_dataflow_demo/dataflow_summary.md) — R1 → forecast → A1 dataflow
-- [`reports/scenarios/latest/`](reports/scenarios/latest/) — congestion / backhaul / outage dashboards
+- [`reports/index.html`](reports/index.html), evidence portal
+- [`reports/model_comparison/comparison_metrics.md`](reports/model_comparison/comparison_metrics.md), three-model head-to-head
+- [`reports/r1_dataflow_demo/dataflow_summary.md`](reports/r1_dataflow_demo/dataflow_summary.md), R1 → forecast → A1 dataflow
+- [`reports/scenarios/latest/`](reports/scenarios/latest/), congestion / backhaul / outage dashboards
 
 ---
 
 ## What production deployment would require (honest priority list)
 
-1. **R1 service registration** — deployment-specific registration for this rApp's data subscriptions and policy outputs with a target Non-RT RIC.
-2. **Wire-protocol transport** — ASN.1 encoders/decoders for E2SM-KPM, A1-P producer SDK integration. Vendor-specific in production.
-3. **Real KPI dataset benchmark** — Telecom Italia MI is the cheapest credible benchmark; full operator dataset access is the next tier.
-4. **Model lifecycle** — training data drift detection, retraining scheduling, A/B between model versions, rollback policy.
-5. **Observability** — metrics on forecast errors, policy emission rates, model staleness, and structured logging for the policy audit trail.
-6. **Multi-cell scaling** — current pipeline is single-cell per invocation; production needs batched multi-cell forecasting and per-site routing of policies.
+1. **R1 service registration**, deployment-specific registration for this rApp's data subscriptions and policy outputs with a target Non-RT RIC.
+2. **Wire-protocol transport**, ASN.1 encoders/decoders for E2SM-KPM, A1-P producer SDK integration. Vendor-specific in production.
+3. **Real KPI dataset benchmark**, Telecom Italia MI is the cheapest credible benchmark; full operator dataset access is the next tier.
+4. **Model lifecycle**, training data drift detection, retraining scheduling, A/B between model versions, rollback policy.
+5. **Observability**, metrics on forecast errors, policy emission rates, model staleness, and structured logging for the policy audit trail.
+6. **Multi-cell scaling**, current pipeline is single-cell per invocation; production needs batched multi-cell forecasting and per-site routing of policies.
 
 These are not claimed in this repo because they depend on a specific Non-RT RIC environment and operator data source. The boundary is clear: this repo is the **evidence + pattern**, not the **deployable rApp**.
 
