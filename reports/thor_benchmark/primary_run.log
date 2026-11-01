@@ -1,4 +1,4 @@
-ERROR: invalid models spec: [Errno 2] No such file or directory: '<home>/github/ai-ran-kpi-forecasting/deploy/thor/models_spec.json'
+ERROR: invalid models spec: [Errno 2] No such file or directory: '~/github/ai-ran-kpi-forecasting/deploy/thor/models_spec.json'
 Hardware: {
   "host": "jetson-agx-thor",
   "machine": "aarch64",
