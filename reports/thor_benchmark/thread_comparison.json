@@ -300,5 +300,10 @@
   "sources": {
     "reports/thor_benchmark/default_threads.json": "01875f53219a72811f110ddc6bf75b835be4e9445fc6be4f71cf6128af5881af",
     "reports/thor_benchmark/thor_benchmark.json": "de09d2ccdfbc6698a6f1f739fff4df73f725701a1b9218c6f468f47028d6ec74"
-  }
+  },
+  "sources_scrubbed_2026-11-03": {
+    "reports/thor_benchmark/default_threads.json": "963152d983280ceb29f83e1c11dec8ce3d7559b0bc6e2b66e9f001e3fe8a5b0d",
+    "reports/thor_benchmark/thor_benchmark.json": "b737a7e8e8a4b1da0713ba3b06a5ee5251d69b67a9800eb8c25cf7f74dca228d"
+  },
+  "scrub_note": "2026-11-03: machine names in the source files were replaced with board labels. 'sources' keeps the as-measured hashes; 'sources_scrubbed_2026-11-03' holds the hashes of the files as now committed. Reversing the substitution reproduces the as-measured files exactly."
 }
